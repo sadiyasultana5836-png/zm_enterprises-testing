@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZM Enterprises | Tailoring & Garment Solutions</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand-section">
+        <div class="brand-badge">ZM</div>
+        <div class="brand-info">
+          <h2>ZM Enterprises</h2>
+          <span class="brand-tag">Tailoring Management</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="orders">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>
+          <span>Orders & Tracking</span>
+        </button>
+        <button class="nav-item" data-tab="customers">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Customers & Measurements</span>
+        </button>
+        <button class="nav-item" data-tab="invoices">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Invoices & Billing</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings & Backup</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="services-pill">
+          <small>Specialties:</small>
+          <span>Custom Stitching • Alterations • Ethnic Wear • Uniforms</span>
+        </div>
+        <div class="version-tag">ZM Tailor Suite v1.0</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-title-group">
+          <h1 id="page-title">Dashboard Overview</h1>
+          <p class="subtitle" id="page-subtitle">Welcome to ZM Enterprises – Quality Tailoring & Garment Solutions</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary" id="btn-quick-customer">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+            <span>+ New Customer</span>
+          </button>
+          <button class="btn btn-primary" id="btn-quick-order">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ New Order</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="content-body">
+        
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="tab-view active">
+          <!-- Metric Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon icon-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Active Orders</span>
+                <span class="stat-value" id="stat-active-orders">0</span>
+                <span class="stat-sub">In cutting & stitching</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Upcoming Trials</span>
+                <span class="stat-value" id="stat-pending-trials">0</span>
+                <span class="stat-sub">Ready for client fitting</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Deliveries Due</span>
+                <span class="stat-value" id="stat-deliveries-due">0</span>
+                <span class="stat-sub">Next 7 days</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Pending Balance</span>
+                <span class="stat-value" id="stat-pending-balance">₹0</span>
+                <span class="stat-sub">To be collected upon delivery</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Banner -->
+          <div class="banner-card">
+            <div class="banner-text">
+              <h3>Tailoring Precision & Personalized Service</h3>
+              <p>Specializing in custom stitching, alterations, ethnic wear, uniforms, and ready-to-wear garments for men, women, and children.</p>
+            </div>
+            <div class="banner-pills">
+              <span class="feature-tag">✔ Perfect Fitting</span>
+              <span class="feature-tag">✔ Quality Craftsmanship</span>
+              <span class="feature-tag">✔ Timely Delivery</span>
+            </div>
+          </div>
+
+          <!-- Recent Orders Section -->
+          <div class="card recent-section">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Recent Orders & Production Status</h3>
+                <p>Live progress from measurement to trial and final delivery</p>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="app.switchTab('orders')">View All Orders →</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table" id="dashboard-orders-table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Garment Type</th>
+                    <th>Trial Date</th>
+                    <th>Delivery Date</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-orders-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ORDERS VIEW -->
+        <section id="view-orders" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-md">
+              <div class="filter-group">
+                <div class="search-box">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="order-search" placeholder="Search by customer name, order #, or phone..." oninput="app.filterOrders()">
+                </div>
+                <select id="order-status-filter" class="form-select" onchange="app.filterOrders()">
+                  <option value="all">All Statuses</option>
+                  <option value="Received">Received / Booked</option>
+                  <option value="Cutting">Cutting</option>
+                  <option value="Stitching">Stitching</option>
+                  <option value="Trial Ready">Trial Ready</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Delivered">Delivered</option>
+                </select>
+                <select id="order-category-filter" class="form-select" onchange="app.filterOrders()">
+                  <option value="all">All Garment Types</option>
+                  <option value="Custom Stitching">Custom Stitching</option>
+                  <option value="Alteration">Alterations</option>
+                  <option value="Ethnic Wear">Ethnic Wear</option>
+                  <option value="Uniform">Uniforms</option>
+                  <option value="Ready-to-Wear">Ready-to-Wear</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="app.openNewOrderModal()">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Create New Order</span>
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table" id="all-orders-table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Category</th>
+                    <th>Garment Description</th>
+                    <th>Trial Due</th>
+                    <th>Delivery Due</th>
+                    <th>Status</th>
+                    <th>Billing</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- CUSTOMERS & MEASUREMENTS VIEW -->
+        <section id="view-customers" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-md">
+              <div class="filter-group">
+                <div class="search-box">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="customer-search" placeholder="Search customer by name, phone, or email..." oninput="app.filterCustomers()">
+                </div>
+                <select id="customer-gender-filter" class="form-select" onchange="app.filterCustomers()">
+                  <option value="all">All Categories</option>
+                  <option value="Men">Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Kids">Kids</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="app.openCustomerModal()">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Customer & Measurements</span>
+              </button>
+            </div>
+
+            <div class="customers-grid" id="customers-grid">
+              <!-- Customer Cards rendered via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- INVOICES & BILLING VIEW -->
+        <section id="view-invoices" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-md">
+              <div class="card-title-group">
+                <h3>Customer Invoices & Receipts</h3>
+                <p>Generate, review, and print receipts with ZM Enterprises branding</p>
+              </div>
+              <div class="filter-group">
+                <div class="search-box">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="invoice-search" placeholder="Search invoices..." oninput="app.filterInvoices()">
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Order Ref</th>
+                    <th>Total (₹)</th>
+                    <th>Advance Paid (₹)</th>
+                    <th>Balance Due (₹)</th>
+                    <th>Payment Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="invoices-tbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS & BACKUP VIEW -->
+        <section id="view-settings" class="tab-view">
+          <div class="settings-grid">
+            <!-- Business Info Settings -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Business & Invoice Details</h3>
+                <p>Customize the header displayed on receipts and bills</p>
+              </div>
+              <form id="settings-form" onsubmit="app.saveSettings(event)" class="form-grid">
+                <div class="form-group full-width">
+                  <label class="form-label">Enterprise Name</label>
+                  <input type="text" id="setting-biz-name" class="form-input" required>
+                </div>
+                <div class="form-group full-width">
+                  <label class="form-label">Tagline / Services</label>
+                  <input type="text" id="setting-biz-tagline" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contact Phone</label>
+                  <input type="text" id="setting-biz-phone" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" id="setting-biz-email" class="form-input">
+                </div>
+                <div class="form-group full-width">
+                  <label class="form-label">Store / Workshop Address</label>
+                  <textarea id="setting-biz-address" class="form-input" rows="2"></textarea>
+                </div>
+                <div class="form-group full-width">
+                  <label class="form-label">Invoice Footer Note / Terms</label>
+                  <input type="text" id="setting-biz-terms" class="form-input">
+                </div>
+                <div class="full-width">
+                  <button type="submit" class="btn btn-primary">Save Business Details</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Data Backup & Reset -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Data Backup & Restore</h3>
+                <p>Safeguard customer profiles, measurements, and order history</p>
+              </div>
+              <div class="backup-actions">
+                <div class="backup-card">
+                  <h4>Export Local Backup</h4>
+                  <p>Download all customers, measurements, and orders to a JSON file on your computer.</p>
+                  <button class="btn btn-secondary" onclick="app.exportData()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Download Backup (.json)</span>
+                  </button>
+                </div>
+
+                <div class="backup-card">
+                  <h4>Restore Data</h4>
+                  <p>Import a previously saved backup file to restore records.</p>
+                  <label class="btn btn-outline file-input-btn">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Select Backup File</span>
+                    <input type="file" id="import-file-input" accept=".json" onchange="app.importData(event)" style="display:none;">
+                  </label>
+                </div>
+
+                <div class="backup-card danger-card">
+                  <h4>Reset to Default Demo Records</h4>
+                  <p>Restore the initial sample customers and orders for ZM Enterprises.</p>
+                  <button class="btn btn-danger-outline" onclick="app.resetDemoData()">Reset Demo Data</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Customer & Measurement Modal -->
+  <div class="modal-overlay" id="modal-customer">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-customer-title">Add Customer & Measurements</h3>
+        <button class="modal-close" onclick="app.closeModal('modal-customer')">&times;</button>
+      </div>
+      <form id="customer-form" onsubmit="app.saveCustomer(event)">
+        <input type="hidden" id="cust-id">
+        <div class="modal-body">
+          <h4 class="section-title">Client Details</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input type="text" id="cust-name" class="form-input" required placeholder="e.g. Ayesha Khan / Rahul Sharma">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" id="cust-phone" class="form-input" required placeholder="e.g. +91 98765 43210">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category / Gender *</label>
+              <select id="cust-gender" class="form-select" onchange="app.onCategoryChange()">
+                <option value="Women">Women</option>
+                <option value="Men">Men</option>
+                <option value="Kids">Kids</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email (Optional)</label>
+              <input type="email" id="cust-email" class="form-input" placeholder="client@example.com">
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Address / Landmark</label>
+              <input type="text" id="cust-address" class="form-input" placeholder="House/Street, Area, City">
+            </div>
+          </div>
+
+          <h4 class="section-title mt-lg">Body Measurements (Inches)</h4>
+          <p class="section-hint">Accurate tailor measurements for custom stitching, blouses, suits, kurtas & trousers.</p>
+
+          <div class="measurements-container">
+            <div class="measurement-subheading">Upper Body (Shirt / Kurta / Blouse / Jacket)</div>
+            <div class="measurements-grid">
+              <div class="measure-field">
+                <label>Top Length</label>
+                <input type="text" id="m-length" placeholder="e.g. 40">
+              </div>
+              <div class="measure-field">
+                <label>Chest / Bust</label>
+                <input type="text" id="m-chest" placeholder="e.g. 36">
+              </div>
+              <div class="measure-field">
+                <label>Waist (Upper)</label>
+                <input type="text" id="m-waist" placeholder="e.g. 32">
+              </div>
+              <div class="measure-field">
+                <label>Shoulder</label>
+                <input type="text" id="m-shoulder" placeholder="e.g. 15">
+              </div>
+              <div class="measure-field">
+                <label>Sleeve Length</label>
+                <input type="text" id="m-sleeve-length" placeholder="e.g. 19">
+              </div>
+              <div class="measure-field">
+                <label>Armhole / Bicep</label>
+                <input type="text" id="m-armhole" placeholder="e.g. 16">
+              </div>
+              <div class="measure-field">
+                <label>Neck / Collar</label>
+                <input type="text" id="m-neck" placeholder="e.g. 14.5">
+              </div>
+              <div class="measure-field">
+                <label>Front Neck Depth</label>
+                <input type="text" id="m-front-neck" placeholder="e.g. 7">
+              </div>
+              <div class="measure-field">
+                <label>Back Neck Depth</label>
+                <input type="text" id="m-back-neck" placeholder="e.g. 8.5">
+              </div>
+            </div>
+
+            <div class="measurement-subheading mt-md">Lower Body (Pants / Salwar / Trouser / Skirt)</div>
+            <div class="measurements-grid">
+              <div class="measure-field">
+                <label>Bottom Length</label>
+                <input type="text" id="m-pant-length" placeholder="e.g. 38">
+              </div>
+              <div class="measure-field">
+                <label>Hip</label>
+                <input type="text" id="m-hip" placeholder="e.g. 40">
+              </div>
+              <div class="measure-field">
+                <label>Lower Waist</label>
+                <input type="text" id="m-pant-waist" placeholder="e.g. 33">
+              </div>
+              <div class="measure-field">
+                <label>Thigh</label>
+                <input type="text" id="m-thigh" placeholder="e.g. 24">
+              </div>
+              <div class="measure-field">
+                <label>Knee</label>
+                <input type="text" id="m-knee" placeholder="e.g. 18">
+              </div>
+              <div class="measure-field">
+                <label>Bottom Opening / Mori</label>
+                <input type="text" id="m-bottom" placeholder="e.g. 14">
+              </div>
+              <div class="measure-field">
+                <label>Inseam</label>
+                <input type="text" id="m-inseam" placeholder="e.g. 29">
+              </div>
+            </div>
+
+            <div class="form-group full-width mt-md">
+              <label class="form-label">Special Fit Preferences & Notes</label>
+              <textarea id="cust-notes" class="form-input" rows="2" placeholder="e.g. Prefers relaxed fit; round neck; pad additions; side zipper; lining required..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-customer')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Customer & Measurements</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div class="modal-overlay" id="modal-order">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-order-title">Create New Tailoring Order</h3>
+        <button class="modal-close" onclick="app.closeModal('modal-order')">&times;</button>
+      </div>
+      <form id="order-form" onsubmit="app.saveOrder(event)">
+        <input type="hidden" id="order-id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Select Customer *</label>
+              <select id="order-cust-id" class="form-select" required onchange="app.onOrderCustomerSelected()">
+                <!-- Customer options populated by JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Garment Category *</label>
+              <select id="order-category" class="form-select" required>
+                <option value="Custom Stitching">Custom Stitching</option>
+                <option value="Ethnic Wear">Ethnic Wear (Sherwani, Kurta, Lehenga, Anarkali)</option>
+                <option value="Alteration">Alterations & Fitting</option>
+                <option value="Uniform">Uniforms (School / Corporate / Hospital)</option>
+                <option value="Ready-to-Wear">Ready-to-Wear Alteration / Sizing</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Item / Garment Details *</label>
+              <input type="text" id="order-title" class="form-input" required placeholder="e.g. 3-Piece Silk Sherwani with matching stole / 2x School Uniform Sets">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fabric Details & Color</label>
+              <input type="text" id="order-fabric" class="form-input" placeholder="e.g. Client provided Navy Blue Italian Wool">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fabric Provided By</label>
+              <select id="order-fabric-source" class="form-select">
+                <option value="Client Provided">Customer Provided</option>
+                <option value="ZM Sourced">ZM Enterprises Sourced</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Trial Fitting Date</label>
+              <input type="date" id="order-trial-date" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Final Delivery Date *</label>
+              <input type="date" id="order-delivery-date" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Production Status</label>
+              <select id="order-status" class="form-select">
+                <option value="Received">Received / Booked</option>
+                <option value="Cutting">Cutting</option>
+                <option value="Stitching">Stitching</option>
+                <option value="Trial Ready">Trial Ready</option>
+                <option value="Completed">Completed</option>
+                <option value="Delivered">Delivered</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Priority</label>
+              <select id="order-priority" class="form-select">
+                <option value="Standard">Standard</option>
+                <option value="Express">Express / Urgent</option>
+              </select>
+            </div>
+
+            <!-- Pricing & Payments -->
+            <div class="form-group">
+              <label class="form-label">Total Amount (₹) *</label>
+              <input type="number" id="order-total" class="form-input" required min="0" step="10" placeholder="0" oninput="app.calculateBalance()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Advance Paid (₹)</label>
+              <input type="number" id="order-advance" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateBalance()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Balance Due (₹)</label>
+              <input type="number" id="order-balance" class="form-input bg-readonly" readonly placeholder="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Method</label>
+              <select id="order-payment-method" class="form-select">
+                <option value="Cash">Cash</option>
+                <option value="UPI / Online">UPI / Online / GPay</option>
+                <option value="Card">Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Special Stitching Instructions / Design Notes</label>
+              <textarea id="order-notes" class="form-input" rows="2" placeholder="e.g. Double stitch at seams, French cuffs, gold embroidery on collar..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-order')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Customer Details Modal -->
+  <div class="modal-overlay" id="modal-view-customer">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="view-customer-name">Customer Measurement Sheet</h3>
+        <button class="modal-close" onclick="app.closeModal('modal-view-customer')">&times;</button>
+      </div>
+      <div class="modal-body" id="view-customer-body">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="window.print()">Print Measurement Sheet</button>
+        <button class="btn btn-outline" onclick="app.closeModal('modal-view-customer')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice View & Print Modal -->
+  <div class="modal-overlay" id="modal-invoice">
+    <div class="modal-dialog modal-lg invoice-modal">
+      <div class="modal-header no-print">
+        <h3>Invoice & Customer Receipt</h3>
+        <button class="modal-close" onclick="app.closeModal('modal-invoice')">&times;</button>
+      </div>
+      <div class="modal-body" id="invoice-printable-area">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer no-print">
+        <button class="btn btn-outline" onclick="app.closeModal('modal-invoice')">Close</button>
+        <button class="btn btn-primary" onclick="window.print()">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <span>Print / Save as PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Action successfully completed!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
