@@ -930,13 +930,14 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(7, 10, 16, 0.65);
+  background-color: rgba(7, 10, 16, 0.7);
   backdrop-filter: blur(4px);
   z-index: 100;
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
+  overflow-y: auto;
 }
 
 .modal-overlay.active {
@@ -949,15 +950,26 @@ body {
   box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   animation: modalScale 0.2s ease-out;
+  position: relative;
 }
 
 .modal-lg {
-  max-width: 840px;
+  max-width: 880px;
+}
+
+/* Ensure forms inside modal dialog fill available height and enable scrolling */
+.modal-dialog form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 @keyframes modalScale {
@@ -971,6 +983,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  background: #ffffff;
 }
 
 .modal-header h3 {
@@ -986,6 +1000,7 @@ body {
   line-height: 1;
   color: var(--gray-400);
   cursor: pointer;
+  padding: 4px;
 }
 
 .modal-close:hover {
@@ -994,8 +1009,33 @@ body {
 
 .modal-body {
   padding: 22px 24px;
-  overflow-y: auto;
-  flex: 1;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(92vh - 135px);
+  overscroll-behavior: contain;
+}
+
+/* Highly visible Green & Grey scrollbar for modal body */
+.modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 6px;
+  border: 2px solid #f1f5f9;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #059669;
 }
 
 .modal-footer {
@@ -1003,8 +1043,11 @@ body {
   border-top: 1px solid var(--gray-200);
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
   background: var(--gray-50);
+  flex-shrink: 0;
+  z-index: 5;
 }
 
 /* ==================== FORMS ==================== */
