@@ -461,7 +461,7 @@
   <div class="modal-overlay" id="modal-customer">
     <div class="modal-dialog modal-lg">
       <div class="modal-header">
-        <h3 id="modal-customer-title">Register Customer & Measurements</h3>
+        <h3 id="modal-customer-title">Register Customer & Full Body Measurements</h3>
         <button class="modal-close" onclick="app.closeModal('modal-customer')">&times;</button>
       </div>
       <form id="customer-form" onsubmit="app.saveCustomer(event); return false;">
@@ -479,10 +479,10 @@
             </div>
             <div class="form-group">
               <label class="form-label">Category / Gender *</label>
-              <select id="cust-gender" class="form-select">
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-                <option value="Kids">Kids</option>
+              <select id="cust-gender" class="form-select" onchange="app.onCustomerGenderChange(this.value)">
+                <option value="Men">Men (Gentlemen Bespoke)</option>
+                <option value="Women">Women (Ladies Couture)</option>
+                <option value="Kids">Kids (Children Wear)</option>
               </select>
             </div>
             <div class="form-group">
@@ -495,37 +495,144 @@
             </div>
           </div>
 
-          <h4 class="section-title mt-lg">Body Measurements Chart (Inches)</h4>
-          <p class="section-hint">Standard workshop measurements for suits, shirts, kurtas, blouses, lehengas & trousers.</p>
+          <div class="flex-between flex-wrap gap-sm mt-lg" style="border-top: 1px solid var(--gray-200); padding-top: 16px;">
+            <div>
+              <h4 class="section-title" style="margin-bottom:2px;">Complete Tailoring Body Measurements (Inches / इंच)</h4>
+              <p class="section-hint" style="margin-bottom:0;">Full bespoke measurements for Shirts, Suits, Kurtas, Blouses, Lehengas & Trousers.</p>
+            </div>
+            <!-- Section navigation tabs -->
+            <div class="measure-tabs-nav" id="measure-tabs-nav">
+              <button type="button" class="measure-tab-btn active" id="tab-btn-all" onclick="app.switchMeasureTab('all')">View All</button>
+              <button type="button" class="measure-tab-btn" id="tab-btn-upper" onclick="app.switchMeasureTab('upper')">👔 Upper Body</button>
+              <button type="button" class="measure-tab-btn" id="tab-btn-lower" onclick="app.switchMeasureTab('lower')">👖 Lower Body</button>
+              <button type="button" class="measure-tab-btn" id="tab-btn-women" onclick="app.switchMeasureTab('women')">👗 Women / Ethnic</button>
+              <button type="button" class="measure-tab-btn" id="tab-btn-fit" onclick="app.switchMeasureTab('fit')">✂️ Fit & Posture</button>
+            </div>
+          </div>
 
-          <div class="measurements-container">
-            <div class="measurement-subheading">Upper Body (Shirt / Kurta / Blouse / Jacket / Coat)</div>
-            <div class="measurements-grid">
-              <div class="measure-field"><label>Top Length</label><input type="text" id="m-length" placeholder="38"></div>
-              <div class="measure-field"><label>Chest / Bust</label><input type="text" id="m-chest" placeholder="36"></div>
-              <div class="measure-field"><label>Waist (Upper)</label><input type="text" id="m-waist" placeholder="32"></div>
-              <div class="measure-field"><label>Shoulder</label><input type="text" id="m-shoulder" placeholder="15"></div>
-              <div class="measure-field"><label>Sleeve Length</label><input type="text" id="m-sleeve-length" placeholder="22"></div>
-              <div class="measure-field"><label>Armhole / Bicep</label><input type="text" id="m-armhole" placeholder="16"></div>
-              <div class="measure-field"><label>Neck / Collar</label><input type="text" id="m-neck" placeholder="15"></div>
-              <div class="measure-field"><label>Front Neck Depth</label><input type="text" id="m-front-neck" placeholder="7"></div>
-              <div class="measure-field"><label>Back Neck Depth</label><input type="text" id="m-back-neck" placeholder="8"></div>
+          <div class="measurements-container mt-md">
+            <!-- UPPER BODY SECTION -->
+            <div class="measure-section-group" id="m-sec-upper">
+              <div class="measurement-subheading">👔 Upper Body – Shirt, Kurta, Coat, Sherwani & Blazer (ऊपरी शरीर)</div>
+              <div class="measurements-grid">
+                <div class="measure-field"><label>Top / Shirt Length (लंबाई)</label><input type="text" id="m-length" placeholder="38"></div>
+                <div class="measure-field"><label>Coat / Sherwani Length</label><input type="text" id="m-coat-length" placeholder="30"></div>
+                <div class="measure-field"><label>Chest / Bust (सीना / छाती)</label><input type="text" id="m-chest" placeholder="38"></div>
+                <div class="measure-field"><label>Stomach / Abdomen (पेट)</label><input type="text" id="m-stomach" placeholder="35"></div>
+                <div class="measure-field"><label>Natural Waist (कमर)</label><input type="text" id="m-waist" placeholder="34"></div>
+                <div class="measure-field"><label>Shoulder / Teera (तीरा / कंधा)</label><input type="text" id="m-shoulder" placeholder="17.5"></div>
+                <div class="measure-field"><label>Cross Back (पीठ / पल्ला)</label><input type="text" id="m-cross-back" placeholder="16"></div>
+                <div class="measure-field"><label>Cross Front (आगे का सीना)</label><input type="text" id="m-cross-front" placeholder="15.5"></div>
+                <div class="measure-field"><label>Sleeve Length (आस्तीन)</label><input type="text" id="m-sleeve-length" placeholder="24"></div>
+                <div class="measure-field"><label>Armhole / Mudda (मुड्ढा)</label><input type="text" id="m-armhole" placeholder="18"></div>
+                <div class="measure-field"><label>Bicep / Muscle (डोला)</label><input type="text" id="m-bicep" placeholder="14"></div>
+                <div class="measure-field"><label>Elbow (कोहनी)</label><input type="text" id="m-elbow" placeholder="12"></div>
+                <div class="measure-field"><label>Cuff / Wrist Mori (कफ / मोरी)</label><input type="text" id="m-cuff" placeholder="9.5"></div>
+                <div class="measure-field"><label>Neck / Collar (गला राउंड)</label><input type="text" id="m-neck" placeholder="15.5"></div>
+              </div>
             </div>
 
-            <div class="measurement-subheading mt-md">Lower Body (Pant / Trouser / Salwar / Churidar / Skirt)</div>
-            <div class="measurements-grid">
-              <div class="measure-field"><label>Bottom Length</label><input type="text" id="m-pant-length" placeholder="39"></div>
-              <div class="measure-field"><label>Hip</label><input type="text" id="m-hip" placeholder="40"></div>
-              <div class="measure-field"><label>Lower Waist</label><input type="text" id="m-pant-waist" placeholder="34"></div>
-              <div class="measure-field"><label>Thigh</label><input type="text" id="m-thigh" placeholder="24"></div>
-              <div class="measure-field"><label>Knee</label><input type="text" id="m-knee" placeholder="18"></div>
-              <div class="measure-field"><label>Bottom Opening (Mori)</label><input type="text" id="m-bottom" placeholder="14"></div>
-              <div class="measure-field"><label>Inseam</label><input type="text" id="m-inseam" placeholder="30"></div>
+            <!-- LOWER BODY SECTION -->
+            <div class="measure-section-group mt-md" id="m-sec-lower">
+              <div class="measurement-subheading">👖 Lower Body – Pant, Trouser, Salwar, Pajama & Churidar (निचला शरीर)</div>
+              <div class="measurements-grid">
+                <div class="measure-field"><label>Pant / Outseam Length (लंबाई)</label><input type="text" id="m-pant-length" placeholder="39"></div>
+                <div class="measure-field"><label>Inseam (अंदर की सिलाई)</label><input type="text" id="m-inseam" placeholder="29"></div>
+                <div class="measure-field"><label>Pant Waist (पैंट कमर)</label><input type="text" id="m-pant-waist" placeholder="34"></div>
+                <div class="measure-field"><label>Hip / Seat (हिप / सीट)</label><input type="text" id="m-hip" placeholder="40"></div>
+                <div class="measure-field"><label>Thigh / Raan (रान / जांघ)</label><input type="text" id="m-thigh" placeholder="24"></div>
+                <div class="measure-field"><label>Knee / Ghutna (घुटना)</label><input type="text" id="m-knee" placeholder="18"></div>
+                <div class="measure-field"><label>Calf / Pindi (पिंडी)</label><input type="text" id="m-calf" placeholder="15"></div>
+                <div class="measure-field"><label>Bottom Opening / Mori (मोरी / पैंचा)</label><input type="text" id="m-bottom" placeholder="14"></div>
+                <div class="measure-field"><label>Crotch / Rise (आसन)</label><input type="text" id="m-rise" placeholder="11.5"></div>
+                <div class="measure-field"><label>Salwar / Churidar Length</label><input type="text" id="m-salwar-length" placeholder="40"></div>
+                <div class="measure-field"><label>Flare / Ghair (लहंगा / घेर)</label><input type="text" id="m-flare" placeholder="120"></div>
+              </div>
             </div>
 
-            <div class="form-group full-width mt-md">
-              <label class="form-label">Fit Style & Custom Tailor Notes</label>
-              <textarea id="cust-notes" class="form-input" rows="2" placeholder="e.g. Slim fit cut; prefer double lining; side zip; extra margin for alterations..."></textarea>
+            <!-- WOMEN / ETHNIC SECTION -->
+            <div class="measure-section-group mt-md" id="m-sec-women">
+              <div class="measurement-subheading">👗 Women Couture & Blouse / Choli Details (लेडीज ब्लाउज / चोली नाप)</div>
+              <div class="measurements-grid">
+                <div class="measure-field"><label>Blouse Length (चोली लंबाई)</label><input type="text" id="m-blouse-length" placeholder="14.5"></div>
+                <div class="measure-field"><label>Upper Chest (अपर चेस्ट)</label><input type="text" id="m-upper-chest" placeholder="34"></div>
+                <div class="measure-field"><label>Under Bust (अंडर बस्ट)</label><input type="text" id="m-under-bust" placeholder="30"></div>
+                <div class="measure-field"><label>Apex / Bust Point Height</label><input type="text" id="m-bust-point" placeholder="10"></div>
+                <div class="measure-field"><label>Apex Distance (पॉइंट दूरी)</label><input type="text" id="m-apex-distance" placeholder="7.5"></div>
+                <div class="measure-field"><label>Front Neck Depth (आगे का गला)</label><input type="text" id="m-front-neck" placeholder="7"></div>
+                <div class="measure-field"><label>Back Neck Depth (पीछे का गला)</label><input type="text" id="m-back-neck" placeholder="9.5"></div>
+                <div class="measure-field">
+                  <label>Front Neck Style</label>
+                  <select id="m-front-neck-style" class="measure-select">
+                    <option value="Round">Round Neck</option>
+                    <option value="V-Neck">V-Neck</option>
+                    <option value="Sweetheart">Sweetheart</option>
+                    <option value="Boat">Boat Neck</option>
+                    <option value="Square">Square Neck</option>
+                    <option value="Stand Collar">Stand / Mandarin Collar</option>
+                  </select>
+                </div>
+                <div class="measure-field">
+                  <label>Back Neck Style</label>
+                  <select id="m-back-neck-style" class="measure-select">
+                    <option value="Round Deep">Deep Round</option>
+                    <option value="Square">Square</option>
+                    <option value="V-Deep">V-Deep</option>
+                    <option value="Backless Dori">Backless with Dori</option>
+                    <option value="Keyhole">Keyhole Neck</option>
+                    <option value="High Back">High Closed Back</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- FIT, LINING & POSTURE SECTION -->
+            <div class="measure-section-group mt-md" id="m-sec-fit">
+              <div class="measurement-subheading">✂️ Fit Style, Lining & Body Posture (फिटिंग व अस्तर पसंद)</div>
+              <div class="measurements-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+                <div class="measure-field">
+                  <label>Fit Preference</label>
+                  <select id="m-fit-type" class="measure-select">
+                    <option value="Regular Fit">Regular Fit (स्टैंडर्ड)</option>
+                    <option value="Modern Slim">Modern Slim Fit (स्लिम)</option>
+                    <option value="Ultra Slim">Ultra Slim Fit (फिटेड)</option>
+                    <option value="Comfort / Loose">Comfort / Loose (ढीला / आरामदायक)</option>
+                    <option value="Traditional">Traditional / Classic Cut</option>
+                  </select>
+                </div>
+                <div class="measure-field">
+                  <label>Lining / Aster Preference</label>
+                  <select id="m-lining" class="measure-select">
+                    <option value="Full Lining">Full Lining (पूरा अस्तर)</option>
+                    <option value="Half Lining">Half Lining (आधा अस्तर)</option>
+                    <option value="Cotton Aster">Pure Cotton Aster</option>
+                    <option value="Santoon Aster">Santoon Silk Aster</option>
+                    <option value="Cancan Flare">Cancan Net Layering</option>
+                    <option value="No Lining">No Lining (बिना अस्तर)</option>
+                  </select>
+                </div>
+                <div class="measure-field">
+                  <label>Shoulder Slope (कंधे की बनावट)</label>
+                  <select id="m-shoulder-type" class="measure-select">
+                    <option value="Normal">Normal Shoulders</option>
+                    <option value="Square">Square / Straight Shoulders</option>
+                    <option value="Sloping">Sloping Shoulders (झुके कंधे)</option>
+                  </select>
+                </div>
+                <div class="measure-field">
+                  <label>Body Posture (शारीरिक मुद्रा)</label>
+                  <select id="m-posture" class="measure-select">
+                    <option value="Normal">Normal Posture</option>
+                    <option value="Erect">Erect (एकदम सीधा / तना हुआ)</option>
+                    <option value="Stooping">Stooping (आगे झुका हुआ)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group full-width mt-md">
+                <label class="form-label">Master Tailor & Cutting Notes (विशेष निर्देश / मार्जिन / पॉकेट / कटिंग नोट्स)</label>
+                <textarea id="cust-notes" class="form-input" rows="2" placeholder="e.g. 2-inch extra inside margin for future adjustments; side concealed zip; right shoulder slightly low; double vents in coat..."></textarea>
+              </div>
             </div>
           </div>
         </div>
@@ -548,6 +655,7 @@
         <input type="hidden" id="order-id">
         <div class="modal-body">
           <div class="form-grid">
+            <!-- Customer selection -->
             <div class="form-group">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label class="form-label" style="margin-bottom:0;">Select Registered Customer *</label>
@@ -555,13 +663,15 @@
                   + Quick Add Customer
                 </button>
               </div>
-              <select id="order-cust-id" class="form-select" required>
+              <select id="order-cust-id" class="form-select" required onchange="app.onOrderCustomerSelected(this.value)">
                 <!-- Populated dynamically -->
               </select>
             </div>
+
+            <!-- Garment Category -->
             <div class="form-group">
               <label class="form-label">Garment Category *</label>
-              <select id="order-category" class="form-select" required>
+              <select id="order-category" class="form-select" required onchange="app.onOrderCategoryChanged(this.value)">
                 <option value="Custom Stitching">Custom Stitching (Suits, Shirts, Kurtas)</option>
                 <option value="Ethnic Wear">Ethnic Wear (Sherwani, Anarkali, Lehenga)</option>
                 <option value="Alteration">Alterations & Restyling</option>
@@ -570,77 +680,286 @@
               </select>
             </div>
 
+            <!-- Specific Garment Item Type -->
+            <div class="form-group">
+              <label class="form-label">Garment Type / Style *</label>
+              <select id="order-item-type" class="form-select" onchange="app.onOrderItemTypeChanged(this.value)">
+                <option value="Men's Bespoke 3-Piece Suit">Men's Bespoke 3-Piece Suit (Coat + Pant + Waistcoat)</option>
+                <option value="Men's 2-Piece Suit / Blazer">Men's 2-Piece Suit / Blazer & Trousers</option>
+                <option value="Royal Sherwani Set">Royal Sherwani Set & Churidar</option>
+                <option value="Kurta Pyjama / Pathani Suit">Kurta Pyjama / Pathani Suit</option>
+                <option value="Formal Shirt">Formal Bespoke Shirt</option>
+                <option value="Formal Trousers / Pants">Formal Trousers / Chinos</option>
+                <option value="Nehru Jacket / Waistcoat">Nehru Jacket / Modi Waistcoat</option>
+                <option value="Safari Suit">Safari Suit (2-Piece)</option>
+                <option value="Bridal Lehenga & Choli">Bridal Lehenga, Choli & Dupatta</option>
+                <option value="Heavy Designer Anarkali Suit">Heavy Designer Anarkali Suit</option>
+                <option value="Designer Padded Saree Blouse">Designer Padded Saree Blouse</option>
+                <option value="Salwar Kameez / Kurti Set">Salwar Kameez / Kurti Pant Set</option>
+                <option value="Designer Gown / Western Dress">Designer Gown / Western Dress</option>
+                <option value="School Uniform Batch Set">School Uniform Batch Set</option>
+                <option value="Corporate Staff Blazer & Shirt">Corporate Staff Blazer & Shirt</option>
+                <option value="Alteration & Fitting">Alterations, Tapering & Fitting</option>
+                <option value="Other Custom Outfit">Other Custom Tailored Garment</option>
+              </select>
+            </div>
+
+            <!-- Quantity -->
+            <div class="form-group">
+              <label class="form-label">Quantity / Sets (संख्या / पीस) *</label>
+              <input type="number" id="order-qty" class="form-input" min="1" value="1" required oninput="app.calculateOrderTotal()">
+            </div>
+
+            <!-- Order Title -->
             <div class="form-group full-width">
               <label class="form-label">Item / Garment Description *</label>
               <input type="text" id="order-title" class="form-input" required placeholder="e.g. Men's 3-Piece Bespoke Navy Suit / Handcrafted Bridal Anarkali">
             </div>
 
-            <div class="form-group">
-              <label class="form-label">Fabric Details & Color</label>
-              <input type="text" id="order-fabric" class="form-input" placeholder="e.g. Navy Blue Pure Italian Wool / Silk Brocade">
+            <!-- Customer Saved Measurements Quick Preview -->
+            <div class="form-group full-width" id="order-cust-measures-box" style="margin-top:-4px;">
+              <div class="customer-measures-preview-box" id="order-customer-measures-preview">
+                <span style="color:#64748b;">Select a customer to view their saved measurements.</span>
+              </div>
             </div>
+
+            <!-- Fabric Sourcing & Fabric Details -->
             <div class="form-group">
-              <label class="form-label">Fabric Sourcing</label>
+              <label class="form-label">Fabric Sourcing *</label>
               <select id="order-fabric-source" class="form-select">
-                <option value="Client Provided">Customer Provided</option>
-                <option value="ZM Sourced">ZM Enterprises Sourced</option>
+                <option value="Client Provided">Customer Provided (कस्टमर का कपड़ा)</option>
+                <option value="ZM Sourced">ZM Enterprises Sourced (दुकान का कपड़ा)</option>
+                <option value="Store Premium Fabric">Store Premium Imported Fabric</option>
               </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fabric Material & Color</label>
+              <input type="text" id="order-fabric" class="form-input" placeholder="e.g. Pure Italian Wool Super 120s / Silk Brocade">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fabric Meterage (कपड़े की लंबाई / मीटर)</label>
+              <input type="text" id="order-fabric-meter" class="form-input" placeholder="e.g. 3.25 Meters / 2.50 Meters">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Lining Material / Aster (अस्तर का कपड़ा)</label>
+              <input type="text" id="order-lining-material" class="form-input" placeholder="e.g. Santoon Silk / Cotton Aster / Cancan">
+            </div>
+
+            <!-- Bespoke Tailoring & Styling Options Card -->
+            <div class="form-group full-width">
+              <div class="order-styling-card">
+                <div class="order-styling-header">
+                  <h5>✂️ Bespoke Tailoring & Design Styling Options</h5>
+                  <span class="text-hint">Choose collar, sleeves, cut, lining & detailing</span>
+                </div>
+                <div class="order-styling-grid">
+                  <div class="styling-field">
+                    <label>Fit Style</label>
+                    <select id="order-fit" class="form-select">
+                      <option value="Modern Slim">Modern Slim Fit</option>
+                      <option value="Ultra Slim">Ultra Slim Fit</option>
+                      <option value="Regular Classic">Regular Classic Fit</option>
+                      <option value="Comfort / Loose">Comfort / Loose Fit</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Collar / Neck Style</label>
+                    <select id="order-collar" class="form-select">
+                      <option value="Mandarin / Bandhgala">Mandarin / Bandhgala (नेहरू कॉलर)</option>
+                      <option value="Classic Shirt Collar">Classic Shirt Collar (शर्ट कॉलर)</option>
+                      <option value="Cutaway Collar">Cutaway / Spread Collar</option>
+                      <option value="V-Neck">V-Neck (वी गला)</option>
+                      <option value="Sweetheart Neck">Sweetheart Neck (स्वीटहार्ट)</option>
+                      <option value="Boat Neck">Boat Neck (बोट नेक)</option>
+                      <option value="Round Neck">Round Deep Neck (गोल गला)</option>
+                      <option value="Square Neck">Square Neck (चौकोर)</option>
+                      <option value="Shawl Lapel">Shawl Lapel / Tuxedo</option>
+                      <option value="Notch Lapel">Classic Notch Lapel</option>
+                      <option value="Peak Lapel">Bold Peak Lapel</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Sleeve Style</label>
+                    <select id="order-sleeve" class="form-select">
+                      <option value="Full Sleeve">Full Sleeves (पूरी आस्तीन)</option>
+                      <option value="Half Sleeve">Half Sleeves (आधी आस्तीन)</option>
+                      <option value="3/4th Sleeve">3/4th Sleeves</option>
+                      <option value="Sleeveless">Sleeveless (बिना आस्तीन)</option>
+                      <option value="French Double Cuff">French Double Cuff</option>
+                      <option value="Single Button Cuff">Single Button Cuff</option>
+                      <option value="Puffed Sleeve">Puffed / Gathered Sleeve</option>
+                      <option value="Bell Sleeve">Bell / Flared Sleeve</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Lining / Aster</label>
+                    <select id="order-lining" class="form-select">
+                      <option value="Full Lining">Full Lining (पूरा अस्तर)</option>
+                      <option value="Half Lining">Half Lining (आधा अस्तर)</option>
+                      <option value="Cancan Flare">Cancan Netting Layer (कैन-कैन)</option>
+                      <option value="Cotton Aster">Pure Cotton Lining</option>
+                      <option value="Santoon Lining">Santoon Silk Lining</option>
+                      <option value="No Lining">No Lining (बिना अस्तर)</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Coat / Back Vents</label>
+                    <select id="order-vents" class="form-select">
+                      <option value="Double Vent">Double Side Vents (डबल कट)</option>
+                      <option value="Single Center Vent">Single Center Vent (सेंटर कट)</option>
+                      <option value="No Vent">No Vent / Plain Back (बिना कट)</option>
+                      <option value="Side Slits">Kurta Side Slits (साइड चाक)</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Pocket Style</label>
+                    <select id="order-pockets" class="form-select">
+                      <option value="Two Flap Pockets">Two Flap Pockets (फ्लैप जेब)</option>
+                      <option value="Welt Pockets">Jetted / Welt Pockets</option>
+                      <option value="Patch Pockets">Patch Pockets</option>
+                      <option value="Ticket Pocket">With Ticket Pocket</option>
+                      <option value="Kurta Side Pockets">Two Side Kurta Pockets</option>
+                      <option value="Concealed Mobile Pocket">Concealed Mobile Pocket</option>
+                      <option value="No Pocket">No Pockets</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Embroidery & Detailing</label>
+                    <select id="order-embroidery" class="form-select">
+                      <option value="Plain / No Work">Plain Tailoring (बिना वर्क)</option>
+                      <option value="Contrast Piping">Contrast Piping (पाइपिंग)</option>
+                      <option value="Thread Work">Thread Embroidery (धागा वर्क)</option>
+                      <option value="Zari & Sequins">Zari & Sequins Work (जरी सितारा)</option>
+                      <option value="Hand Zardozi">Handcrafted Zardozi (ज़रदोज़ी)</option>
+                      <option value="Designer Buttons">Designer Metal/Gold Buttons</option>
+                      <option value="Pleats / Pintucks">Pintucks & Pleat Detailing</option>
+                    </select>
+                  </div>
+
+                  <div class="styling-field">
+                    <label>Assigned Master Tailor</label>
+                    <select id="order-master-tailor" class="form-select">
+                      <option value="Master Zahid (Cutting Head)">Master Zahid (Cutting Head)</option>
+                      <option value="Master Mohan (Senior Tailor)">Master Mohan (Senior Tailor)</option>
+                      <option value="Master Rashid (Suits Specialist)">Master Rashid (Suits Specialist)</option>
+                      <option value="Ladies Couture Master">Ladies Couture Master</option>
+                      <option value="Alteration Specialist">Alteration Specialist</option>
+                      <option value="Workshop Main Team">Workshop Main Team</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Specific Measurement Adjustments for THIS Order -->
+            <div class="form-group full-width">
+              <label class="form-label">Order-Specific Measurement Adjustments (इस आर्डर के लिए नाप में बदलाव)</label>
+              <input type="text" id="order-adjustments" class="form-input" placeholder="e.g. +0.5 inch extra looseness on chest for winter innerwear; sleeve 1/2 inch shorter; tighter calf fitting...">
             </div>
 
             <!-- Trial Date & Delivery Date -->
             <div class="form-group">
-              <label class="form-label">Trial Fitting Date (Important)</label>
+              <label class="form-label">Trial Fitting Date (नाप / ट्रायल तारीख)</label>
               <input type="date" id="order-trial-date" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">Final Delivery Date *</label>
+              <label class="form-label">Final Delivery Date (डिलीवरी तारीख) *</label>
               <input type="date" id="order-delivery-date" class="form-input" required>
             </div>
 
+            <!-- Production Stage & Priority -->
             <div class="form-group">
-              <label class="form-label">Production Stage</label>
+              <label class="form-label">Production Stage *</label>
               <select id="order-status" class="form-select">
-                <option value="Received">Received / Booked</option>
-                <option value="Cutting">Cutting</option>
-                <option value="Stitching">Stitching</option>
-                <option value="Trial Ready">Trial Ready</option>
-                <option value="Completed">Completed</option>
-                <option value="Delivered">Delivered</option>
+                <option value="Received">Received / Booked (बुक हुआ)</option>
+                <option value="Cutting">Cutting (कटाई चालू)</option>
+                <option value="Stitching">Stitching (सिलाई चालू)</option>
+                <option value="Trial Ready">Trial Ready (ट्रायल के लिए तैयार)</option>
+                <option value="Completed">Completed (तैयार / फिनिशिंग)</option>
+                <option value="Delivered">Delivered (कस्टमर को डिलीवर)</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Order Priority</label>
+              <label class="form-label">Order Priority *</label>
               <select id="order-priority" class="form-select">
-                <option value="Standard">Standard</option>
-                <option value="Express">Express / Urgent (Fast Track)</option>
+                <option value="Standard">Standard (सामान्य समय)</option>
+                <option value="Express">Express / Urgent (अर्जेंट फास्ट ट्रैक)</option>
+                <option value="24hr Rush">24-Hour Super Express Rush</option>
               </select>
             </div>
 
-            <!-- Pricing & Payments -->
-            <div class="form-group">
-              <label class="form-label">Total Amount (₹) *</label>
-              <input type="number" id="order-total" class="form-input" required min="0" step="10" placeholder="0" oninput="app.calculateBalance()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Initial Advance Paid (₹)</label>
-              <input type="number" id="order-advance" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateBalance()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Balance Remaining (₹)</label>
-              <input type="number" id="order-balance" class="form-input bg-readonly" readonly placeholder="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Advance Payment Mode</label>
-              <select id="order-payment-method" class="form-select">
-                <option value="UPI / Online">UPI / GPay / PhonePe</option>
-                <option value="Cash">Cash</option>
-                <option value="Card">Card (POS)</option>
-                <option value="Bank Transfer">Bank Transfer / NEFT</option>
-              </select>
-            </div>
-
+            <!-- Itemized Pricing & Billing Breakdown -->
             <div class="form-group full-width">
-              <label class="form-label">Special Stitching Instructions & Design Preferences</label>
+              <div class="order-cost-breakdown">
+                <div class="order-cost-header">
+                  <h5>💰 Itemized Billing & Pricing Breakdown (₹)</h5>
+                  <span class="text-hint">Auto-calculated total amount</span>
+                </div>
+                <div class="cost-grid">
+                  <div class="cost-item">
+                    <label>Stitching Charges (₹) *</label>
+                    <input type="number" id="order-price-stitching" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateOrderTotal()">
+                  </div>
+                  <div class="cost-item">
+                    <label>Fabric Cost (₹)</label>
+                    <input type="number" id="order-price-fabric" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateOrderTotal()">
+                  </div>
+                  <div class="cost-item">
+                    <label>Lining / Aster (₹)</label>
+                    <input type="number" id="order-price-lining" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateOrderTotal()">
+                  </div>
+                  <div class="cost-item">
+                    <label>Embroidery / Work (₹)</label>
+                    <input type="number" id="order-price-embroidery" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateOrderTotal()">
+                  </div>
+                  <div class="cost-item">
+                    <label>Alteration / Extra (₹)</label>
+                    <input type="number" id="order-price-extra" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateOrderTotal()">
+                  </div>
+                  <div class="cost-item">
+                    <label>Discount / Off (₹)</label>
+                    <input type="number" id="order-price-discount" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateOrderTotal()">
+                  </div>
+                </div>
+
+                <div class="cost-totals-row">
+                  <div class="cost-total-box">
+                    <label>Total Order Cost (₹) *</label>
+                    <input type="number" id="order-total" class="form-input font-bold" required min="0" step="10" placeholder="0" oninput="app.calculateBalance()">
+                  </div>
+                  <div class="cost-total-box">
+                    <label>Advance Paid (₹)</label>
+                    <input type="number" id="order-advance" class="form-input" min="0" step="10" placeholder="0" oninput="app.calculateBalance()">
+                  </div>
+                  <div class="cost-total-box">
+                    <label>Balance Due (₹)</label>
+                    <input type="number" id="order-balance" class="form-input bg-readonly font-bold" readonly placeholder="0">
+                  </div>
+                  <div class="cost-total-box">
+                    <label>Advance Payment Mode</label>
+                    <select id="order-payment-method" class="form-select">
+                      <option value="UPI / Online">UPI / GPay / PhonePe</option>
+                      <option value="Cash">Cash (नकद)</option>
+                      <option value="Card">Card (POS)</option>
+                      <option value="Bank Transfer">Bank Transfer / NEFT</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group full-width">
+              <label class="form-label">Special Master Tailor Instructions & Design Preferences</label>
               <textarea id="order-notes" class="form-input" rows="2" placeholder="e.g. Double vents, lapel pick stitching, French cuffs, gold zari border on neckline..."></textarea>
             </div>
           </div>
@@ -752,9 +1071,12 @@
       <div class="modal-body" id="view-customer-body">
         <!-- Rendered via JS -->
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer no-print">
         <button class="btn btn-outline" onclick="app.closeModal('modal-view-customer')">Close</button>
-        <button class="btn btn-secondary" onclick="window.print()">Print Measurement Sheet</button>
+        <button class="btn btn-danger-outline" id="btn-delete-view-customer" onclick="app.deleteCurrentViewCustomer()">🗑️ Delete Customer</button>
+        <button class="btn btn-outline" id="btn-edit-view-customer" onclick="app.editCurrentViewCustomer()">✏️ Edit Profile</button>
+        <button class="btn btn-secondary" onclick="app.printCustomerMeasurementSheet()">🖨️ Print Measurement Sheet</button>
+        <button class="btn btn-primary" id="btn-order-view-customer" onclick="app.newOrderForCurrentViewCustomer()">+ Create Order</button>
       </div>
     </div>
   </div>

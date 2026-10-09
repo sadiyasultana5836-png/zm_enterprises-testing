@@ -156,23 +156,45 @@ const DEFAULT_DATA = {
       address: "B-42, Crescent Park, City Center",
       measurements: {
         length: "31",
+        coatLength: "30.5",
         chest: "40",
+        stomach: "36",
         waist: "34",
         shoulder: "18",
+        crossBack: "16.5",
+        crossFront: "16",
         sleeveLength: "25",
         armhole: "18.5",
+        bicep: "14",
+        elbow: "12.5",
+        cuff: "10",
         neck: "16",
-        frontNeck: "7",
-        backNeck: "2.5",
         pantLength: "41",
-        hip: "42",
+        inseam: "31",
         pantWaist: "34",
+        hip: "42",
         thigh: "25",
         knee: "18",
+        calf: "15.5",
         bottom: "15",
-        inseam: "31"
+        rise: "11.5",
+        salwarLength: "",
+        flare: "",
+        blouseLength: "",
+        upperChest: "",
+        underBust: "",
+        bustPoint: "",
+        apexDistance: "",
+        frontNeck: "7",
+        backNeck: "2.5",
+        frontNeckStyle: "Round",
+        backNeckStyle: "High Back",
+        fitType: "Modern Slim",
+        lining: "Full Lining",
+        shoulderType: "Normal",
+        posture: "Normal"
       },
-      notes: "Prefers modern slim cut for blazers; 2 front buttons; double back vent.",
+      notes: "Prefers modern slim cut for blazers; 2 front buttons; double back vents.",
       createdAt: "2026-10-01"
     },
     {
@@ -184,23 +206,45 @@ const DEFAULT_DATA = {
       address: "Flat 304, Emerald Heights, Gulshan",
       measurements: {
         length: "48",
+        coatLength: "",
         chest: "37",
+        stomach: "32",
         waist: "31",
         shoulder: "14.5",
+        crossBack: "13.5",
+        crossFront: "13",
         sleeveLength: "18",
         armhole: "16",
+        bicep: "12",
+        elbow: "10.5",
+        cuff: "9",
         neck: "14",
-        frontNeck: "7.5",
-        backNeck: "9",
         pantLength: "38",
-        hip: "40",
+        inseam: "28",
         pantWaist: "31",
+        hip: "40",
         thigh: "23",
         knee: "17",
+        calf: "14",
         bottom: "13",
-        inseam: "28"
+        rise: "12",
+        salwarLength: "39",
+        flare: "140",
+        blouseLength: "14.5",
+        upperChest: "35",
+        underBust: "30",
+        bustPoint: "10",
+        apexDistance: "7.5",
+        frontNeck: "7.5",
+        backNeck: "9",
+        frontNeckStyle: "Sweetheart",
+        backNeckStyle: "Backless Dori",
+        fitType: "Modern Slim",
+        lining: "Santoon Aster",
+        shoulderType: "Normal",
+        posture: "Normal"
       },
-      notes: "Deep back neck with latkan ties. High quality santoon lining required.",
+      notes: "Deep back neck with latkan tassels. High quality santoon silk lining required.",
       createdAt: "2026-10-02"
     },
     {
@@ -212,21 +256,43 @@ const DEFAULT_DATA = {
       address: "Administrative Wing, Sector 4",
       measurements: {
         length: "24",
+        coatLength: "22",
         chest: "30",
+        stomach: "27",
         waist: "26",
         shoulder: "13",
+        crossBack: "12",
+        crossFront: "11.5",
         sleeveLength: "17",
         armhole: "14",
+        bicep: "10",
+        elbow: "9",
+        cuff: "8",
         neck: "13",
-        frontNeck: "5",
-        backNeck: "2",
         pantLength: "32",
-        hip: "32",
+        inseam: "24",
         pantWaist: "26",
+        hip: "32",
         thigh: "18",
         knee: "14",
+        calf: "12",
         bottom: "13",
-        inseam: "24"
+        rise: "9.5",
+        salwarLength: "",
+        flare: "",
+        blouseLength: "",
+        upperChest: "",
+        underBust: "",
+        bustPoint: "",
+        apexDistance: "",
+        frontNeck: "5",
+        backNeck: "2",
+        frontNeckStyle: "Stand Collar",
+        backNeckStyle: "High Back",
+        fitType: "Regular Fit",
+        lining: "Half Lining",
+        shoulderType: "Normal",
+        posture: "Normal"
       },
       notes: "Batch uniform standard pattern. Size 30 chest sample batch.",
       createdAt: "2026-10-03"
@@ -240,21 +306,43 @@ const DEFAULT_DATA = {
       address: "14/A, Silver Oak Lane",
       measurements: {
         length: "42",
+        coatLength: "",
         chest: "35",
+        stomach: "30",
         waist: "29",
         shoulder: "14",
+        crossBack: "13",
+        crossFront: "12.5",
         sleeveLength: "16",
         armhole: "15",
+        bicep: "11.5",
+        elbow: "10",
+        cuff: "8.5",
         neck: "13.5",
-        frontNeck: "6.5",
-        backNeck: "7",
         pantLength: "37",
-        hip: "38",
+        inseam: "27.5",
         pantWaist: "29",
+        hip: "38",
         thigh: "22",
         knee: "16",
+        calf: "13.5",
         bottom: "12",
-        inseam: "27.5"
+        rise: "11",
+        salwarLength: "38",
+        flare: "90",
+        blouseLength: "14",
+        upperChest: "33.5",
+        underBust: "28.5",
+        bustPoint: "9.5",
+        apexDistance: "7",
+        frontNeck: "6.5",
+        backNeck: "7",
+        frontNeckStyle: "Boat",
+        backNeckStyle: "Square",
+        fitType: "Regular Fit",
+        lining: "Cotton Aster",
+        shoulderType: "Normal",
+        posture: "Normal"
       },
       notes: "Kurti alteration and waist tucking. Needs 1-inch side margin for future letting out.",
       createdAt: "2026-10-04"
@@ -267,13 +355,32 @@ const DEFAULT_DATA = {
       customerName: "Tariq Ahmed",
       customerPhone: "9845012345",
       category: "Custom Stitching",
+      itemType: "Men's Bespoke 3-Piece Suit",
+      qty: 1,
       title: "Men's Bespoke 3-Piece Suit (Navy Italian Wool)",
       fabric: "Client provided Italian Super 120s Wool",
       fabricSource: "Client Provided",
+      fabricMeter: "3.5 Meters",
+      liningMaterial: "Italian Silk Lining",
+      fit: "Modern Slim",
+      collar: "Notch Lapel",
+      sleeve: "Full Sleeve",
+      lining: "Full Lining",
+      vents: "Double Vent",
+      pockets: "Two Flap Pockets",
+      embroidery: "Plain / No Work",
+      masterTailor: "Master Zahid (Cutting Head)",
+      adjustments: "Fitted waist suppression, extra 1/2 inch in sleeve length.",
       trialDate: "2026-10-10",
       deliveryDate: "2026-10-15",
       status: "Cutting",
       priority: "Express",
+      priceStitching: 6500,
+      priceFabric: 0,
+      priceLining: 1500,
+      priceEmbroidery: 0,
+      priceExtra: 500,
+      discount: 0,
       total: 8500,
       advance: 5000,
       balance: 3500,
@@ -290,13 +397,32 @@ const DEFAULT_DATA = {
       customerName: "Fatima Sana",
       customerPhone: "9712355678",
       category: "Ethnic Wear",
+      itemType: "Heavy Designer Anarkali Suit",
+      qty: 1,
       title: "Bridal Heavy Anarkali Suit with Dupatta Bordering",
       fabric: "Pure Georgette with Zari work (ZM Sourced)",
       fabricSource: "ZM Sourced",
+      fabricMeter: "5.5 Meters",
+      liningMaterial: "Santoon Silk & Cancan",
+      fit: "Modern Slim",
+      collar: "Sweetheart Neck",
+      sleeve: "3/4th Sleeve",
+      lining: "Cancan Flare",
+      vents: "Side Slits",
+      pockets: "Concealed Mobile Pocket",
+      embroidery: "Zari & Sequins",
+      masterTailor: "Ladies Couture Master",
+      adjustments: "Deep back neckline 9.5 inches with padded cups.",
       trialDate: "2026-10-09",
       deliveryDate: "2026-10-13",
       status: "Stitching",
       priority: "Standard",
+      priceStitching: 3500,
+      priceFabric: 2000,
+      priceLining: 800,
+      priceEmbroidery: 0,
+      priceExtra: 0,
+      discount: 100,
       total: 6200,
       advance: 3000,
       balance: 3200,
@@ -313,13 +439,32 @@ const DEFAULT_DATA = {
       customerName: "Green Valley Public School",
       customerPhone: "9822099887",
       category: "Uniform",
+      itemType: "School Uniform Batch Set",
+      qty: 25,
       title: "Batch Order: 25 Pairs School Uniform Shirts & Trousers",
       fabric: "Dacron Poly-Cotton Blend (Grey & White)",
       fabricSource: "ZM Sourced",
+      fabricMeter: "70 Meters",
+      liningMaterial: "No Lining",
+      fit: "Regular Classic",
+      collar: "Classic Shirt Collar",
+      sleeve: "Full Sleeve",
+      lining: "No Lining",
+      vents: "Single Center Vent",
+      pockets: "Two Flap Pockets",
+      embroidery: "Plain / No Work",
+      masterTailor: "Workshop Main Team",
+      adjustments: "Batch standard grade 6 size sample pattern.",
       trialDate: "2026-10-14",
       deliveryDate: "2026-10-20",
       status: "Received",
       priority: "Standard",
+      priceStitching: 500,
+      priceFabric: 360,
+      priceLining: 0,
+      priceEmbroidery: 0,
+      priceExtra: 0,
+      discount: 0,
       total: 21500,
       advance: 10000,
       balance: 11500,
@@ -336,13 +481,32 @@ const DEFAULT_DATA = {
       customerName: "Priya Verma",
       customerPhone: "9988122334",
       category: "Alteration",
+      itemType: "Alteration & Fitting",
+      qty: 1,
       title: "Designer Kurti Alteration & Fitting + Palazzo Hemming",
       fabric: "Silk Crepe",
       fabricSource: "Client Provided",
+      fabricMeter: "—",
+      liningMaterial: "Original Lining",
+      fit: "Regular Classic",
+      collar: "Boat Neck",
+      sleeve: "Half Sleeve",
+      lining: "Cotton Aster",
+      vents: "Side Slits",
+      pockets: "No Pocket",
+      embroidery: "Plain / No Work",
+      masterTailor: "Alteration Specialist",
+      adjustments: "Waist take-in 1.5 inches; palazzo shorten 1 inch.",
       trialDate: "2026-10-08",
       deliveryDate: "2026-10-09",
       status: "Trial Ready",
       priority: "Standard",
+      priceStitching: 450,
+      priceFabric: 0,
+      priceLining: 0,
+      priceEmbroidery: 0,
+      priceExtra: 200,
+      discount: 0,
       total: 650,
       advance: 650,
       balance: 0,
@@ -659,8 +823,9 @@ class TailorBusinessApp {
         </td>
         <td><span class="badge badge-cat">${order.category}</span></td>
         <td>
-          <div style="max-width:260px; font-weight:600; color:#0f172a;">${order.title}</div>
-          <small style="color:#64748b;">Fabric: ${order.fabric || 'Client Provided'} (${order.fabricSource})</small>
+          <div style="max-width:260px; font-weight:600; color:#0f172a;">${order.title} ${order.qty > 1 ? `<span class="badge badge-cat" style="font-size:0.7rem; padding:1px 5px; margin-left:4px;">Qty: ${order.qty}</span>` : ''}</div>
+          <small style="color:#64748b; display:block;">Fabric: ${order.fabric || 'Client Provided'} (${order.fabricSource || 'Standard'})</small>
+          ${order.fit || order.masterTailor ? `<small style="color:#059669; font-weight:600; display:block; margin-top:2px;">${order.fit || 'Regular Fit'} • ✂️ ${order.masterTailor || 'Workshop Master'}</small>` : ''}
         </td>
         <td>${order.trialDate ? `<span style="font-weight:600;">${order.trialDate}</span>` : '—'}</td>
         <td>
@@ -752,6 +917,118 @@ class TailorBusinessApp {
     }
   }
 
+  onOrderCustomerSelected(custId) {
+    const preview = document.getElementById('order-customer-measures-preview');
+    if (!preview) return;
+
+    const c = (this.data.customers || []).find(item => item.id === custId);
+    if (!c) {
+      preview.innerHTML = `<span style="color:#64748b;">Select a customer to view their saved measurements.</span>`;
+      return;
+    }
+
+    const m = c.measurements || {};
+    const chips = [];
+    if (m.length) chips.push(`Top: <strong>${m.length}"</strong>`);
+    if (m.coatLength) chips.push(`Coat: <strong>${m.coatLength}"</strong>`);
+    if (m.chest) chips.push(`Chest: <strong>${m.chest}"</strong>`);
+    if (m.stomach) chips.push(`Stomach: <strong>${m.stomach}"</strong>`);
+    if (m.waist) chips.push(`Waist: <strong>${m.waist}"</strong>`);
+    if (m.shoulder) chips.push(`Teera: <strong>${m.shoulder}"</strong>`);
+    if (m.sleeveLength) chips.push(`Sleeve: <strong>${m.sleeveLength}"</strong>`);
+    if (m.armhole) chips.push(`Mudda: <strong>${m.armhole}"</strong>`);
+    if (m.bicep) chips.push(`Bicep: <strong>${m.bicep}"</strong>`);
+    if (m.neck) chips.push(`Neck: <strong>${m.neck}"</strong>`);
+    if (m.pantLength) chips.push(`Pant: <strong>${m.pantLength}"</strong>`);
+    if (m.pantWaist) chips.push(`Pant Waist: <strong>${m.pantWaist}"</strong>`);
+    if (m.hip) chips.push(`Hip/Seat: <strong>${m.hip}"</strong>`);
+    if (m.thigh) chips.push(`Raan: <strong>${m.thigh}"</strong>`);
+    if (m.knee) chips.push(`Knee: <strong>${m.knee}"</strong>`);
+    if (m.bottom) chips.push(`Mori: <strong>${m.bottom}"</strong>`);
+    if (m.rise) chips.push(`Aasan: <strong>${m.rise}"</strong>`);
+    if (m.blouseLength) chips.push(`Blouse: <strong>${m.blouseLength}"</strong>`);
+    if (m.bustPoint) chips.push(`Apex: <strong>${m.bustPoint}"</strong>`);
+
+    preview.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-weight:700;">
+        <span>📐 Profile Measurements: ${c.name} (${c.gender})</span>
+        <button type="button" class="btn btn-sm btn-outline" style="padding:1px 8px; font-size:0.7rem;" onclick="app.editCustomer('${c.id}')">
+          ✏️ Edit Profile
+        </button>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.775rem;">
+        ${chips.map(chip => `<span class="snapshot-chip">${chip}</span>`).join('') || '<span style="color:#64748b;">No detailed measurements recorded yet.</span>'}
+        ${m.fitType ? `<span class="snapshot-chip" style="background:#e0e7ff; color:#3730a3; font-weight:700;">Fit: ${m.fitType}</span>` : ''}
+        ${m.lining ? `<span class="snapshot-chip" style="background:#fef3c7; color:#92400e; font-weight:700;">Aster: ${m.lining}</span>` : ''}
+      </div>
+      ${c.notes ? `<div style="margin-top:6px; font-size:0.75rem; color:#475569;"><strong>Notes:</strong> ${c.notes}</div>` : ''}
+    `;
+
+    // Auto-prefill order fit & lining from customer preferences if blank/default
+    if (m.fitType) {
+      const fitEl = document.getElementById('order-fit');
+      if (fitEl) fitEl.value = m.fitType;
+    }
+    if (m.lining) {
+      const liningEl = document.getElementById('order-lining');
+      if (liningEl) liningEl.value = m.lining;
+    }
+  }
+
+  onOrderCategoryChanged(cat) {
+    const itemTypeEl = document.getElementById('order-item-type');
+    if (!itemTypeEl) return;
+
+    const catMap = {
+      'Custom Stitching': "Men's Bespoke 3-Piece Suit",
+      'Ethnic Wear': "Royal Sherwani Set",
+      'Alteration': "Alteration & Fitting",
+      'Uniform': "School Uniform Batch Set",
+      'Ready-to-Wear': "Other Custom Outfit"
+    };
+
+    if (catMap[cat]) {
+      itemTypeEl.value = catMap[cat];
+      this.onOrderItemTypeChanged(catMap[cat]);
+    }
+  }
+
+  onOrderItemTypeChanged(itemType) {
+    const titleEl = document.getElementById('order-title');
+    if (titleEl && (!titleEl.value.trim() || titleEl.dataset.autofilled === "true")) {
+      titleEl.value = itemType;
+      titleEl.dataset.autofilled = "true";
+    }
+  }
+
+  calculateOrderTotal() {
+    const qty = Math.max(1, parseInt(document.getElementById('order-qty')?.value) || 1);
+    const stitching = parseFloat(document.getElementById('order-price-stitching')?.value) || 0;
+    const fabric = parseFloat(document.getElementById('order-price-fabric')?.value) || 0;
+    const lining = parseFloat(document.getElementById('order-price-lining')?.value) || 0;
+    const embroidery = parseFloat(document.getElementById('order-price-embroidery')?.value) || 0;
+    const extra = parseFloat(document.getElementById('order-price-extra')?.value) || 0;
+    const discount = parseFloat(document.getElementById('order-price-discount')?.value) || 0;
+
+    const subtotalPerPiece = stitching + fabric + lining + embroidery + extra;
+    const calculatedTotal = Math.max(0, (subtotalPerPiece * qty) - discount);
+
+    const totalEl = document.getElementById('order-total');
+    if (totalEl && (subtotalPerPiece > 0 || discount > 0)) {
+      totalEl.value = calculatedTotal;
+    }
+
+    this.calculateBalance();
+  }
+
+  calculateBalance() {
+    const total = parseFloat(document.getElementById('order-total')?.value) || 0;
+    const advance = parseFloat(document.getElementById('order-advance')?.value) || 0;
+    const balance = Math.max(0, total - advance);
+    const balEl = document.getElementById('order-balance');
+    if (balEl) balEl.value = balance;
+  }
+
   openNewOrderModal(prefilled = {}) {
     document.getElementById('modal-order-title').textContent = 'Create New Tailoring Order';
     document.getElementById('order-form').reset();
@@ -766,25 +1043,49 @@ class TailorBusinessApp {
     trial.setDate(trial.getDate() + 4);
     const trialStr = trial.toISOString().split('T')[0];
 
-    document.getElementById('order-trial-date').value = trialStr;
-    document.getElementById('order-delivery-date').value = deliveryStr;
-    document.getElementById('order-balance').value = '0';
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    };
+
+    setVal('order-qty', 1);
+    setVal('order-trial-date', trialStr);
+    setVal('order-delivery-date', deliveryStr);
+    setVal('order-balance', '0');
+    setVal('order-price-stitching', '');
+    setVal('order-price-fabric', '');
+    setVal('order-price-lining', '');
+    setVal('order-price-embroidery', '');
+    setVal('order-price-extra', '');
+    setVal('order-price-discount', '');
+    setVal('order-total', '');
+    setVal('order-advance', '');
     
     this.populateCustomerDropdowns();
 
     // Prefill from catalog or customer if provided
     if (prefilled.customerId) {
-      document.getElementById('order-cust-id').value = prefilled.customerId;
+      setVal('order-cust-id', prefilled.customerId);
     }
     if (prefilled.category) {
-      document.getElementById('order-category').value = prefilled.category;
+      setVal('order-category', prefilled.category);
+    }
+    if (prefilled.itemType) {
+      setVal('order-item-type', prefilled.itemType);
     }
     if (prefilled.title) {
-      document.getElementById('order-title').value = prefilled.title;
+      setVal('order-title', prefilled.title);
     }
     if (prefilled.price) {
-      document.getElementById('order-total').value = prefilled.price;
+      setVal('order-price-stitching', prefilled.price);
+      setVal('order-total', prefilled.price);
       this.calculateBalance();
+    }
+
+    // Trigger measurement preview
+    const selectedCustId = document.getElementById('order-cust-id')?.value;
+    if (selectedCustId) {
+      this.onOrderCustomerSelected(selectedCustId);
     }
 
     this.openModal('modal-order');
@@ -798,45 +1099,86 @@ class TailorBusinessApp {
     document.getElementById('order-id').value = order.id;
     this.populateCustomerDropdowns();
 
-    document.getElementById('order-cust-id').value = order.customerId;
-    document.getElementById('order-category').value = order.category;
-    document.getElementById('order-title').value = order.title;
-    document.getElementById('order-fabric').value = order.fabric || '';
-    document.getElementById('order-fabric-source').value = order.fabricSource || 'Client Provided';
-    document.getElementById('order-trial-date').value = order.trialDate || '';
-    document.getElementById('order-delivery-date').value = order.deliveryDate || '';
-    document.getElementById('order-status').value = order.status;
-    document.getElementById('order-priority').value = order.priority || 'Standard';
-    document.getElementById('order-total').value = order.total;
-    document.getElementById('order-advance').value = order.advance;
-    document.getElementById('order-balance').value = order.balance;
-    document.getElementById('order-payment-method').value = order.paymentMethod || 'UPI / Online';
-    document.getElementById('order-notes').value = order.notes || '';
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.value = (val !== undefined && val !== null) ? val : '';
+    };
 
+    setVal('order-cust-id', order.customerId);
+    setVal('order-category', order.category);
+    setVal('order-item-type', order.itemType || order.title);
+    setVal('order-qty', order.qty || 1);
+    setVal('order-title', order.title);
+    setVal('order-fabric', order.fabric || '');
+    setVal('order-fabric-source', order.fabricSource || 'Client Provided');
+    setVal('order-fabric-meter', order.fabricMeter || '');
+    setVal('order-lining-material', order.liningMaterial || '');
+
+    setVal('order-fit', order.fit || 'Modern Slim');
+    setVal('order-collar', order.collar || 'Mandarin / Bandhgala');
+    setVal('order-sleeve', order.sleeve || 'Full Sleeve');
+    setVal('order-lining', order.lining || 'Full Lining');
+    setVal('order-vents', order.vents || 'Double Vent');
+    setVal('order-pockets', order.pockets || 'Two Flap Pockets');
+    setVal('order-embroidery', order.embroidery || 'Plain / No Work');
+    setVal('order-master-tailor', order.masterTailor || 'Master Zahid (Cutting Head)');
+
+    setVal('order-adjustments', order.adjustments || '');
+    setVal('order-trial-date', order.trialDate || '');
+    setVal('order-delivery-date', order.deliveryDate || '');
+    setVal('order-status', order.status);
+    setVal('order-priority', order.priority || 'Standard');
+
+    setVal('order-price-stitching', order.priceStitching || '');
+    setVal('order-price-fabric', order.priceFabric || '');
+    setVal('order-price-lining', order.priceLining || '');
+    setVal('order-price-embroidery', order.priceEmbroidery || '');
+    setVal('order-price-extra', order.priceExtra || '');
+    setVal('order-price-discount', order.discount || '');
+    setVal('order-total', order.total);
+    setVal('order-advance', order.advance);
+    setVal('order-balance', order.balance);
+    setVal('order-payment-method', order.paymentMethod || 'UPI / Online');
+    setVal('order-notes', order.notes || '');
+
+    this.onOrderCustomerSelected(order.customerId);
     this.openModal('modal-order');
   }
 
-  calculateBalance() {
-    const total = parseFloat(document.getElementById('order-total').value) || 0;
-    const advance = parseFloat(document.getElementById('order-advance').value) || 0;
-    const balance = Math.max(0, total - advance);
-    document.getElementById('order-balance').value = balance;
-  }
-
   saveOrder(e) {
-    e.preventDefault();
-    const idInput = document.getElementById('order-id').value;
-    const custId = document.getElementById('order-cust-id').value;
-    const customer = this.data.customers.find(c => c.id === custId);
+    if (e && e.preventDefault) e.preventDefault();
+
+    const idInput = document.getElementById('order-id')?.value;
+    const custId = document.getElementById('order-cust-id')?.value;
+    const customer = (this.data.customers || []).find(c => c.id === custId);
     
     if (!customer) {
       alert("Please select a registered customer.");
       return;
     }
 
-    const total = parseFloat(document.getElementById('order-total').value) || 0;
-    const advance = parseFloat(document.getElementById('order-advance').value) || 0;
+    const title = document.getElementById('order-title')?.value.trim();
+    if (!title) {
+      alert("Please enter the item / garment description.");
+      document.getElementById('order-title')?.focus();
+      return;
+    }
+
+    const deliveryDate = document.getElementById('order-delivery-date')?.value;
+    if (!deliveryDate) {
+      alert("Please choose a final delivery date.");
+      document.getElementById('order-delivery-date')?.focus();
+      return;
+    }
+
+    const total = parseFloat(document.getElementById('order-total')?.value) || 0;
+    const advance = parseFloat(document.getElementById('order-advance')?.value) || 0;
     const balance = Math.max(0, total - advance);
+
+    const getVal = (id) => {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    };
 
     const existingOrder = idInput ? this.data.orders.find(o => o.id === idInput) : null;
     const payments = existingOrder && existingOrder.payments ? existingOrder.payments : [];
@@ -846,7 +1188,7 @@ class TailorBusinessApp {
       payments.push({
         id: `PAY-${Date.now()}`,
         amount: advance,
-        mode: document.getElementById('order-payment-method').value,
+        mode: getVal('order-payment-method') || 'UPI / Online',
         date: new Date().toISOString().split('T')[0],
         notes: "Initial advance payment on booking"
       });
@@ -857,19 +1199,38 @@ class TailorBusinessApp {
       customerId: custId,
       customerName: customer.name,
       customerPhone: customer.phone,
-      category: document.getElementById('order-category').value,
-      title: document.getElementById('order-title').value,
-      fabric: document.getElementById('order-fabric').value,
-      fabricSource: document.getElementById('order-fabric-source').value,
-      trialDate: document.getElementById('order-trial-date').value,
-      deliveryDate: document.getElementById('order-delivery-date').value,
-      status: document.getElementById('order-status').value,
-      priority: document.getElementById('order-priority').value,
+      category: getVal('order-category'),
+      itemType: getVal('order-item-type'),
+      qty: parseInt(getVal('order-qty')) || 1,
+      title: title,
+      fabric: getVal('order-fabric'),
+      fabricSource: getVal('order-fabric-source'),
+      fabricMeter: getVal('order-fabric-meter'),
+      liningMaterial: getVal('order-lining-material'),
+      fit: getVal('order-fit'),
+      collar: getVal('order-collar'),
+      sleeve: getVal('order-sleeve'),
+      lining: getVal('order-lining'),
+      vents: getVal('order-vents'),
+      pockets: getVal('order-pockets'),
+      embroidery: getVal('order-embroidery'),
+      masterTailor: getVal('order-master-tailor'),
+      adjustments: getVal('order-adjustments'),
+      trialDate: getVal('order-trial-date'),
+      deliveryDate: deliveryDate,
+      status: getVal('order-status'),
+      priority: getVal('order-priority'),
+      priceStitching: parseFloat(getVal('order-price-stitching')) || 0,
+      priceFabric: parseFloat(getVal('order-price-fabric')) || 0,
+      priceLining: parseFloat(getVal('order-price-lining')) || 0,
+      priceEmbroidery: parseFloat(getVal('order-price-embroidery')) || 0,
+      priceExtra: parseFloat(getVal('order-price-extra')) || 0,
+      discount: parseFloat(getVal('order-price-discount')) || 0,
       total: total,
       advance: advance,
       balance: balance,
-      paymentMethod: document.getElementById('order-payment-method').value,
-      notes: document.getElementById('order-notes').value,
+      paymentMethod: getVal('order-payment-method'),
+      notes: getVal('order-notes'),
       payments: payments,
       createdAt: idInput ? (existingOrder?.createdAt || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0]
     };
@@ -1055,6 +1416,87 @@ class TailorBusinessApp {
     });
   }
 
+  // ==================== CUSTOMERS & MEASUREMENTS ====================
+  onCustomerGenderChange(gender) {
+    const tabWomen = document.getElementById('tab-btn-women');
+    if (gender === 'Women') {
+      if (tabWomen) {
+        tabWomen.style.borderColor = '#10b981';
+        tabWomen.style.color = 'var(--primary)';
+        tabWomen.style.fontWeight = '700';
+      }
+    } else {
+      if (tabWomen) {
+        tabWomen.style.borderColor = '';
+        tabWomen.style.color = '';
+        tabWomen.style.fontWeight = '';
+      }
+    }
+  }
+
+  switchMeasureTab(tabName) {
+    const tabs = ['all', 'upper', 'lower', 'women', 'fit'];
+    tabs.forEach(t => {
+      const btn = document.getElementById(`tab-btn-${t}`);
+      if (btn) btn.classList.toggle('active', t === tabName);
+    });
+
+    const secUpper = document.getElementById('m-sec-upper');
+    const secLower = document.getElementById('m-sec-lower');
+    const secWomen = document.getElementById('m-sec-women');
+    const secFit = document.getElementById('m-sec-fit');
+
+    if (tabName === 'all') {
+      if (secUpper) secUpper.style.display = 'block';
+      if (secLower) secLower.style.display = 'block';
+      if (secWomen) secWomen.style.display = 'block';
+      if (secFit) secFit.style.display = 'block';
+    } else if (tabName === 'upper') {
+      if (secUpper) secUpper.style.display = 'block';
+      if (secLower) secLower.style.display = 'none';
+      if (secWomen) secWomen.style.display = 'none';
+      if (secFit) secFit.style.display = 'none';
+    } else if (tabName === 'lower') {
+      if (secUpper) secUpper.style.display = 'none';
+      if (secLower) secLower.style.display = 'block';
+      if (secWomen) secWomen.style.display = 'none';
+      if (secFit) secFit.style.display = 'none';
+    } else if (tabName === 'women') {
+      if (secUpper) secUpper.style.display = 'none';
+      if (secLower) secLower.style.display = 'none';
+      if (secWomen) secWomen.style.display = 'block';
+      if (secFit) secFit.style.display = 'none';
+    } else if (tabName === 'fit') {
+      if (secUpper) secUpper.style.display = 'none';
+      if (secLower) secLower.style.display = 'none';
+      if (secWomen) secWomen.style.display = 'none';
+      if (secFit) secFit.style.display = 'block';
+    }
+  }
+
+  populateCustomerDropdowns() {
+    const select = document.getElementById('order-cust-id');
+    if (!select) return;
+
+    const currentVal = select.value;
+    select.innerHTML = '';
+    if (!this.data.customers || this.data.customers.length === 0) {
+      select.innerHTML = '<option value="">No registered customers. Please add one first.</option>';
+      return;
+    }
+
+    this.data.customers.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${c.name} (${c.phone}) - ${c.gender}`;
+      select.appendChild(opt);
+    });
+
+    if (currentVal && this.data.customers.some(c => c.id === currentVal)) {
+      select.value = currentVal;
+    }
+  }
+
   renderCustomersGrid(filteredList = null) {
     if (!Array.isArray(this.data.customers)) {
       this.data.customers = [];
@@ -1095,25 +1537,35 @@ class TailorBusinessApp {
             </div>
 
             <div class="measurement-snapshot">
-              <div class="snapshot-title">Measurements Snapshot (Inches)</div>
+              <div class="snapshot-title">Bespoke Measurements Snapshot (Inches)</div>
               <div class="snapshot-chips">
+                ${m.length ? `<span class="snapshot-chip">Top: ${m.length}"</span>` : ''}
+                ${m.coatLength ? `<span class="snapshot-chip">Coat: ${m.coatLength}"</span>` : ''}
                 ${m.chest ? `<span class="snapshot-chip">Chest: ${m.chest}"</span>` : ''}
                 ${m.waist ? `<span class="snapshot-chip">Waist: ${m.waist}"</span>` : ''}
-                ${m.shoulder ? `<span class="snapshot-chip">Shoulder: ${m.shoulder}"</span>` : ''}
-                ${m.length ? `<span class="snapshot-chip">Length: ${m.length}"</span>` : ''}
+                ${m.shoulder ? `<span class="snapshot-chip">Teera: ${m.shoulder}"</span>` : ''}
+                ${m.sleeveLength ? `<span class="snapshot-chip">Sleeve: ${m.sleeveLength}"</span>` : ''}
+                ${m.armhole ? `<span class="snapshot-chip">Mudda: ${m.armhole}"</span>` : ''}
                 ${m.pantLength ? `<span class="snapshot-chip">Pant: ${m.pantLength}"</span>` : ''}
+                ${m.hip ? `<span class="snapshot-chip">Hip: ${m.hip}"</span>` : ''}
+                ${m.bottom ? `<span class="snapshot-chip">Mori: ${m.bottom}"</span>` : ''}
+                ${m.blouseLength ? `<span class="snapshot-chip">Blouse: ${m.blouseLength}"</span>` : ''}
+                ${m.fitType ? `<span class="snapshot-chip" style="background:#e0e7ff; color:#3730a3; font-weight:700;">${m.fitType}</span>` : ''}
               </div>
             </div>
 
             <div class="cust-card-actions">
               <button class="btn btn-sm btn-outline" style="flex:1;" onclick="app.viewCustomerDetails('${cust.id}')">
-                View & History
+                Profile & History
               </button>
               <button class="btn btn-sm btn-outline" style="flex:1;" onclick="app.editCustomer('${cust.id}')">
                 Edit
               </button>
               <button class="btn btn-sm btn-primary" onclick="app.newOrderForCustomer('${cust.id}')">
                 + Order
+              </button>
+              <button class="btn btn-sm btn-danger-outline" title="Delete Customer" onclick="app.deleteCustomer('${cust.id}')">
+                &times;
               </button>
             </div>
           `;
@@ -1127,8 +1579,8 @@ class TailorBusinessApp {
   }
 
   filterCustomers() {
-    const query = (document.getElementById('customer-search').value || '').toLowerCase().trim();
-    const genderFilter = document.getElementById('customer-gender-filter').value;
+    const query = (document.getElementById('customer-search')?.value || '').toLowerCase().trim();
+    const genderFilter = document.getElementById('customer-gender-filter')?.value || 'all';
 
     const filtered = (this.data.customers || []).filter(cust => {
       const matchQuery = !query ||
@@ -1148,11 +1600,13 @@ class TailorBusinessApp {
   openCustomerModal(openedFromOrder = false) {
     this.openedFromOrderModal = openedFromOrder;
     const titleEl = document.getElementById('modal-customer-title');
-    if (titleEl) titleEl.textContent = openedFromOrder ? 'Quick Add Customer for Order' : 'Register Customer & Measurements';
+    if (titleEl) titleEl.textContent = openedFromOrder ? 'Quick Add Customer for Order' : 'Register Customer & Full Body Measurements';
     const form = document.getElementById('customer-form');
     if (form) form.reset();
     const idInput = document.getElementById('cust-id');
     if (idInput) idInput.value = '';
+    
+    this.switchMeasureTab('all');
     this.openModal('modal-customer');
     const nameEl = document.getElementById('cust-name');
     if (nameEl) nameEl.focus();
@@ -1175,27 +1629,56 @@ class TailorBusinessApp {
     const m = c.measurements || {};
     const setVal = (id, val) => {
       const el = document.getElementById(id);
-      if (el) el.value = val || '';
+      if (el) el.value = (val !== undefined && val !== null) ? val : '';
     };
 
+    // Upper body
     setVal('m-length', m.length);
+    setVal('m-coat-length', m.coatLength);
     setVal('m-chest', m.chest);
+    setVal('m-stomach', m.stomach);
     setVal('m-waist', m.waist);
     setVal('m-shoulder', m.shoulder);
+    setVal('m-cross-back', m.crossBack);
+    setVal('m-cross-front', m.crossFront);
     setVal('m-sleeve-length', m.sleeveLength);
     setVal('m-armhole', m.armhole);
+    setVal('m-bicep', m.bicep);
+    setVal('m-elbow', m.elbow);
+    setVal('m-cuff', m.cuff);
     setVal('m-neck', m.neck);
-    setVal('m-front-neck', m.frontNeck);
-    setVal('m-back-neck', m.backNeck);
 
+    // Lower body
     setVal('m-pant-length', m.pantLength);
-    setVal('m-hip', m.hip);
+    setVal('m-inseam', m.inseam);
     setVal('m-pant-waist', m.pantWaist);
+    setVal('m-hip', m.hip);
     setVal('m-thigh', m.thigh);
     setVal('m-knee', m.knee);
+    setVal('m-calf', m.calf);
     setVal('m-bottom', m.bottom);
-    setVal('m-inseam', m.inseam);
+    setVal('m-rise', m.rise);
+    setVal('m-salwar-length', m.salwarLength);
+    setVal('m-flare', m.flare);
 
+    // Women / Ethnic
+    setVal('m-blouse-length', m.blouseLength);
+    setVal('m-upper-chest', m.upperChest);
+    setVal('m-under-bust', m.underBust);
+    setVal('m-bust-point', m.bustPoint);
+    setVal('m-apex-distance', m.apexDistance);
+    setVal('m-front-neck', m.frontNeck);
+    setVal('m-back-neck', m.backNeck);
+    setVal('m-front-neck-style', m.frontNeckStyle || 'Round');
+    setVal('m-back-neck-style', m.backNeckStyle || 'Round Deep');
+
+    // Fit & Posture
+    setVal('m-fit-type', m.fitType || 'Regular Fit');
+    setVal('m-lining', m.lining || 'Full Lining');
+    setVal('m-shoulder-type', m.shoulderType || 'Normal');
+    setVal('m-posture', m.posture || 'Normal');
+
+    this.switchMeasureTab('all');
     this.openModal('modal-customer');
   }
 
@@ -1225,22 +1708,51 @@ class TailorBusinessApp {
     };
 
     const measurements = {
+      // Upper body
       length: getVal('m-length'),
+      coatLength: getVal('m-coat-length'),
       chest: getVal('m-chest'),
+      stomach: getVal('m-stomach'),
       waist: getVal('m-waist'),
       shoulder: getVal('m-shoulder'),
+      crossBack: getVal('m-cross-back'),
+      crossFront: getVal('m-cross-front'),
       sleeveLength: getVal('m-sleeve-length'),
       armhole: getVal('m-armhole'),
+      bicep: getVal('m-bicep'),
+      elbow: getVal('m-elbow'),
+      cuff: getVal('m-cuff'),
       neck: getVal('m-neck'),
-      frontNeck: getVal('m-front-neck'),
-      backNeck: getVal('m-back-neck'),
+
+      // Lower body
       pantLength: getVal('m-pant-length'),
-      hip: getVal('m-hip'),
+      inseam: getVal('m-inseam'),
       pantWaist: getVal('m-pant-waist'),
+      hip: getVal('m-hip'),
       thigh: getVal('m-thigh'),
       knee: getVal('m-knee'),
+      calf: getVal('m-calf'),
       bottom: getVal('m-bottom'),
-      inseam: getVal('m-inseam')
+      rise: getVal('m-rise'),
+      salwarLength: getVal('m-salwar-length'),
+      flare: getVal('m-flare'),
+
+      // Women
+      blouseLength: getVal('m-blouse-length'),
+      upperChest: getVal('m-upper-chest'),
+      underBust: getVal('m-under-bust'),
+      bustPoint: getVal('m-bust-point'),
+      apexDistance: getVal('m-apex-distance'),
+      frontNeck: getVal('m-front-neck'),
+      backNeck: getVal('m-back-neck'),
+      frontNeckStyle: getVal('m-front-neck-style'),
+      backNeckStyle: getVal('m-back-neck-style'),
+
+      // Fit & Posture
+      fitType: getVal('m-fit-type'),
+      lining: getVal('m-lining'),
+      shoulderType: getVal('m-shoulder-type'),
+      posture: getVal('m-posture')
     };
 
     if (!Array.isArray(this.data.customers)) {
@@ -1277,12 +1789,13 @@ class TailorBusinessApp {
     this.populateCustomerDropdowns();
     this.showToast(idInput ? `Customer "${customerObj.name}" updated!` : `Customer "${customerObj.name}" registered successfully!`);
 
-    // If opened from order modal, auto-select this customer and return to order modal
+    // If opened from order modal, auto-select this customer and update measurement preview
     if (this.openedFromOrderModal) {
       this.openedFromOrderModal = false;
       const orderCustSelect = document.getElementById('order-cust-id');
       if (orderCustSelect) {
         orderCustSelect.value = customerObj.id;
+        this.onOrderCustomerSelected(customerObj.id);
       }
       this.openModal('modal-order');
       this.showToast(`"${customerObj.name}" selected for this order!`);
@@ -1316,68 +1829,154 @@ class TailorBusinessApp {
     return false;
   }
 
-  viewCustomerDetails(custId) {
-    const cust = this.data.customers.find(c => c.id === custId);
+  deleteCustomer(custId) {
+    const cust = (this.data.customers || []).find(c => c.id === custId);
     if (!cust) return;
 
-    document.getElementById('view-customer-name').textContent = `${cust.name} – Tailoring Profile & History`;
+    if (confirm(`Are you sure you want to delete customer "${cust.name}" (${cust.id})? All saved measurements will be removed.`)) {
+      this.data.customers = this.data.customers.filter(c => c.id !== custId);
+      this.saveData();
+      this.closeModal('modal-view-customer');
+      this.populateCustomerDropdowns();
+      this.renderCustomersGrid();
+      this.renderDashboard();
+      this.showToast(`Customer "${cust.name}" deleted.`);
+    }
+  }
+
+  deleteCurrentViewCustomer() {
+    if (this.activeViewCustomerId) {
+      this.deleteCustomer(this.activeViewCustomerId);
+    }
+  }
+
+  editCurrentViewCustomer() {
+    if (this.activeViewCustomerId) {
+      this.closeModal('modal-view-customer');
+      this.editCustomer(this.activeViewCustomerId);
+    }
+  }
+
+  newOrderForCurrentViewCustomer() {
+    if (this.activeViewCustomerId) {
+      this.closeModal('modal-view-customer');
+      this.openNewOrderModal({ customerId: this.activeViewCustomerId });
+    }
+  }
+
+  viewCustomerDetails(custId) {
+    const cust = (this.data.customers || []).find(c => c.id === custId);
+    if (!cust) return;
+
+    this.activeViewCustomerId = custId;
+    document.getElementById('view-customer-name').textContent = `${cust.name} – Bespoke Tailoring Profile & History`;
     const body = document.getElementById('view-customer-body');
     const m = cust.measurements || {};
-    const orders = this.data.orders.filter(o => o.customerId === cust.id);
+    const orders = (this.data.orders || []).filter(o => o.customerId === cust.id);
+
+    const hasWomen = cust.gender === 'Women' || m.blouseLength || m.upperChest || m.underBust || m.bustPoint || m.flare;
 
     body.innerHTML = `
       <div style="background:#0a0f18; color:#fff; border-radius:12px; padding:18px; margin-bottom:20px; border:1px solid #1f293d;">
         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
           <div>
-            <div style="font-size:1.3rem; font-weight:700;">${cust.name}</div>
-            <div style="color:#34d399; font-size:0.875rem; margin-top:2px;">Category: ${cust.gender}</div>
+            <div style="font-size:1.35rem; font-weight:700;">${cust.name}</div>
+            <div style="color:#34d399; font-size:0.875rem; margin-top:2px;">Category: <strong>${cust.gender}</strong> • ID: ${cust.id}</div>
             <div style="font-size:0.875rem; color:#94a3b8; margin-top:4px;">📞 Phone: ${cust.phone} | ✉️ ${cust.email || 'No email registered'}</div>
-            <div style="font-size:0.875rem; color:#94a3b8;">📍 Address: ${cust.address || 'N/A'}</div>
+            <div style="font-size:0.875rem; color:#94a3b8;">📍 Address: ${cust.address || 'Address not specified'}</div>
           </div>
           <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
             <button class="btn btn-sm btn-whatsapp" onclick="app.directWhatsApp('${cust.phone}', '${cust.name}')">
-              📱 Chat on WhatsApp
+              📱 WhatsApp Client
             </button>
-            <button class="btn btn-sm btn-primary" onclick="app.newOrderForCustomer('${cust.id}')">
-              + Create Order
+            <button class="btn btn-sm btn-primary" onclick="app.newOrderForCurrentViewCustomer()">
+              + Create New Order
             </button>
           </div>
         </div>
       </div>
 
-      <h4 style="color:var(--primary); font-size:0.95rem; margin-bottom:10px; text-transform:uppercase; font-weight:700;">
-        Upper Body Measurements (Inches)
-      </h4>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(125px, 1fr)); gap:10px; margin-bottom:18px;">
-        <div class="measure-field"><label>Top Length</label><strong>${m.length || '—'}</strong></div>
-        <div class="measure-field"><label>Chest / Bust</label><strong>${m.chest || '—'}</strong></div>
-        <div class="measure-field"><label>Waist (Upper)</label><strong>${m.waist || '—'}</strong></div>
-        <div class="measure-field"><label>Shoulder</label><strong>${m.shoulder || '—'}</strong></div>
-        <div class="measure-field"><label>Sleeve Length</label><strong>${m.sleeveLength || '—'}</strong></div>
-        <div class="measure-field"><label>Armhole</label><strong>${m.armhole || '—'}</strong></div>
-        <div class="measure-field"><label>Neck</label><strong>${m.neck || '—'}</strong></div>
-        <div class="measure-field"><label>Front Neck</label><strong>${m.frontNeck || '—'}</strong></div>
-        <div class="measure-field"><label>Back Neck</label><strong>${m.backNeck || '—'}</strong></div>
+      <!-- Upper Body Card -->
+      <div style="background:#ffffff; border:1px solid var(--gray-200); border-radius:10px; padding:16px; margin-bottom:16px;">
+        <h4 style="color:var(--primary); font-size:0.95rem; margin-bottom:10px; text-transform:uppercase; font-weight:700;">
+          👔 Upper Body Measurements (Inches)
+        </h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+          <div class="measure-field"><label>Top / Shirt Length</label><strong>${m.length ? `${m.length}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Coat / Sherwani Length</label><strong>${m.coatLength ? `${m.coatLength}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Chest / Bust</label><strong>${m.chest ? `${m.chest}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Stomach / Abdomen</label><strong>${m.stomach ? `${m.stomach}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Natural Waist</label><strong>${m.waist ? `${m.waist}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Shoulder / Teera</label><strong>${m.shoulder ? `${m.shoulder}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Cross Back (Peeth)</label><strong>${m.crossBack ? `${m.crossBack}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Cross Front</label><strong>${m.crossFront ? `${m.crossFront}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Sleeve Length</label><strong>${m.sleeveLength ? `${m.sleeveLength}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Armhole / Mudda</label><strong>${m.armhole ? `${m.armhole}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Bicep / Dolah</label><strong>${m.bicep ? `${m.bicep}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Elbow Round</label><strong>${m.elbow ? `${m.elbow}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Cuff / Mori</label><strong>${m.cuff ? `${m.cuff}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Neck / Collar</label><strong>${m.neck ? `${m.neck}"` : '—'}</strong></div>
+        </div>
       </div>
 
-      <h4 style="color:var(--primary); font-size:0.95rem; margin-bottom:10px; text-transform:uppercase; font-weight:700;">
-        Lower Body Measurements (Inches)
-      </h4>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(125px, 1fr)); gap:10px; margin-bottom:18px;">
-        <div class="measure-field"><label>Bottom Length</label><strong>${m.pantLength || '—'}</strong></div>
-        <div class="measure-field"><label>Hip</label><strong>${m.hip || '—'}</strong></div>
-        <div class="measure-field"><label>Lower Waist</label><strong>${m.pantWaist || '—'}</strong></div>
-        <div class="measure-field"><label>Thigh</label><strong>${m.thigh || '—'}</strong></div>
-        <div class="measure-field"><label>Knee</label><strong>${m.knee || '—'}</strong></div>
-        <div class="measure-field"><label>Bottom Mori</label><strong>${m.bottom || '—'}</strong></div>
-        <div class="measure-field"><label>Inseam</label><strong>${m.inseam || '—'}</strong></div>
+      <!-- Lower Body Card -->
+      <div style="background:#ffffff; border:1px solid var(--gray-200); border-radius:10px; padding:16px; margin-bottom:16px;">
+        <h4 style="color:var(--primary); font-size:0.95rem; margin-bottom:10px; text-transform:uppercase; font-weight:700;">
+          👖 Lower Body Measurements (Inches)
+        </h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+          <div class="measure-field"><label>Pant / Outseam Length</label><strong>${m.pantLength ? `${m.pantLength}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Inseam</label><strong>${m.inseam ? `${m.inseam}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Pant Waist</label><strong>${m.pantWaist ? `${m.pantWaist}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Hip / Seat</label><strong>${m.hip ? `${m.hip}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Thigh / Raan</label><strong>${m.thigh ? `${m.thigh}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Knee / Ghutna</label><strong>${m.knee ? `${m.knee}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Calf / Pindi</label><strong>${m.calf ? `${m.calf}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Bottom Opening (Mori)</label><strong>${m.bottom ? `${m.bottom}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Crotch / Rise (Aasan)</label><strong>${m.rise ? `${m.rise}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Salwar Length</label><strong>${m.salwarLength ? `${m.salwarLength}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Flare / Ghair</label><strong>${m.flare ? `${m.flare}"` : '—'}</strong></div>
+        </div>
       </div>
 
+      ${hasWomen ? `
+      <!-- Women Couture Details -->
+      <div style="background:#ffffff; border:1px solid var(--gray-200); border-radius:10px; padding:16px; margin-bottom:16px;">
+        <h4 style="color:var(--primary); font-size:0.95rem; margin-bottom:10px; text-transform:uppercase; font-weight:700;">
+          👗 Women Couture & Blouse Details (Inches)
+        </h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+          <div class="measure-field"><label>Blouse Length</label><strong>${m.blouseLength ? `${m.blouseLength}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Upper Chest</label><strong>${m.upperChest ? `${m.upperChest}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Under Bust</label><strong>${m.underBust ? `${m.underBust}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Apex / Bust Point</label><strong>${m.bustPoint ? `${m.bustPoint}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Apex Distance</label><strong>${m.apexDistance ? `${m.apexDistance}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Front Neck Depth</label><strong>${m.frontNeck ? `${m.frontNeck}" (${m.frontNeckStyle || 'Round'})` : '—'}</strong></div>
+          <div class="measure-field"><label>Back Neck Depth</label><strong>${m.backNeck ? `${m.backNeck}" (${m.backNeckStyle || 'Round Deep'})` : '—'}</strong></div>
+        </div>
+      </div>
+      ` : ''}
+
+      <!-- Fit & Posture Specs -->
+      <div style="background:#ffffff; border:1px solid var(--gray-200); border-radius:10px; padding:16px; margin-bottom:16px;">
+        <h4 style="color:var(--primary); font-size:0.95rem; margin-bottom:10px; text-transform:uppercase; font-weight:700;">
+          ✂️ Tailoring Fit, Lining & Posture Preferences
+        </h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+          <div class="measure-field"><label>Fit Style</label><strong>${m.fitType || 'Regular Fit'}</strong></div>
+          <div class="measure-field"><label>Preferred Lining</label><strong>${m.lining || 'Full Lining'}</strong></div>
+          <div class="measure-field"><label>Shoulder Slope</label><strong>${m.shoulderType || 'Normal'}</strong></div>
+          <div class="measure-field"><label>Body Posture</label><strong>${m.posture || 'Normal'}</strong></div>
+        </div>
+      </div>
+
+      <!-- Notes -->
       <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:20px;">
-        <strong style="font-size:0.85rem; color:#475569;">Style & Tailoring Instructions:</strong>
-        <p style="font-size:0.9rem; margin-top:4px;">${cust.notes || 'No special fit preferences noted.'}</p>
+        <strong style="font-size:0.85rem; color:#475569;">Special Cutting Master Notes:</strong>
+        <p style="font-size:0.9rem; margin-top:4px; color:#1e293b;">${cust.notes || 'No special fit preferences noted.'}</p>
       </div>
 
+      <!-- Order History -->
       <h4 style="color:#0f172a; font-size:1rem; margin-bottom:12px; font-weight:700;">
         Order History (${orders.length})
       </h4>
@@ -1414,6 +2013,136 @@ class TailorBusinessApp {
     `;
 
     this.openModal('modal-view-customer');
+  }
+
+  printCustomerMeasurementSheet() {
+    const custId = this.activeViewCustomerId;
+    const cust = (this.data.customers || []).find(c => c.id === custId);
+    if (!cust) return;
+
+    const m = cust.measurements || {};
+    const s = this.data.settings || {};
+    const dateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    // Open print window with bespoke tailor sheet
+    const printWindow = window.open('', '_blank', 'width=850,height=900');
+    if (!printWindow) {
+      alert("Please allow popups to print the measurement sheet.");
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${cust.name} - Measurement Sheet | ZM Enterprises</title>
+        <style>
+          body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; padding: 30px; color: #0f172a; margin: 0; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2.5px solid #059669; padding-bottom: 14px; margin-bottom: 18px; }
+          .header h1 { margin: 0; color: #059669; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+          .header p { margin: 2px 0 0 0; font-size: 13px; color: #64748b; }
+          .meta-box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; background: #f8fafc; display: flex; justify-content: space-between; }
+          .section-title { font-size: 13px; font-weight: 800; color: #059669; text-transform: uppercase; margin: 16px 0 8px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+          .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+          .item { border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; background: #fff; }
+          .item label { display: block; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+          .item strong { font-size: 15px; color: #0f172a; }
+          .notes { border: 1px dashed #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-top: 14px; font-size: 13px; }
+          .signature-row { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 10px; font-size: 12px; color: #64748b; }
+          @media print {
+            body { padding: 15px; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1>${s.businessName || 'ZM Enterprises'}</h1>
+            <p>${s.tagline || 'Custom Bespoke Stitching & Tailoring Atelier'}</p>
+            <p>📍 ${s.address || 'Workshop Studio'} | 📞 ${s.phone || ''}</p>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:18px; font-weight:800; color:#0f172a;">MASTER MEASUREMENT SHEET</div>
+            <p>Date: ${dateStr}</p>
+            <p>Profile ID: <strong>${cust.id}</strong></p>
+          </div>
+        </div>
+
+        <div class="meta-box">
+          <div>
+            <strong>Client Name:</strong> ${cust.name}<br>
+            <strong>Phone / WhatsApp:</strong> ${cust.phone}<br>
+            <strong>Category:</strong> ${cust.gender}
+          </div>
+          <div style="text-align:right;">
+            <strong>Fit Style:</strong> ${m.fitType || 'Regular Fit'}<br>
+            <strong>Lining Preference:</strong> ${m.lining || 'Full Lining'}<br>
+            <strong>Shoulder Slope:</strong> ${m.shoulderType || 'Normal'}
+          </div>
+        </div>
+
+        <div class="section-title">👔 Upper Body (Shirt / Kurta / Coat / Blazer)</div>
+        <div class="grid">
+          <div class="item"><label>Top Length</label><strong>${m.length || '—'}"</strong></div>
+          <div class="item"><label>Coat Length</label><strong>${m.coatLength || '—'}"</strong></div>
+          <div class="item"><label>Chest / Bust</label><strong>${m.chest || '—'}"</strong></div>
+          <div class="item"><label>Stomach / Abdomen</label><strong>${m.stomach || '—'}"</strong></div>
+          <div class="item"><label>Natural Waist</label><strong>${m.waist || '—'}"</strong></div>
+          <div class="item"><label>Shoulder / Teera</label><strong>${m.shoulder || '—'}"</strong></div>
+          <div class="item"><label>Cross Back</label><strong>${m.crossBack || '—'}"</strong></div>
+          <div class="item"><label>Cross Front</label><strong>${m.crossFront || '—'}"</strong></div>
+          <div class="item"><label>Sleeve Length</label><strong>${m.sleeveLength || '—'}"</strong></div>
+          <div class="item"><label>Armhole / Mudda</label><strong>${m.armhole || '—'}"</strong></div>
+          <div class="item"><label>Bicep / Muscle</label><strong>${m.bicep || '—'}"</strong></div>
+          <div class="item"><label>Neck / Collar</label><strong>${m.neck || '—'}"</strong></div>
+        </div>
+
+        <div class="section-title">👖 Lower Body (Pant / Trouser / Salwar / Pajama)</div>
+        <div class="grid">
+          <div class="item"><label>Pant Length (Outseam)</label><strong>${m.pantLength || '—'}"</strong></div>
+          <div class="item"><label>Inseam</label><strong>${m.inseam || '—'}"</strong></div>
+          <div class="item"><label>Pant Waist</label><strong>${m.pantWaist || '—'}"</strong></div>
+          <div class="item"><label>Hip / Seat</label><strong>${m.hip || '—'}"</strong></div>
+          <div class="item"><label>Thigh / Raan</label><strong>${m.thigh || '—'}"</strong></div>
+          <div class="item"><label>Knee / Ghutna</label><strong>${m.knee || '—'}"</strong></div>
+          <div class="item"><label>Calf / Pindi</label><strong>${m.calf || '—'}"</strong></div>
+          <div class="item"><label>Bottom Opening (Mori)</label><strong>${m.bottom || '—'}"</strong></div>
+          <div class="item"><label>Crotch / Rise (Aasan)</label><strong>${m.rise || '—'}"</strong></div>
+          <div class="item"><label>Salwar Length</label><strong>${m.salwarLength || '—'}"</strong></div>
+        </div>
+
+        ${(cust.gender === 'Women' || m.blouseLength || m.upperChest || m.underBust || m.bustPoint) ? `
+        <div class="section-title">👗 Women Couture & Blouse Details</div>
+        <div class="grid">
+          <div class="item"><label>Blouse Length</label><strong>${m.blouseLength || '—'}"</strong></div>
+          <div class="item"><label>Upper Chest</label><strong>${m.upperChest || '—'}"</strong></div>
+          <div class="item"><label>Under Bust</label><strong>${m.underBust || '—'}"</strong></div>
+          <div class="item"><label>Apex / Bust Point</label><strong>${m.bustPoint || '—'}"</strong></div>
+          <div class="item"><label>Apex Distance</label><strong>${m.apexDistance || '—'}"</strong></div>
+          <div class="item"><label>Front Neck</label><strong>${m.frontNeck || '—'}" (${m.frontNeckStyle || 'Round'})</strong></div>
+          <div class="item"><label>Back Neck</label><strong>${m.backNeck || '—'}" (${m.backNeckStyle || 'Deep'})</strong></div>
+          <div class="item"><label>Flare / Ghair</label><strong>${m.flare || '—'}"</strong></div>
+        </div>
+        ` : ''}
+
+        <div class="notes">
+          <strong>Special Cutting Master Notes & Styling:</strong><br>
+          ${cust.notes || 'Standard bespoke tailoring specifications apply.'}
+        </div>
+
+        <div class="signature-row">
+          <div>Cutting Master Signature: _______________________</div>
+          <div>Stitching Tailor Signature: _______________________</div>
+          <div>Checked By: _______________________</div>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
   }
 
   directWhatsApp(phone, name) {
@@ -1582,10 +2311,12 @@ class TailorBusinessApp {
           </div>
           <div class="inv-box">
             <h5>Garment & Workshop Details</h5>
-            <p><strong>Category:</strong> ${order.category}</p>
+            <p><strong>Category:</strong> ${order.category} ${order.itemType ? `(${order.itemType})` : ''}</p>
+            <p><strong>Quantity:</strong> ${order.qty || 1} Piece(s) / Set</p>
             <p><strong>Production Stage:</strong> ${order.status}</p>
-            <p><strong>Fabric:</strong> ${order.fabric || 'Client Provided'} (${order.fabricSource})</p>
-            <p><strong>Priority:</strong> ${order.priority}</p>
+            <p><strong>Fabric:</strong> ${order.fabric || 'Client Provided'} (${order.fabricSource || 'Standard'}) ${order.fabricMeter ? `• ${order.fabricMeter}` : ''}</p>
+            <p><strong>Styling:</strong> ${order.fit || 'Regular Fit'} • ${order.collar || 'Standard'} • ${order.vents || 'Standard'}</p>
+            <p><strong>Master Tailor:</strong> ${order.masterTailor || 'Workshop Master'}</p>
           </div>
         </div>
 
@@ -1603,10 +2334,12 @@ class TailorBusinessApp {
             <tr>
               <td>1</td>
               <td>
-                <div style="font-weight:700;">${order.title}</div>
+                <div style="font-weight:700;">${order.title} ${order.qty > 1 ? `(Qty: ${order.qty})` : ''}</div>
                 <div style="font-size:0.8rem; color:#64748b; margin-top:3px;">
-                  ${order.notes ? `Notes: ${order.notes}` : 'Custom tailoring, finishing and fitting in accordance with customer measurements.'}
+                  ${order.fit ? `Fit: ${order.fit} • ` : ''}${order.collar ? `Collar: ${order.collar} • ` : ''}${order.sleeve ? `Sleeves: ${order.sleeve}` : ''}
                 </div>
+                ${order.adjustments ? `<div style="font-size:0.8rem; color:#059669; margin-top:2px;">Custom Adjustments: ${order.adjustments}</div>` : ''}
+                ${order.notes ? `<div style="font-size:0.8rem; color:#64748b; margin-top:2px;">Special Notes: ${order.notes}</div>` : ''}
               </td>
               <td>${order.category}</td>
               <td style="text-align:right; font-weight:700;">₹${order.total.toLocaleString('en-IN')}</td>
@@ -1617,8 +2350,14 @@ class TailorBusinessApp {
         <!-- Summary Totals -->
         <div class="inv-summary-box">
           <table class="inv-summary-table">
+            ${order.priceStitching ? `<tr><td>Stitching Charges:</td><td>₹${(order.priceStitching * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
+            ${order.priceFabric ? `<tr><td>Fabric Material:</td><td>₹${(order.priceFabric * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
+            ${order.priceLining ? `<tr><td>Lining / Aster:</td><td>₹${(order.priceLining * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
+            ${order.priceEmbroidery ? `<tr><td>Embroidery & Detailing:</td><td>₹${(order.priceEmbroidery * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
+            ${order.priceExtra ? `<tr><td>Alterations / Extra:</td><td>₹${(order.priceExtra * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
+            ${order.discount ? `<tr><td>Discount / Concession:</td><td style="color:#dc2626;">- ₹${order.discount.toLocaleString('en-IN')}</td></tr>` : ''}
             <tr>
-              <td>Subtotal:</td>
+              <td>Total Order Value:</td>
               <td>₹${order.total.toLocaleString('en-IN')}</td>
             </tr>
             <tr>
