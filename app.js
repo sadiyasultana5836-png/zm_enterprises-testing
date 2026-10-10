@@ -15,13 +15,13 @@
 
 const STORAGE_KEY = 'ZM_TAILORING_PRO_DATA_V2';
 
-// Standard Tailoring Service Catalog
-const SERVICE_CATALOG = [
+// Standard Tailoring Service Catalog (Prices unset by default - set by user)
+const DEFAULT_SERVICES = [
   {
     id: "CAT-101",
     name: "Men's Bespoke 3-Piece Suit",
     category: "Custom Stitching",
-    price: 7500,
+    price: null,
     turnaround: "7 - 10 Days",
     desc: "Coat, trousers and tailored waistcoat. Hand-finished lapel with canvas structure.",
     fabricTip: "Recommended: Italian Wool, Poly-Viscose or Linen."
@@ -30,7 +30,7 @@ const SERVICE_CATALOG = [
     id: "CAT-102",
     name: "Royal Sherwani & Kurta Set",
     category: "Ethnic Wear",
-    price: 6500,
+    price: null,
     turnaround: "8 - 12 Days",
     desc: "Festive or wedding sherwani with matching churidar and stole bordering.",
     fabricTip: "Recommended: Silk Brocade, Raw Silk or Velvet."
@@ -39,7 +39,7 @@ const SERVICE_CATALOG = [
     id: "CAT-103",
     name: "Men's Formal Blazer & Trousers",
     category: "Custom Stitching",
-    price: 4800,
+    price: null,
     turnaround: "5 - 7 Days",
     desc: "Single/double breasted blazer with slim-cut formal trousers.",
     fabricTip: "Recommended: Wool blend, Tweed or Cotton Twill."
@@ -48,7 +48,7 @@ const SERVICE_CATALOG = [
     id: "CAT-104",
     name: "Men's Kurta Pyjama / Pathani",
     category: "Custom Stitching",
-    price: 1200,
+    price: null,
     turnaround: "3 - 5 Days",
     desc: "Traditional or modern Pathani suit with Mandarin collar and cuffed sleeves.",
     fabricTip: "Recommended: Pure Cotton, Linen or Silk blend."
@@ -57,7 +57,7 @@ const SERVICE_CATALOG = [
     id: "CAT-105",
     name: "Bridal Lehenga & Designer Blouse",
     category: "Ethnic Wear",
-    price: 8500,
+    price: null,
     turnaround: "10 - 15 Days",
     desc: "Full flare kali lehenga with canvas & cancan netting, handcrafted choli.",
     fabricTip: "Recommended: Silk, Georgette, Velvet with Zari work."
@@ -66,7 +66,7 @@ const SERVICE_CATALOG = [
     id: "CAT-106",
     name: "Designer Heavy Anarkali Suit",
     category: "Ethnic Wear",
-    price: 4500,
+    price: null,
     turnaround: "7 - 9 Days",
     desc: "Floor-length multi-kali Anarkali with pants and decorated dupatta.",
     fabricTip: "Recommended: Pure Georgette, Chanderi or Chiffon."
@@ -75,7 +75,7 @@ const SERVICE_CATALOG = [
     id: "CAT-107",
     name: "Designer Padded Saree Blouse",
     category: "Custom Stitching",
-    price: 1400,
+    price: null,
     turnaround: "2 - 4 Days",
     desc: "Custom neckline, princess cut, concealed zipper with padded cups.",
     fabricTip: "Recommended: Brocade, Silk or Jacquard with lining."
@@ -84,7 +84,7 @@ const SERVICE_CATALOG = [
     id: "CAT-108",
     name: "Women's Salwar Suit & Churidar",
     category: "Custom Stitching",
-    price: 1100,
+    price: null,
     turnaround: "3 - 5 Days",
     desc: "Everyday or semi-formal kameez with salwar, patiala or pants.",
     fabricTip: "Recommended: Cotton, Crepe or Cambric."
@@ -93,7 +93,7 @@ const SERVICE_CATALOG = [
     id: "CAT-109",
     name: "School Uniform Batch Set",
     category: "Uniform",
-    price: 850,
+    price: null,
     turnaround: "5 - 7 Days",
     desc: "Durable school uniform shirt and trousers or skirt with badge stitching.",
     fabricTip: "Recommended: Dacron Poly-Cotton Blend."
@@ -102,7 +102,7 @@ const SERVICE_CATALOG = [
     id: "CAT-110",
     name: "Corporate Staff Blazer & Shirt",
     category: "Uniform",
-    price: 3200,
+    price: null,
     turnaround: "7 - 10 Days",
     desc: "Institutional or corporate blazer with custom embroidered logo crest.",
     fabricTip: "Recommended: Durable Poly-Viscose suiting."
@@ -111,7 +111,7 @@ const SERVICE_CATALOG = [
     id: "CAT-111",
     name: "Suit / Blazer Resizing & Alteration",
     category: "Alteration",
-    price: 650,
+    price: null,
     turnaround: "1 - 2 Days",
     desc: "Waist suppression, sleeve shortening, shoulder tapering & vent adjustments.",
     fabricTip: "Applicable on client's ready garments."
@@ -120,414 +120,55 @@ const SERVICE_CATALOG = [
     id: "CAT-112",
     name: "Trouser Tapering, Hemming & Waist Fix",
     category: "Alteration",
-    price: 250,
+    price: null,
     turnaround: "1 Day",
-    desc: "Bottom mori alteration, waist loosening/tightening, zip replacement.",
+    desc: "Bottom hemming alteration, waist loosening/tightening, zip replacement.",
     fabricTip: "Express 24-hour turnaround available."
   },
   {
     id: "CAT-113",
     name: "Kids Festive Kurta Set / Sherwani",
     category: "Ethnic Wear",
-    price: 1600,
+    price: null,
     turnaround: "4 - 6 Days",
     desc: "Comfort-tailored festive outfit for boys and girls with soft lining.",
     fabricTip: "Recommended: Cotton-Silk or Breathable Rayon."
   }
 ];
 
-// Initial Demo Data
+// Clean Production Data Configuration
 const DEFAULT_DATA = {
   settings: {
     businessName: "ZM Enterprises",
-    tagline: "Quality Tailoring & Garment Solutions | Custom Stitching, Alterations & Uniforms",
-    phone: "919876543210",
+    tagline: "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
+    phone: "", // Configurable: user configures their actual WhatsApp number in Store Settings
     email: "contact@zmenterprises.com",
-    address: "Shop No. 12, Fashion Commercial Complex, Main Market",
-    terms: "Fitting alterations accommodated within 7 days of delivery. Perfect fitting guaranteed."
+    address: "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001",
+    city: "Hyderabad",
+    state: "Telangana",
+    terms: "Fitting alterations accommodated within 7 days of delivery. Sample approval prior to bulk uniform production."
   },
-  customers: [
-    {
-      id: "CUST-101",
-      name: "Tariq Ahmed",
-      phone: "9845012345",
-      gender: "Men",
-      email: "tariq.ahmed@example.com",
-      address: "B-42, Crescent Park, City Center",
-      measurements: {
-        length: "31",
-        coatLength: "30.5",
-        chest: "40",
-        stomach: "36",
-        waist: "34",
-        shoulder: "18",
-        crossBack: "16.5",
-        crossFront: "16",
-        sleeveLength: "25",
-        armhole: "18.5",
-        bicep: "14",
-        elbow: "12.5",
-        cuff: "10",
-        neck: "16",
-        pantLength: "41",
-        inseam: "31",
-        pantWaist: "34",
-        hip: "42",
-        thigh: "25",
-        knee: "18",
-        calf: "15.5",
-        bottom: "15",
-        rise: "11.5",
-        salwarLength: "",
-        flare: "",
-        blouseLength: "",
-        upperChest: "",
-        underBust: "",
-        bustPoint: "",
-        apexDistance: "",
-        frontNeck: "7",
-        backNeck: "2.5",
-        frontNeckStyle: "Round",
-        backNeckStyle: "High Back",
-        fitType: "Modern Slim",
-        lining: "Full Lining",
-        shoulderType: "Normal",
-        posture: "Normal"
-      },
-      notes: "Prefers modern slim cut for blazers; 2 front buttons; double back vents.",
-      createdAt: "2026-10-01"
-    },
-    {
-      id: "CUST-102",
-      name: "Fatima Sana",
-      phone: "9712355678",
-      gender: "Women",
-      email: "fatima.sana@example.com",
-      address: "Flat 304, Emerald Heights, Gulshan",
-      measurements: {
-        length: "48",
-        coatLength: "",
-        chest: "37",
-        stomach: "32",
-        waist: "31",
-        shoulder: "14.5",
-        crossBack: "13.5",
-        crossFront: "13",
-        sleeveLength: "18",
-        armhole: "16",
-        bicep: "12",
-        elbow: "10.5",
-        cuff: "9",
-        neck: "14",
-        pantLength: "38",
-        inseam: "28",
-        pantWaist: "31",
-        hip: "40",
-        thigh: "23",
-        knee: "17",
-        calf: "14",
-        bottom: "13",
-        rise: "12",
-        salwarLength: "39",
-        flare: "140",
-        blouseLength: "14.5",
-        upperChest: "35",
-        underBust: "30",
-        bustPoint: "10",
-        apexDistance: "7.5",
-        frontNeck: "7.5",
-        backNeck: "9",
-        frontNeckStyle: "Sweetheart",
-        backNeckStyle: "Backless Dori",
-        fitType: "Modern Slim",
-        lining: "Santoon Aster",
-        shoulderType: "Normal",
-        posture: "Normal"
-      },
-      notes: "Deep back neck with latkan tassels. High quality santoon silk lining required.",
-      createdAt: "2026-10-02"
-    },
-    {
-      id: "CUST-103",
-      name: "Green Valley Public School",
-      phone: "9822099887",
-      gender: "Kids",
-      email: "admin@greenvalleyschool.edu",
-      address: "Administrative Wing, Sector 4",
-      measurements: {
-        length: "24",
-        coatLength: "22",
-        chest: "30",
-        stomach: "27",
-        waist: "26",
-        shoulder: "13",
-        crossBack: "12",
-        crossFront: "11.5",
-        sleeveLength: "17",
-        armhole: "14",
-        bicep: "10",
-        elbow: "9",
-        cuff: "8",
-        neck: "13",
-        pantLength: "32",
-        inseam: "24",
-        pantWaist: "26",
-        hip: "32",
-        thigh: "18",
-        knee: "14",
-        calf: "12",
-        bottom: "13",
-        rise: "9.5",
-        salwarLength: "",
-        flare: "",
-        blouseLength: "",
-        upperChest: "",
-        underBust: "",
-        bustPoint: "",
-        apexDistance: "",
-        frontNeck: "5",
-        backNeck: "2",
-        frontNeckStyle: "Stand Collar",
-        backNeckStyle: "High Back",
-        fitType: "Regular Fit",
-        lining: "Half Lining",
-        shoulderType: "Normal",
-        posture: "Normal"
-      },
-      notes: "Batch uniform standard pattern. Size 30 chest sample batch.",
-      createdAt: "2026-10-03"
-    },
-    {
-      id: "CUST-104",
-      name: "Priya Verma",
-      phone: "9988122334",
-      gender: "Women",
-      email: "priya.v@example.com",
-      address: "14/A, Silver Oak Lane",
-      measurements: {
-        length: "42",
-        coatLength: "",
-        chest: "35",
-        stomach: "30",
-        waist: "29",
-        shoulder: "14",
-        crossBack: "13",
-        crossFront: "12.5",
-        sleeveLength: "16",
-        armhole: "15",
-        bicep: "11.5",
-        elbow: "10",
-        cuff: "8.5",
-        neck: "13.5",
-        pantLength: "37",
-        inseam: "27.5",
-        pantWaist: "29",
-        hip: "38",
-        thigh: "22",
-        knee: "16",
-        calf: "13.5",
-        bottom: "12",
-        rise: "11",
-        salwarLength: "38",
-        flare: "90",
-        blouseLength: "14",
-        upperChest: "33.5",
-        underBust: "28.5",
-        bustPoint: "9.5",
-        apexDistance: "7",
-        frontNeck: "6.5",
-        backNeck: "7",
-        frontNeckStyle: "Boat",
-        backNeckStyle: "Square",
-        fitType: "Regular Fit",
-        lining: "Cotton Aster",
-        shoulderType: "Normal",
-        posture: "Normal"
-      },
-      notes: "Kurti alteration and waist tucking. Needs 1-inch side margin for future letting out.",
-      createdAt: "2026-10-04"
-    }
-  ],
-  orders: [
-    {
-      id: "ZM-1001",
-      customerId: "CUST-101",
-      customerName: "Tariq Ahmed",
-      customerPhone: "9845012345",
-      category: "Custom Stitching",
-      itemType: "Men's Bespoke 3-Piece Suit",
-      qty: 1,
-      title: "Men's Bespoke 3-Piece Suit (Navy Italian Wool)",
-      fabric: "Client provided Italian Super 120s Wool",
-      fabricSource: "Client Provided",
-      fabricMeter: "3.5 Meters",
-      liningMaterial: "Italian Silk Lining",
-      fit: "Modern Slim",
-      collar: "Notch Lapel",
-      sleeve: "Full Sleeve",
-      lining: "Full Lining",
-      vents: "Double Vent",
-      pockets: "Two Flap Pockets",
-      embroidery: "Plain / No Work",
-      masterTailor: "Master Zahid (Cutting Head)",
-      adjustments: "Fitted waist suppression, extra 1/2 inch in sleeve length.",
-      trialDate: "2026-10-10",
-      deliveryDate: "2026-10-15",
-      status: "Cutting",
-      priority: "Express",
-      priceStitching: 6500,
-      priceFabric: 0,
-      priceLining: 1500,
-      priceEmbroidery: 0,
-      priceExtra: 500,
-      discount: 0,
-      total: 8500,
-      advance: 5000,
-      balance: 3500,
-      paymentMethod: "UPI / Online",
-      notes: "Satin lapel trim, personalized monogram 'TA' inside coat.",
-      createdAt: "2026-10-05",
-      payments: [
-        { id: "PAY-1", amount: 5000, mode: "UPI / Online", date: "2026-10-05", notes: "Advance on booking" }
-      ]
-    },
-    {
-      id: "ZM-1002",
-      customerId: "CUST-102",
-      customerName: "Fatima Sana",
-      customerPhone: "9712355678",
-      category: "Ethnic Wear",
-      itemType: "Heavy Designer Anarkali Suit",
-      qty: 1,
-      title: "Bridal Heavy Anarkali Suit with Dupatta Bordering",
-      fabric: "Pure Georgette with Zari work (ZM Sourced)",
-      fabricSource: "ZM Sourced",
-      fabricMeter: "5.5 Meters",
-      liningMaterial: "Santoon Silk & Cancan",
-      fit: "Modern Slim",
-      collar: "Sweetheart Neck",
-      sleeve: "3/4th Sleeve",
-      lining: "Cancan Flare",
-      vents: "Side Slits",
-      pockets: "Concealed Mobile Pocket",
-      embroidery: "Zari & Sequins",
-      masterTailor: "Ladies Couture Master",
-      adjustments: "Deep back neckline 9.5 inches with padded cups.",
-      trialDate: "2026-10-09",
-      deliveryDate: "2026-10-13",
-      status: "Stitching",
-      priority: "Standard",
-      priceStitching: 3500,
-      priceFabric: 2000,
-      priceLining: 800,
-      priceEmbroidery: 0,
-      priceExtra: 0,
-      discount: 100,
-      total: 6200,
-      advance: 3000,
-      balance: 3200,
-      paymentMethod: "Cash",
-      notes: "Full flare kali design; handcrafted tassels for back dori.",
-      createdAt: "2026-10-06",
-      payments: [
-        { id: "PAY-2", amount: 3000, mode: "Cash", date: "2026-10-06", notes: "Advance at fabric selection" }
-      ]
-    },
-    {
-      id: "ZM-1003",
-      customerId: "CUST-103",
-      customerName: "Green Valley Public School",
-      customerPhone: "9822099887",
-      category: "Uniform",
-      itemType: "School Uniform Batch Set",
-      qty: 25,
-      title: "Batch Order: 25 Pairs School Uniform Shirts & Trousers",
-      fabric: "Dacron Poly-Cotton Blend (Grey & White)",
-      fabricSource: "ZM Sourced",
-      fabricMeter: "70 Meters",
-      liningMaterial: "No Lining",
-      fit: "Regular Classic",
-      collar: "Classic Shirt Collar",
-      sleeve: "Full Sleeve",
-      lining: "No Lining",
-      vents: "Single Center Vent",
-      pockets: "Two Flap Pockets",
-      embroidery: "Plain / No Work",
-      masterTailor: "Workshop Main Team",
-      adjustments: "Batch standard grade 6 size sample pattern.",
-      trialDate: "2026-10-14",
-      deliveryDate: "2026-10-20",
-      status: "Received",
-      priority: "Standard",
-      priceStitching: 500,
-      priceFabric: 360,
-      priceLining: 0,
-      priceEmbroidery: 0,
-      priceExtra: 0,
-      discount: 0,
-      total: 21500,
-      advance: 10000,
-      balance: 11500,
-      paymentMethod: "Bank Transfer",
-      notes: "School embroidered crest badges will be supplied by school office.",
-      createdAt: "2026-10-07",
-      payments: [
-        { id: "PAY-3", amount: 10000, mode: "Bank Transfer", date: "2026-10-07", notes: "Bank NEFT Advance" }
-      ]
-    },
-    {
-      id: "ZM-1004",
-      customerId: "CUST-104",
-      customerName: "Priya Verma",
-      customerPhone: "9988122334",
-      category: "Alteration",
-      itemType: "Alteration & Fitting",
-      qty: 1,
-      title: "Designer Kurti Alteration & Fitting + Palazzo Hemming",
-      fabric: "Silk Crepe",
-      fabricSource: "Client Provided",
-      fabricMeter: "—",
-      liningMaterial: "Original Lining",
-      fit: "Regular Classic",
-      collar: "Boat Neck",
-      sleeve: "Half Sleeve",
-      lining: "Cotton Aster",
-      vents: "Side Slits",
-      pockets: "No Pocket",
-      embroidery: "Plain / No Work",
-      masterTailor: "Alteration Specialist",
-      adjustments: "Waist take-in 1.5 inches; palazzo shorten 1 inch.",
-      trialDate: "2026-10-08",
-      deliveryDate: "2026-10-09",
-      status: "Trial Ready",
-      priority: "Standard",
-      priceStitching: 450,
-      priceFabric: 0,
-      priceLining: 0,
-      priceEmbroidery: 0,
-      priceExtra: 200,
-      discount: 0,
-      total: 650,
-      advance: 650,
-      balance: 0,
-      paymentMethod: "UPI / Online",
-      notes: "Waist take-in 1.5 inches; palazzo shorten 1 inch.",
-      createdAt: "2026-10-07",
-      payments: [
-        { id: "PAY-4", amount: 650, mode: "UPI / Online", date: "2026-10-07", notes: "Full upfront payment" }
-      ]
-    }
-  ]
+  services: DEFAULT_SERVICES,
+  customers: [],
+  orders: [],
+  enquiries: [],
+  uniformGallery: []
 };
 
 class TailorBusinessApp {
   constructor() {
     window.app = this;
     this.data = this.loadData();
-    this.currentTab = 'dashboard';
+    const hash = window.location.hash ? window.location.hash.substring(1) : '';
+    const validTabs = ['home', 'uniforms', 'enquiry', 'contact', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'];
+    this.currentTab = validTabs.includes(hash) ? hash : 'home';
     this.activeWhatsAppOrderId = null;
     this.activePaymentOrderId = null;
     this.openedFromOrderModal = false;
+    this.activeViewEnquiryId = null;
+    this.activeSubmittedEnquiry = null;
+    this.galleryFilter = 'all';
+    this.uploadedPhotoDataUrl = null;
     try {
       this.init();
     } catch (err) {
@@ -539,12 +180,80 @@ class TailorBusinessApp {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        return this.cleanDemoData(parsed);
       }
     } catch (e) {
       console.error("Failed to parse storage data", e);
     }
     return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+
+  cleanDemoData(data) {
+    if (!data || typeof data !== 'object') {
+      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    // Preserve business settings
+    if (!data.settings) {
+      data.settings = JSON.parse(JSON.stringify(DEFAULT_DATA.settings));
+    }
+    if (!Array.isArray(data.customers)) {
+      data.customers = [];
+    }
+    if (!Array.isArray(data.orders)) {
+      data.orders = [];
+    }
+    if (!Array.isArray(data.services) || data.services.length === 0) {
+      data.services = JSON.parse(JSON.stringify(DEFAULT_SERVICES));
+    }
+    if (!Array.isArray(data.enquiries)) {
+      data.enquiries = [];
+    }
+    if (!Array.isArray(data.uniformGallery)) {
+      data.uniformGallery = [];
+    }
+    if (!data.settings.city) data.settings.city = "Hyderabad";
+    if (!data.settings.state) data.settings.state = "Telangana";
+    if (data.settings.phone === "919876543210") {
+      data.settings.phone = ""; // Reset demo placeholder
+    }
+
+    // Safely identify and remove ONLY confirmed demo records
+    const DEMO_CUSTOMER_IDS = new Set(['CUST-101', 'CUST-102', 'CUST-103', 'CUST-104']);
+    const DEMO_NAMES = new Set(['Tariq Ahmed', 'Fatima Sana', 'Green Valley Public School', 'Priya Verma']);
+    const DEMO_ORDER_IDS = new Set(['ZM-1001', 'ZM-1002', 'ZM-1003', 'ZM-1004']);
+
+    const initialCustCount = data.customers.length;
+    data.customers = data.customers.filter(c => {
+      const isDemo = c && DEMO_CUSTOMER_IDS.has(c.id) && DEMO_NAMES.has(c.name);
+      return !isDemo; // Preserve all genuine customer records
+    });
+
+    const initialOrderCount = data.orders.length;
+    data.orders = data.orders.filter(o => {
+      const isDemo = o && DEMO_ORDER_IDS.has(o.id) && (DEMO_CUSTOMER_IDS.has(o.customerId) || DEMO_NAMES.has(o.customerName));
+      return !isDemo; // Preserve all genuine orders
+    });
+
+    // Reset old demo/sample fake prices in services if present
+    const DEMO_FAKE_PRICES = new Set([7500, 6500, 4800, 1200, 8500, 4500, 1400, 1100, 850, 3200, 650, 250, 1600]);
+    data.services.forEach(s => {
+      if (s && DEMO_FAKE_PRICES.has(Number(s.price))) {
+        s.price = null; // Reset to "Price not set" so user configures actual business rates
+      }
+    });
+
+    // Save cleaned dataset immediately if demo records were pruned
+    if (initialCustCount !== data.customers.length || initialOrderCount !== data.orders.length) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (err) {
+        console.warn("Storage sync after demo cleaning:", err);
+      }
+    }
+
+    return data;
   }
 
   saveData() {
@@ -560,11 +269,16 @@ class TailorBusinessApp {
     this.bindEvents();
     this.renderSettings();
     this.populateCustomerDropdowns();
+    this.updateContactDisplay();
+    this.updateEnquiryBadge();
+    this.renderUniformGallery();
+    this.renderEnquiriesAdmin();
     this.renderDashboard();
     this.renderOrdersTable();
     this.renderCustomersGrid();
     this.renderCatalog();
     this.renderInvoicesTable();
+    this.switchTab(this.currentTab);
   }
 
   bindEvents() {
@@ -583,6 +297,14 @@ class TailorBusinessApp {
 
     const btnQuickCustomer = document.getElementById('btn-quick-customer');
     if (btnQuickCustomer) btnQuickCustomer.addEventListener('click', () => this.openCustomerModal());
+
+    // Hash change listener for direct bookmarking
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash && hash !== this.currentTab) {
+        this.switchTab(hash);
+      }
+    });
   }
 
   toggleMobileNav(show) {
@@ -598,11 +320,18 @@ class TailorBusinessApp {
   }
 
   switchTab(tabName) {
+    const validTabs = ['home', 'uniforms', 'enquiry', 'contact', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'];
+    if (!validTabs.includes(tabName)) {
+      tabName = 'home';
+    }
     this.currentTab = tabName;
+
+    // Update active nav-item in sidebar
     document.querySelectorAll('.nav-item').forEach(b => {
       b.classList.toggle('active', b.dataset.tab === tabName);
     });
 
+    // Update active tab-view
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.remove('active');
     });
@@ -610,8 +339,40 @@ class TailorBusinessApp {
     const activeView = document.getElementById(`view-${tabName}`);
     if (activeView) activeView.classList.add('active');
 
+    // Update topbar navigation pills
+    const pillHome = document.getElementById('pill-home');
+    const pillUniforms = document.getElementById('pill-uniforms');
+    const pillEnquiry = document.getElementById('pill-enquiry');
+    const pillDashboard = document.getElementById('pill-dashboard');
+    if (pillHome) pillHome.classList.toggle('active', tabName === 'home');
+    if (pillUniforms) pillUniforms.classList.toggle('active', tabName === 'uniforms');
+    if (pillEnquiry) pillEnquiry.classList.toggle('active', tabName === 'enquiry');
+    if (pillDashboard) pillDashboard.classList.toggle('active', ['dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'].includes(tabName));
+
+    // Dynamic Topbar Actions toggle
+    const isPublicTab = ['home', 'uniforms', 'enquiry', 'contact'].includes(tabName);
+    const btnQuote = document.getElementById('btn-topbar-quote');
+    const btnCust = document.getElementById('btn-quick-customer');
+    const btnOrder = document.getElementById('btn-quick-order');
+
+    if (btnQuote) btnQuote.style.display = isPublicTab ? 'inline-flex' : 'none';
+    if (btnCust) btnCust.style.display = isPublicTab ? 'none' : 'inline-flex';
+    if (btnOrder) btnOrder.style.display = isPublicTab ? 'none' : 'inline-flex';
+
+    // Update URL hash without scroll jump
+    try {
+      history.replaceState(null, null, '#' + tabName);
+    } catch (e) {
+      // ignore
+    }
+
     const titleMap = {
+      home: "ZM Enterprises",
+      uniforms: "School & Corporate Uniform Stitching",
+      enquiry: "Request a Bulk Quotation",
+      contact: "Contact & Workshop Location",
       dashboard: "Dashboard Overview",
+      'enquiries-admin': "B2B Uniform Enquiries",
       orders: "Orders & Production Tracking",
       customers: "Customer Records & Measurements",
       catalog: "Tailoring Service Catalog & Rates",
@@ -620,7 +381,12 @@ class TailorBusinessApp {
     };
 
     const subtitleMap = {
-      dashboard: "Welcome to ZM Enterprises – Quality Tailoring & Garment Solutions",
+      home: "School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
+      uniforms: "Comprehensive uniform manufacturing programs for schools and enterprises across Telangana",
+      enquiry: "Submit your institution's uniform specifications for an itemized bulk quotation",
+      contact: "Workshop & studio in Hyderabad, Telangana – Serving schools and corporate clients",
+      dashboard: "Workshop production pipeline, upcoming fittings, and order deliveries",
+      'enquiries-admin': "Review, track status, and convert incoming B2B uniform enquiries to production orders",
       orders: "Manage custom stitching, alterations, ethnic wear & uniform production",
       customers: "Comprehensive body measurement records for men, women, and children",
       catalog: "Explore standard service offerings, pricing, and rapid order booking",
@@ -628,16 +394,38 @@ class TailorBusinessApp {
       settings: "Configure store contact details, invoice headers, and export backups"
     };
 
+    const seoTitleMap = {
+      home: "ZM Enterprises | School & Corporate Uniform Stitching in Hyderabad, Telangana",
+      uniforms: "School & Corporate Uniform Stitching Services in Hyderabad | ZM Enterprises",
+      enquiry: "Request Bulk Uniform Stitching Quotation | ZM Enterprises Hyderabad",
+      contact: "Contact ZM Enterprises | Tailoring Workshop Hyderabad, Telangana",
+      dashboard: "Production Dashboard | ZM Enterprises Tailoring Suite",
+      'enquiries-admin': "B2B Enquiries Pipeline | ZM Enterprises",
+      orders: "Production Orders & Workflow | ZM Enterprises",
+      customers: "Customer Measurements & Archiving | ZM Enterprises",
+      catalog: "Tailoring Rates & Catalog | ZM Enterprises",
+      invoices: "Invoices & Billing | ZM Enterprises",
+      settings: "Settings & Backup | ZM Enterprises"
+    };
+
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) pageTitle.textContent = titleMap[tabName] || "ZM Enterprises";
     const pageSub = document.getElementById('page-subtitle');
     if (pageSub) pageSub.textContent = subtitleMap[tabName] || "";
 
+    if (seoTitleMap[tabName]) {
+      document.title = seoTitleMap[tabName];
+    }
+
+    if (tabName === 'home') this.updateContactDisplay();
+    if (tabName === 'uniforms') this.renderUniformGallery();
+    if (tabName === 'enquiries-admin') this.renderEnquiriesAdmin();
     if (tabName === 'dashboard') this.renderDashboard();
     if (tabName === 'orders') this.renderOrdersTable();
     if (tabName === 'customers') this.renderCustomersGrid();
     if (tabName === 'catalog') this.renderCatalog();
     if (tabName === 'invoices') this.renderInvoicesTable();
+    if (tabName === 'settings') this.renderSettings();
   }
 
   showToast(message) {
@@ -702,10 +490,26 @@ class TailorBusinessApp {
     setText('stat-total-revenue', `₹${totalRevenue.toLocaleString('en-IN')}`);
     setText('stat-pending-balance', `₹${pendingBalance.toLocaleString('en-IN')}`);
 
-    // Render alert banners for trials today / overdue
+    // Render alert banners for enquiries / trials today / overdue
     const alertsContainer = document.getElementById('dashboard-alerts-container');
     if (alertsContainer) {
       alertsContainer.innerHTML = '';
+
+      const newEnquiries = (this.data.enquiries || []).filter(e => e.status === 'New');
+      if (newEnquiries.length > 0) {
+        const enqBanner = document.createElement('div');
+        enqBanner.className = 'alert-banner';
+        enqBanner.style.background = '#ecfdf5';
+        enqBanner.style.borderColor = '#10b981';
+        enqBanner.style.color = '#064e3b';
+        enqBanner.innerHTML = `
+          <div>
+            <strong>📬 New B2B Uniform Enquiries (${newEnquiries.length}):</strong> ${newEnquiries.map(e => `${this.escapeHtml(e.schoolOrCompany)} (${this.escapeHtml(e.category)})`).join(', ')}
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="app.switchTab('enquiries-admin')">Manage Enquiries</button>
+        `;
+        alertsContainer.appendChild(enqBanner);
+      }
 
       if (overdueOrders.length > 0) {
         const banner = document.createElement('div');
@@ -793,6 +597,7 @@ class TailorBusinessApp {
   renderOrdersTable(filteredList = null) {
     const list = filteredList !== null ? filteredList : this.data.orders;
     const tbody = document.getElementById('orders-tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (list.length === 0) {
@@ -934,18 +739,18 @@ class TailorBusinessApp {
     if (m.chest) chips.push(`Chest: <strong>${m.chest}"</strong>`);
     if (m.stomach) chips.push(`Stomach: <strong>${m.stomach}"</strong>`);
     if (m.waist) chips.push(`Waist: <strong>${m.waist}"</strong>`);
-    if (m.shoulder) chips.push(`Teera: <strong>${m.shoulder}"</strong>`);
+    if (m.shoulder) chips.push(`Shoulder: <strong>${m.shoulder}"</strong>`);
     if (m.sleeveLength) chips.push(`Sleeve: <strong>${m.sleeveLength}"</strong>`);
-    if (m.armhole) chips.push(`Mudda: <strong>${m.armhole}"</strong>`);
+    if (m.armhole) chips.push(`Armhole: <strong>${m.armhole}"</strong>`);
     if (m.bicep) chips.push(`Bicep: <strong>${m.bicep}"</strong>`);
     if (m.neck) chips.push(`Neck: <strong>${m.neck}"</strong>`);
     if (m.pantLength) chips.push(`Pant: <strong>${m.pantLength}"</strong>`);
     if (m.pantWaist) chips.push(`Pant Waist: <strong>${m.pantWaist}"</strong>`);
     if (m.hip) chips.push(`Hip/Seat: <strong>${m.hip}"</strong>`);
-    if (m.thigh) chips.push(`Raan: <strong>${m.thigh}"</strong>`);
+    if (m.thigh) chips.push(`Thigh: <strong>${m.thigh}"</strong>`);
     if (m.knee) chips.push(`Knee: <strong>${m.knee}"</strong>`);
-    if (m.bottom) chips.push(`Mori: <strong>${m.bottom}"</strong>`);
-    if (m.rise) chips.push(`Aasan: <strong>${m.rise}"</strong>`);
+    if (m.bottom) chips.push(`Bottom Opening: <strong>${m.bottom}"</strong>`);
+    if (m.rise) chips.push(`Crotch / Rise: <strong>${m.rise}"</strong>`);
     if (m.blouseLength) chips.push(`Blouse: <strong>${m.blouseLength}"</strong>`);
     if (m.bustPoint) chips.push(`Apex: <strong>${m.bustPoint}"</strong>`);
 
@@ -959,7 +764,7 @@ class TailorBusinessApp {
       <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.775rem;">
         ${chips.map(chip => `<span class="snapshot-chip">${chip}</span>`).join('') || '<span style="color:#64748b;">No detailed measurements recorded yet.</span>'}
         ${m.fitType ? `<span class="snapshot-chip" style="background:#e0e7ff; color:#3730a3; font-weight:700;">Fit: ${m.fitType}</span>` : ''}
-        ${m.lining ? `<span class="snapshot-chip" style="background:#fef3c7; color:#92400e; font-weight:700;">Aster: ${m.lining}</span>` : ''}
+        ${m.lining ? `<span class="snapshot-chip" style="background:#fef3c7; color:#92400e; font-weight:700;">Lining: ${m.lining}</span>` : ''}
       </div>
       ${c.notes ? `<div style="margin-top:6px; font-size:0.75rem; color:#475569;"><strong>Notes:</strong> ${c.notes}</div>` : ''}
     `;
@@ -1030,9 +835,12 @@ class TailorBusinessApp {
   }
 
   openNewOrderModal(prefilled = {}) {
-    document.getElementById('modal-order-title').textContent = 'Create New Tailoring Order';
-    document.getElementById('order-form').reset();
-    document.getElementById('order-id').value = '';
+    const titleEl = document.getElementById('modal-order-title');
+    if (titleEl) titleEl.textContent = 'Create New Tailoring Order';
+    const formEl = document.getElementById('order-form');
+    if (formEl) formEl.reset();
+    const idEl = document.getElementById('order-id');
+    if (idEl) idEl.value = '';
     
     // Default dates
     const delivery = new Date();
@@ -1543,12 +1351,12 @@ class TailorBusinessApp {
                 ${m.coatLength ? `<span class="snapshot-chip">Coat: ${m.coatLength}"</span>` : ''}
                 ${m.chest ? `<span class="snapshot-chip">Chest: ${m.chest}"</span>` : ''}
                 ${m.waist ? `<span class="snapshot-chip">Waist: ${m.waist}"</span>` : ''}
-                ${m.shoulder ? `<span class="snapshot-chip">Teera: ${m.shoulder}"</span>` : ''}
+                ${m.shoulder ? `<span class="snapshot-chip">Shoulder: ${m.shoulder}"</span>` : ''}
                 ${m.sleeveLength ? `<span class="snapshot-chip">Sleeve: ${m.sleeveLength}"</span>` : ''}
-                ${m.armhole ? `<span class="snapshot-chip">Mudda: ${m.armhole}"</span>` : ''}
+                ${m.armhole ? `<span class="snapshot-chip">Armhole: ${m.armhole}"</span>` : ''}
                 ${m.pantLength ? `<span class="snapshot-chip">Pant: ${m.pantLength}"</span>` : ''}
                 ${m.hip ? `<span class="snapshot-chip">Hip: ${m.hip}"</span>` : ''}
-                ${m.bottom ? `<span class="snapshot-chip">Mori: ${m.bottom}"</span>` : ''}
+                ${m.bottom ? `<span class="snapshot-chip">Bottom: ${m.bottom}"</span>` : ''}
                 ${m.blouseLength ? `<span class="snapshot-chip">Blouse: ${m.blouseLength}"</span>` : ''}
                 ${m.fitType ? `<span class="snapshot-chip" style="background:#e0e7ff; color:#3730a3; font-weight:700;">${m.fitType}</span>` : ''}
               </div>
@@ -1689,13 +1497,13 @@ class TailorBusinessApp {
     const phoneInput = document.getElementById('cust-phone');
 
     if (!nameInput || !nameInput.value.trim()) {
-      alert("Kripya customer ka naam likhein (Please enter customer name).");
+      alert("Please enter customer name.");
       if (nameInput) nameInput.focus();
       return false;
     }
 
     if (!phoneInput || !phoneInput.value.trim()) {
-      alert("Kripya phone number likhein (Please enter customer phone number).");
+      alert("Please enter customer phone number.");
       if (phoneInput) phoneInput.focus();
       return false;
     }
@@ -1907,14 +1715,14 @@ class TailorBusinessApp {
           <div class="measure-field"><label>Chest / Bust</label><strong>${m.chest ? `${m.chest}"` : '—'}</strong></div>
           <div class="measure-field"><label>Stomach / Abdomen</label><strong>${m.stomach ? `${m.stomach}"` : '—'}</strong></div>
           <div class="measure-field"><label>Natural Waist</label><strong>${m.waist ? `${m.waist}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Shoulder / Teera</label><strong>${m.shoulder ? `${m.shoulder}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Cross Back (Peeth)</label><strong>${m.crossBack ? `${m.crossBack}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Shoulder</label><strong>${m.shoulder ? `${m.shoulder}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Cross Back</label><strong>${m.crossBack ? `${m.crossBack}"` : '—'}</strong></div>
           <div class="measure-field"><label>Cross Front</label><strong>${m.crossFront ? `${m.crossFront}"` : '—'}</strong></div>
           <div class="measure-field"><label>Sleeve Length</label><strong>${m.sleeveLength ? `${m.sleeveLength}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Armhole / Mudda</label><strong>${m.armhole ? `${m.armhole}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Bicep / Dolah</label><strong>${m.bicep ? `${m.bicep}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Armhole</label><strong>${m.armhole ? `${m.armhole}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Bicep / Muscle</label><strong>${m.bicep ? `${m.bicep}"` : '—'}</strong></div>
           <div class="measure-field"><label>Elbow Round</label><strong>${m.elbow ? `${m.elbow}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Cuff / Mori</label><strong>${m.cuff ? `${m.cuff}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Cuff Opening</label><strong>${m.cuff ? `${m.cuff}"` : '—'}</strong></div>
           <div class="measure-field"><label>Neck / Collar</label><strong>${m.neck ? `${m.neck}"` : '—'}</strong></div>
         </div>
       </div>
@@ -1929,13 +1737,13 @@ class TailorBusinessApp {
           <div class="measure-field"><label>Inseam</label><strong>${m.inseam ? `${m.inseam}"` : '—'}</strong></div>
           <div class="measure-field"><label>Pant Waist</label><strong>${m.pantWaist ? `${m.pantWaist}"` : '—'}</strong></div>
           <div class="measure-field"><label>Hip / Seat</label><strong>${m.hip ? `${m.hip}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Thigh / Raan</label><strong>${m.thigh ? `${m.thigh}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Knee / Ghutna</label><strong>${m.knee ? `${m.knee}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Calf / Pindi</label><strong>${m.calf ? `${m.calf}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Bottom Opening (Mori)</label><strong>${m.bottom ? `${m.bottom}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Crotch / Rise (Aasan)</label><strong>${m.rise ? `${m.rise}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Thigh</label><strong>${m.thigh ? `${m.thigh}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Knee</label><strong>${m.knee ? `${m.knee}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Calf</label><strong>${m.calf ? `${m.calf}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Bottom Opening</label><strong>${m.bottom ? `${m.bottom}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Crotch / Rise</label><strong>${m.rise ? `${m.rise}"` : '—'}</strong></div>
           <div class="measure-field"><label>Salwar Length</label><strong>${m.salwarLength ? `${m.salwarLength}"` : '—'}</strong></div>
-          <div class="measure-field"><label>Flare / Ghair</label><strong>${m.flare ? `${m.flare}"` : '—'}</strong></div>
+          <div class="measure-field"><label>Flare / Sweep</label><strong>${m.flare ? `${m.flare}"` : '—'}</strong></div>
         </div>
       </div>
 
@@ -2088,11 +1896,11 @@ class TailorBusinessApp {
           <div class="item"><label>Chest / Bust</label><strong>${m.chest || '—'}"</strong></div>
           <div class="item"><label>Stomach / Abdomen</label><strong>${m.stomach || '—'}"</strong></div>
           <div class="item"><label>Natural Waist</label><strong>${m.waist || '—'}"</strong></div>
-          <div class="item"><label>Shoulder / Teera</label><strong>${m.shoulder || '—'}"</strong></div>
+          <div class="item"><label>Shoulder</label><strong>${m.shoulder || '—'}"</strong></div>
           <div class="item"><label>Cross Back</label><strong>${m.crossBack || '—'}"</strong></div>
           <div class="item"><label>Cross Front</label><strong>${m.crossFront || '—'}"</strong></div>
           <div class="item"><label>Sleeve Length</label><strong>${m.sleeveLength || '—'}"</strong></div>
-          <div class="item"><label>Armhole / Mudda</label><strong>${m.armhole || '—'}"</strong></div>
+          <div class="item"><label>Armhole</label><strong>${m.armhole || '—'}"</strong></div>
           <div class="item"><label>Bicep / Muscle</label><strong>${m.bicep || '—'}"</strong></div>
           <div class="item"><label>Neck / Collar</label><strong>${m.neck || '—'}"</strong></div>
         </div>
@@ -2103,11 +1911,11 @@ class TailorBusinessApp {
           <div class="item"><label>Inseam</label><strong>${m.inseam || '—'}"</strong></div>
           <div class="item"><label>Pant Waist</label><strong>${m.pantWaist || '—'}"</strong></div>
           <div class="item"><label>Hip / Seat</label><strong>${m.hip || '—'}"</strong></div>
-          <div class="item"><label>Thigh / Raan</label><strong>${m.thigh || '—'}"</strong></div>
-          <div class="item"><label>Knee / Ghutna</label><strong>${m.knee || '—'}"</strong></div>
-          <div class="item"><label>Calf / Pindi</label><strong>${m.calf || '—'}"</strong></div>
-          <div class="item"><label>Bottom Opening (Mori)</label><strong>${m.bottom || '—'}"</strong></div>
-          <div class="item"><label>Crotch / Rise (Aasan)</label><strong>${m.rise || '—'}"</strong></div>
+          <div class="item"><label>Thigh</label><strong>${m.thigh || '—'}"</strong></div>
+          <div class="item"><label>Knee</label><strong>${m.knee || '—'}"</strong></div>
+          <div class="item"><label>Calf</label><strong>${m.calf || '—'}"</strong></div>
+          <div class="item"><label>Bottom Opening</label><strong>${m.bottom || '—'}"</strong></div>
+          <div class="item"><label>Crotch / Rise</label><strong>${m.rise || '—'}"</strong></div>
           <div class="item"><label>Salwar Length</label><strong>${m.salwarLength || '—'}"</strong></div>
         </div>
 
@@ -2121,7 +1929,7 @@ class TailorBusinessApp {
           <div class="item"><label>Apex Distance</label><strong>${m.apexDistance || '—'}"</strong></div>
           <div class="item"><label>Front Neck</label><strong>${m.frontNeck || '—'}" (${m.frontNeckStyle || 'Round'})</strong></div>
           <div class="item"><label>Back Neck</label><strong>${m.backNeck || '—'}" (${m.backNeckStyle || 'Deep'})</strong></div>
-          <div class="item"><label>Flare / Ghair</label><strong>${m.flare || '—'}"</strong></div>
+          <div class="item"><label>Flare / Sweep</label><strong>${m.flare || '—'}"</strong></div>
         </div>
         ` : ''}
 
@@ -2157,55 +1965,178 @@ class TailorBusinessApp {
     this.openNewOrderModal({ customerId: custId });
   }
 
-  // ==================== SERVICE CATALOG ====================
+  // ==================== SERVICE CATALOG & RATE CARD ====================
   renderCatalog(filterCategory = 'all') {
     const grid = document.getElementById('catalog-grid');
+    if (!grid) return;
     grid.innerHTML = '';
 
+    const services = Array.isArray(this.data.services) ? this.data.services : [];
     const filtered = filterCategory === 'all' 
-      ? SERVICE_CATALOG 
-      : SERVICE_CATALOG.filter(s => s.category === filterCategory);
+      ? services 
+      : services.filter(s => s.category === filterCategory);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: #64748b;">
+          <p style="font-size: 1.1rem; font-weight: 600; color: #334155;">No services found in this category.</p>
+          <p style="font-size: 0.9rem; margin-top: 6px;">Click <strong>"+ Add Service Rate"</strong> above to configure your tailoring offerings and custom prices.</p>
+        </div>
+      `;
+      return;
+    }
 
     filtered.forEach(item => {
       const card = document.createElement('div');
       card.className = 'catalog-card';
+      
+      const hasPrice = item.price !== null && item.price !== undefined && item.price !== '' && !isNaN(item.price) && Number(item.price) > 0;
+      const priceHtml = hasPrice
+        ? `<div class="catalog-price">₹${Number(item.price).toLocaleString('en-IN')}</div>`
+        : `<div class="catalog-price-unset">Price not set</div>`;
+
       card.innerHTML = `
         <div class="catalog-card-header">
           <div>
             <span class="badge badge-cat" style="margin-bottom:6px;">${item.category}</span>
             <h4>${item.name}</h4>
           </div>
-          <div class="catalog-price">From ₹${item.price.toLocaleString('en-IN')}</div>
+          ${priceHtml}
         </div>
 
-        <p class="catalog-desc">${item.desc}</p>
+        <p class="catalog-desc">${item.desc || 'Custom bespoke tailoring service.'}</p>
 
         <div class="catalog-details">
-          <div>⏱️ Turnaround: <strong>${item.turnaround}</strong></div>
-          <div>✂️ ${item.fabricTip}</div>
+          <div>⏱️ Turnaround: <strong>${item.turnaround || 'On Request'}</strong></div>
+          ${item.fabricTip ? `<div>✂️ ${item.fabricTip}</div>` : ''}
         </div>
 
-        <button class="btn btn-primary" style="width:100%;" onclick="app.bookFromCatalog('${item.id}')">
-          + Book This Service
-        </button>
+        <div class="catalog-actions-row">
+          <button class="btn btn-primary" style="flex:2;" onclick="app.bookFromCatalog('${item.id}')">
+            + Book Service
+          </button>
+          <button class="btn btn-outline" style="flex:1;" title="Edit Service Rate" onclick="app.openServiceModal('${item.id}')">
+            ✏️ Edit
+          </button>
+          <button class="btn btn-danger-outline" style="padding:6px 10px;" title="Delete Service" onclick="app.deleteService('${item.id}')">
+            🗑️
+          </button>
+        </div>
       `;
       grid.appendChild(card);
     });
   }
 
   filterCatalog() {
-    const cat = document.getElementById('catalog-category-filter').value;
+    const cat = document.getElementById('catalog-category-filter')?.value || 'all';
     this.renderCatalog(cat);
   }
 
+  openServiceModal(serviceId = null) {
+    const modal = document.getElementById('modal-service');
+    if (!modal) return;
+    
+    const form = document.getElementById('service-form');
+    if (form) form.reset();
+    
+    const titleEl = document.getElementById('modal-service-title');
+    const idInput = document.getElementById('service-id');
+    const nameInput = document.getElementById('service-name');
+    const catSelect = document.getElementById('service-category');
+    const priceInput = document.getElementById('service-price');
+    const turnInput = document.getElementById('service-turnaround');
+    const descInput = document.getElementById('service-desc');
+    
+    if (serviceId) {
+      const s = (this.data.services || []).find(item => item.id === serviceId);
+      if (s) {
+        if (titleEl) titleEl.textContent = 'Edit Service Rate & Details';
+        if (idInput) idInput.value = s.id;
+        if (nameInput) nameInput.value = s.name || '';
+        if (catSelect) catSelect.value = s.category || 'Custom Stitching';
+        if (priceInput) priceInput.value = (s.price !== null && s.price !== undefined && s.price !== '') ? s.price : '';
+        if (turnInput) turnInput.value = s.turnaround || '';
+        if (descInput) descInput.value = s.desc || '';
+      }
+    } else {
+      if (titleEl) titleEl.textContent = 'Add New Service Rate';
+      if (idInput) idInput.value = '';
+    }
+    
+    this.openModal('modal-service');
+  }
+
+  saveService(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    
+    const id = (document.getElementById('service-id')?.value || '').trim();
+    const name = (document.getElementById('service-name')?.value || '').trim();
+    if (!name) {
+      alert('Please enter a service name.');
+      return false;
+    }
+    
+    const category = document.getElementById('service-category')?.value || 'Custom Stitching';
+    const rawPrice = document.getElementById('service-price')?.value;
+    const price = (rawPrice !== '' && rawPrice !== null && !isNaN(rawPrice)) ? Math.max(0, parseFloat(rawPrice)) : null;
+    const turnaround = (document.getElementById('service-turnaround')?.value || '').trim() || 'On Request';
+    const desc = (document.getElementById('service-desc')?.value || '').trim();
+    
+    if (!Array.isArray(this.data.services)) {
+      this.data.services = [];
+    }
+    
+    if (id) {
+      const idx = this.data.services.findIndex(s => s.id === id);
+      if (idx !== -1) {
+        this.data.services[idx] = {
+          ...this.data.services[idx],
+          name,
+          category,
+          price,
+          turnaround,
+          desc
+        };
+        this.showToast(`Service "${name}" updated!`);
+      }
+    } else {
+      const newService = {
+        id: `SRV-${Date.now().toString().slice(-5)}`,
+        name,
+        category,
+        price,
+        turnaround,
+        desc
+      };
+      this.data.services.push(newService);
+      this.showToast(`New service "${name}" added!`);
+    }
+    
+    this.saveData();
+    this.closeModal('modal-service');
+    this.renderCatalog();
+    return false;
+  }
+
+  deleteService(serviceId) {
+    const s = (this.data.services || []).find(item => item.id === serviceId);
+    if (!s) return;
+    if (confirm(`Are you sure you want to remove "${s.name}" from your rate catalog?`)) {
+      this.data.services = (this.data.services || []).filter(item => item.id !== serviceId);
+      this.saveData();
+      this.renderCatalog();
+      this.showToast(`Service "${s.name}" removed.`);
+    }
+  }
+
   bookFromCatalog(serviceId) {
-    const item = SERVICE_CATALOG.find(s => s.id === serviceId);
+    const item = (this.data.services || []).find(s => s.id === serviceId);
     if (!item) return;
 
     this.openNewOrderModal({
       category: item.category,
       title: item.name,
-      price: item.price
+      price: (item.price !== null && item.price !== undefined && item.price !== '' && !isNaN(item.price) && Number(item.price) > 0) ? item.price : ''
     });
   }
 
@@ -2213,6 +2144,7 @@ class TailorBusinessApp {
   renderInvoicesTable(filteredList = null) {
     const list = filteredList !== null ? filteredList : this.data.orders;
     const tbody = document.getElementById('invoices-tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (list.length === 0) {
@@ -2352,7 +2284,7 @@ class TailorBusinessApp {
           <table class="inv-summary-table">
             ${order.priceStitching ? `<tr><td>Stitching Charges:</td><td>₹${(order.priceStitching * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
             ${order.priceFabric ? `<tr><td>Fabric Material:</td><td>₹${(order.priceFabric * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
-            ${order.priceLining ? `<tr><td>Lining / Aster:</td><td>₹${(order.priceLining * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
+            ${order.priceLining ? `<tr><td>Lining Material:</td><td>₹${(order.priceLining * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
             ${order.priceEmbroidery ? `<tr><td>Embroidery & Detailing:</td><td>₹${(order.priceEmbroidery * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
             ${order.priceExtra ? `<tr><td>Alterations / Extra:</td><td>₹${(order.priceExtra * (order.qty || 1)).toLocaleString('en-IN')}</td></tr>` : ''}
             ${order.discount ? `<tr><td>Discount / Concession:</td><td style="color:#dc2626;">- ₹${order.discount.toLocaleString('en-IN')}</td></tr>` : ''}
@@ -2399,6 +2331,8 @@ class TailorBusinessApp {
     setVal('setting-biz-phone', s.phone);
     setVal('setting-biz-email', s.email);
     setVal('setting-biz-address', s.address);
+    setVal('setting-biz-city', s.city || "Hyderabad");
+    setVal('setting-biz-state', s.state || "Telangana");
     setVal('setting-biz-terms', s.terms);
   }
 
@@ -2410,15 +2344,59 @@ class TailorBusinessApp {
     };
     this.data.settings = {
       businessName: getVal('setting-biz-name') || "ZM Enterprises",
-      tagline: getVal('setting-biz-tagline'),
+      tagline: getVal('setting-biz-tagline') || "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
       phone: getVal('setting-biz-phone'),
-      email: getVal('setting-biz-email'),
-      address: getVal('setting-biz-address'),
-      terms: getVal('setting-biz-terms')
+      email: getVal('setting-biz-email') || "contact@zmenterprises.com",
+      address: getVal('setting-biz-address') || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001",
+      city: getVal('setting-biz-city') || "Hyderabad",
+      state: getVal('setting-biz-state') || "Telangana",
+      terms: getVal('setting-biz-terms') || "Fitting alterations accommodated within 7 days of delivery. Sample approval prior to bulk uniform production."
     };
 
     this.saveData();
-    this.showToast('Business & WhatsApp details updated!');
+    this.updateContactDisplay();
+    this.showToast('Business & WhatsApp details updated successfully!');
+  }
+
+  updateContactDisplay() {
+    const s = this.data.settings || {};
+    const addr = s.address || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001";
+    const phone = s.phone ? s.phone : "";
+    const email = s.email || "contact@zmenterprises.com";
+
+    const addrEl = document.getElementById('contact-display-address');
+    if (addrEl) addrEl.textContent = addr;
+
+    const phoneEl = document.getElementById('contact-display-phone');
+    if (phoneEl) {
+      if (phone) {
+        phoneEl.innerHTML = `<strong>${phone}</strong> (Direct WhatsApp & Calls)`;
+      } else {
+        phoneEl.innerHTML = `<span style="color:#d97706; font-weight:600;">⚠️ WhatsApp number not yet configured in Store Settings</span>`;
+      }
+    }
+
+    const emailEl = document.getElementById('contact-display-email');
+    if (emailEl) emailEl.textContent = email;
+  }
+
+  getCleanBizPhone() {
+    const raw = (this.data.settings && this.data.settings.phone) ? String(this.data.settings.phone).trim() : '';
+    const digits = raw.replace(/[^0-9]/g, '');
+    if (!digits || digits.length < 10) return '';
+    if (digits.length === 10) return '91' + digits;
+    return digits;
+  }
+
+  openFloatingWhatsApp() {
+    const bizPhone = this.getCleanBizPhone();
+    if (!bizPhone) {
+      this.openModal('modal-whatsapp-setup');
+      return;
+    }
+    const msg = "Hello ZM Enterprises, I am inquiring about school/corporate uniform stitching services in Hyderabad.";
+    const url = `https://wa.me/${bizPhone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
   }
 
   exportData() {
@@ -2430,7 +2408,7 @@ class TailorBusinessApp {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    this.showToast('Backup file downloaded successfully!');
+    this.showToast('Full backup file downloaded successfully!');
   }
 
   importData(event) {
@@ -2442,6 +2420,8 @@ class TailorBusinessApp {
       try {
         const parsed = JSON.parse(e.target.result);
         if (parsed.customers && parsed.orders) {
+          if (!Array.isArray(parsed.enquiries)) parsed.enquiries = [];
+          if (!Array.isArray(parsed.uniformGallery)) parsed.uniformGallery = [];
           this.data = parsed;
           this.saveData();
           this.init();
@@ -2457,13 +2437,667 @@ class TailorBusinessApp {
     event.target.value = '';
   }
 
-  resetDemoData() {
-    if (confirm('Are you sure you want to reset all records to the original sample data for ZM Enterprises? Any unsaved edits will be overwritten.')) {
-      this.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-      this.saveData();
-      this.init();
-      this.showToast('Reset to original ZM Enterprises demo data completed.');
+  // ==================== B2B BULK ENQUIRY METHODS ====================
+  setEnquiryArea(areaName) {
+    const el = document.getElementById('enq-city-area');
+    if (el) el.value = areaName;
+  }
+
+  submitBulkEnquiry(event) {
+    if (event && event.preventDefault) event.preventDefault();
+
+    const getVal = (id) => {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    };
+
+    const orgName = getVal('enq-org-name');
+    const contactName = getVal('enq-contact-name');
+    const contactRole = getVal('enq-contact-role');
+    const phone = getVal('enq-phone');
+    const email = getVal('enq-email');
+    const cityArea = getVal('enq-city-area');
+    const category = getVal('enq-category');
+    const quantity = getVal('enq-quantity');
+    const deliveryDate = getVal('enq-delivery-date');
+    const fabricSource = getVal('enq-fabric-source');
+    const embroidery = getVal('enq-embroidery');
+    const sampleFitting = getVal('enq-sample-fitting');
+    const requirements = getVal('enq-requirements');
+
+    // Validation
+    if (!orgName) {
+      alert("Please enter your School or Company name.");
+      document.getElementById('enq-org-name')?.focus();
+      return false;
     }
+    if (!contactName) {
+      alert("Please enter the contact person's name.");
+      document.getElementById('enq-contact-name')?.focus();
+      return false;
+    }
+    const digitsOnly = phone.replace(/[^0-9]/g, '');
+    if (digitsOnly.length < 10) {
+      alert("Please enter a valid 10-digit mobile number so we can send your quotation.");
+      document.getElementById('enq-phone')?.focus();
+      return false;
+    }
+    if (!cityArea) {
+      alert("Please specify your city or area in Hyderabad / Telangana.");
+      document.getElementById('enq-city-area')?.focus();
+      return false;
+    }
+    if (!deliveryDate) {
+      alert("Please select your required delivery date.");
+      document.getElementById('enq-delivery-date')?.focus();
+      return false;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (deliveryDate < todayStr) {
+      alert("The delivery date cannot be in the past. Please choose today or an upcoming date.");
+      document.getElementById('enq-delivery-date')?.focus();
+      return false;
+    }
+
+    const enqId = 'ENQ-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000);
+
+    const newEnquiry = {
+      id: enqId,
+      createdAt: new Date().toISOString(),
+      schoolOrCompany: orgName,
+      contactPerson: contactName,
+      contactRole: contactRole,
+      phone: phone,
+      email: email,
+      cityArea: cityArea,
+      category: category,
+      quantity: quantity,
+      deliveryDate: deliveryDate,
+      fabricSource: fabricSource,
+      embroidery: embroidery,
+      sampleFitting: sampleFitting,
+      requirements: requirements,
+      status: 'New', // New | In Discussion | Quotation Sent | Converted to Order | Closed
+      internalNotes: '',
+      orderId: null
+    };
+
+    if (!Array.isArray(this.data.enquiries)) {
+      this.data.enquiries = [];
+    }
+    this.data.enquiries.unshift(newEnquiry);
+    this.saveData();
+
+    this.activeSubmittedEnquiry = newEnquiry;
+    this.renderEnquiryConfirmation(newEnquiry);
+    this.updateEnquiryBadge();
+    this.showToast(`Quotation request ${enqId} received successfully!`);
+    return false;
+  }
+
+  renderEnquiryConfirmation(enq) {
+    const box = document.getElementById('enquiry-confirmation-box');
+    const formBox = document.getElementById('enquiry-form-container');
+    const refEl = document.getElementById('conf-ref-id');
+    const table = document.getElementById('conf-summary-table');
+
+    if (refEl) refEl.textContent = enq.id;
+    if (table) {
+      table.innerHTML = `
+        <tr><td>Organization / School:</td><td><strong>${this.escapeHtml(enq.schoolOrCompany)}</strong></td></tr>
+        <tr><td>Contact Person:</td><td>${this.escapeHtml(enq.contactPerson)} ${enq.contactRole ? `(${this.escapeHtml(enq.contactRole)})` : ''}</td></tr>
+        <tr><td>Phone Number:</td><td>${this.escapeHtml(enq.phone)}</td></tr>
+        ${enq.email ? `<tr><td>Email Address:</td><td>${this.escapeHtml(enq.email)}</td></tr>` : ''}
+        <tr><td>City / Locality:</td><td>${this.escapeHtml(enq.cityArea)}</td></tr>
+        <tr><td>Uniform Category:</td><td><strong>${this.escapeHtml(enq.category)}</strong></td></tr>
+        <tr><td>Estimated Quantity:</td><td>${this.escapeHtml(enq.quantity)}</td></tr>
+        <tr><td>Target Delivery Date:</td><td>${enq.deliveryDate}</td></tr>
+        <tr><td>Fabric Sourcing:</td><td>${this.escapeHtml(enq.fabricSource)}</td></tr>
+        ${enq.embroidery ? `<tr><td>Logo / Crest Work:</td><td>${this.escapeHtml(enq.embroidery)}</td></tr>` : ''}
+        ${enq.requirements ? `<tr><td>Special Specifications:</td><td>${this.escapeHtml(enq.requirements)}</td></tr>` : ''}
+      `;
+    }
+
+    if (formBox) formBox.style.display = 'none';
+    if (box) {
+      box.style.display = 'block';
+      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  resetEnquiryForm() {
+    const form = document.getElementById('bulk-enquiry-form');
+    if (form) form.reset();
+    const box = document.getElementById('enquiry-confirmation-box');
+    const formBox = document.getElementById('enquiry-form-container');
+    if (box) box.style.display = 'none';
+    if (formBox) {
+      formBox.style.display = 'block';
+      formBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  sendEnquiryViaWhatsApp() {
+    const enq = this.activeSubmittedEnquiry;
+    if (!enq) {
+      this.openFloatingWhatsApp();
+      return;
+    }
+
+    const bizPhone = this.getCleanBizPhone();
+    if (!bizPhone) {
+      this.openModal('modal-whatsapp-setup');
+      return;
+    }
+
+    const msg = `Hello ZM Enterprises,\nI have submitted a Bulk Uniform Stitching Enquiry on your website:\n\n*Reference:* ${enq.id}\n*Institution:* ${enq.schoolOrCompany}\n*Contact Person:* ${enq.contactPerson} (${enq.phone})\n*City/Area:* ${enq.cityArea}\n*Category:* ${enq.category}\n*Estimated Quantity:* ${enq.quantity}\n*Target Delivery:* ${enq.deliveryDate}\n*Fabric Sourcing:* ${enq.fabricSource}\n${enq.requirements ? `*Notes:* ${enq.requirements}\n` : ''}\nPlease review and provide an itemized bulk quotation.`;
+
+    const url = `https://wa.me/${bizPhone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  // ==================== B2B ENQUIRIES ADMIN PIPELINE ====================
+  updateEnquiryBadge() {
+    const list = this.data.enquiries || [];
+    const newCount = list.filter(e => e.status === 'New').length;
+    const badge = document.getElementById('nav-enquiry-count');
+    if (badge) {
+      badge.textContent = newCount;
+      badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+    }
+  }
+
+  renderEnquiriesAdmin() {
+    const list = this.data.enquiries || [];
+    const totalEl = document.getElementById('stat-total-enquiries');
+    const newEl = document.getElementById('stat-new-enquiries');
+    const quotedEl = document.getElementById('stat-quoted-enquiries');
+    const convEl = document.getElementById('stat-converted-enquiries');
+
+    const total = list.length;
+    const newCount = list.filter(e => e.status === 'New').length;
+    const quotedCount = list.filter(e => e.status === 'Quotation Sent' || e.status === 'In Discussion').length;
+    const convertedCount = list.filter(e => e.status === 'Converted to Order').length;
+
+    if (totalEl) totalEl.textContent = total;
+    if (newEl) newEl.textContent = newCount;
+    if (quotedEl) quotedEl.textContent = quotedCount;
+    if (convEl) convEl.textContent = convertedCount;
+
+    this.filterEnquiries();
+  }
+
+  filterEnquiries() {
+    const list = this.data.enquiries || [];
+    const searchVal = (document.getElementById('enquiry-search')?.value || '').toLowerCase().trim();
+    const statusVal = document.getElementById('enquiry-status-filter')?.value || 'all';
+    const catVal = document.getElementById('enquiry-category-filter')?.value || 'all';
+
+    const filtered = list.filter(e => {
+      const matchSearch = !searchVal || 
+        (e.id && e.id.toLowerCase().includes(searchVal)) ||
+        (e.schoolOrCompany && e.schoolOrCompany.toLowerCase().includes(searchVal)) ||
+        (e.contactPerson && e.contactPerson.toLowerCase().includes(searchVal)) ||
+        (e.phone && e.phone.includes(searchVal)) ||
+        (e.cityArea && e.cityArea.toLowerCase().includes(searchVal));
+
+      const matchStatus = statusVal === 'all' || e.status === statusVal;
+      const matchCat = catVal === 'all' || (e.category && e.category.toLowerCase().includes(catVal.toLowerCase()));
+
+      return matchSearch && matchStatus && matchCat;
+    });
+
+    const tbody = document.getElementById('admin-enquiries-tbody');
+    if (!tbody) return;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:#94a3b8;">No enquiries found matching your filter.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(e => {
+      const statusBadge = this.getEnquiryStatusBadge(e.status);
+      const dateStr = e.createdAt ? new Date(e.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+
+      return `
+        <tr>
+          <td>
+            <strong>#${e.id}</strong><br>
+            <small style="color:#64748b;">${dateStr}</small>
+          </td>
+          <td>
+            <div style="font-weight:700; color:#0f172a;">${this.escapeHtml(e.schoolOrCompany)}</div>
+            <div style="font-size:0.825rem; color:#475569;">${this.escapeHtml(e.contactPerson)} • 📞 ${this.escapeHtml(e.phone)}</div>
+          </td>
+          <td>
+            <div style="font-weight:600;">${this.escapeHtml(e.category)}</div>
+            <small style="color:#64748b;">Qty: ${this.escapeHtml(e.quantity)}</small>
+          </td>
+          <td>${this.escapeHtml(e.cityArea || 'Hyderabad')}</td>
+          <td><strong>${e.deliveryDate || '—'}</strong></td>
+          <td>${statusBadge}</td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-outline" onclick="app.viewEnquiryDetails('${e.id}')" title="View Full Details">
+                👁️ View
+              </button>
+              <button class="btn btn-sm btn-whatsapp" onclick="app.whatsappEnquiryClient('${e.id}')" title="WhatsApp Customer">
+                💬 Reply
+              </button>
+              ${e.status !== 'Converted to Order' ? `
+                <button class="btn btn-sm btn-primary" onclick="app.convertEnquiryToOrder('${e.id}')" title="Convert to Order">
+                  ✂️ Convert
+                </button>
+              ` : `
+                <span class="badge badge-paid" style="font-size:0.75rem;">Converted ✔</span>
+              `}
+              <button class="btn btn-sm btn-danger-outline" onclick="app.deleteEnquiry('${e.id}')" title="Delete">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  getEnquiryStatusBadge(status) {
+    const map = {
+      'New': '<span class="badge-enq-new">● New</span>',
+      'In Discussion': '<span class="badge-enq-discussion">● In Discussion</span>',
+      'Quotation Sent': '<span class="badge-enq-quoted">● Quote Sent</span>',
+      'Converted to Order': '<span class="badge-enq-converted">✔ Converted</span>',
+      'Closed': '<span class="badge-enq-closed">✕ Closed</span>'
+    };
+    return map[status] || `<span class="badge-enq-new">${status || 'New'}</span>`;
+  }
+
+  viewEnquiryDetails(enqId) {
+    const enq = (this.data.enquiries || []).find(e => e.id === enqId);
+    if (!enq) return;
+
+    this.activeViewEnquiryId = enqId;
+    const body = document.getElementById('modal-enq-detail-body');
+    const title = document.getElementById('modal-enq-detail-title');
+    if (title) title.textContent = `Enquiry #${enq.id} – ${enq.schoolOrCompany}`;
+
+    const dateStr = enq.createdAt ? new Date(enq.createdAt).toLocaleString('en-IN') : '—';
+
+    if (body) {
+      body.innerHTML = `
+        <div style="background:#0a0f18; color:#fff; border-radius:10px; padding:18px; margin-bottom:18px; border:1px solid #1f293d;">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-size:1.3rem; font-weight:700;">${this.escapeHtml(enq.schoolOrCompany)}</div>
+              <div style="color:#34d399; font-size:0.875rem; margin-top:2px;">Contact: <strong>${this.escapeHtml(enq.contactPerson)}</strong> ${enq.contactRole ? `(${this.escapeHtml(enq.contactRole)})` : ''}</div>
+              <div style="font-size:0.85rem; color:#94a3b8; margin-top:4px;">📞 Phone: ${this.escapeHtml(enq.phone)} | ✉️ ${this.escapeHtml(enq.email || 'No email')}</div>
+              <div style="font-size:0.85rem; color:#94a3b8;">📍 Locality / Area: ${this.escapeHtml(enq.cityArea || 'Hyderabad')}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.8rem; color:#94a3b8;">Submitted: ${dateStr}</div>
+              <div style="margin-top:8px;">${this.getEnquiryStatusBadge(enq.status)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:var(--primary-dark); margin-bottom:12px; text-transform:uppercase;">
+            📋 Uniform Specifications
+          </h4>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+            <div class="measure-field"><label>Category</label><strong>${this.escapeHtml(enq.category)}</strong></div>
+            <div class="measure-field"><label>Estimated Quantity</label><strong>${this.escapeHtml(enq.quantity)}</strong></div>
+            <div class="measure-field"><label>Target Delivery Date</label><strong>${enq.deliveryDate || '—'}</strong></div>
+            <div class="measure-field"><label>Fabric Sourcing</label><strong>${this.escapeHtml(enq.fabricSource)}</strong></div>
+            <div class="measure-field"><label>Logo / Crest</label><strong>${this.escapeHtml(enq.embroidery || 'Standard')}</strong></div>
+            <div class="measure-field"><label>Sample Fitting</label><strong>${this.escapeHtml(enq.sampleFitting || 'Standard')}</strong></div>
+          </div>
+          ${enq.requirements ? `
+            <div style="margin-top:14px; padding-top:10px; border-top:1px solid #e2e8f0;">
+              <label style="font-size:0.75rem; color:#64748b; font-weight:700; display:block; margin-bottom:4px;">Client's Specific Requirements:</label>
+              <p style="font-size:0.875rem; color:#0f172a; margin:0; line-height:1.5;">${this.escapeHtml(enq.requirements)}</p>
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:16px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:var(--gray-900); margin-bottom:12px;">
+            ⚙️ Workshop Status & Master Tailor Internal Notes
+          </h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Current Pipeline Status</label>
+              <select id="modal-enq-status-select" class="form-select" onchange="app.updateEnquiryStatus('${enq.id}', this.value)">
+                <option value="New" ${enq.status === 'New' ? 'selected' : ''}>New / Pending</option>
+                <option value="In Discussion" ${enq.status === 'In Discussion' ? 'selected' : ''}>In Discussion</option>
+                <option value="Quotation Sent" ${enq.status === 'Quotation Sent' ? 'selected' : ''}>Quotation Sent</option>
+                <option value="Converted to Order" ${enq.status === 'Converted to Order' ? 'selected' : ''}>Converted to Order</option>
+                <option value="Closed" ${enq.status === 'Closed' ? 'selected' : ''}>Closed</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Internal Workshop Notes (Quotations quoted, sample dates, fabric rates)</label>
+              <textarea id="modal-enq-notes" class="form-input" rows="2" placeholder="e.g. Quoted ₹680 per set for Poly-Viscose blend; sample delivery on 15th...">${this.escapeHtml(enq.internalNotes || '')}</textarea>
+            </div>
+            <div class="full-width" style="text-align:right;">
+              <button class="btn btn-sm btn-outline" onclick="app.saveEnquiryInternalNotes('${enq.id}')">💾 Save Notes</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    this.openModal('modal-enquiry-detail');
+  }
+
+  saveEnquiryInternalNotes(enqId) {
+    const enq = (this.data.enquiries || []).find(e => e.id === enqId);
+    if (!enq) return;
+
+    const notes = document.getElementById('modal-enq-notes')?.value || '';
+    enq.internalNotes = notes;
+    this.saveData();
+    this.showToast("Internal notes updated.");
+  }
+
+  updateEnquiryStatus(enqId, newStatus) {
+    const enq = (this.data.enquiries || []).find(e => e.id === enqId);
+    if (!enq) return;
+
+    enq.status = newStatus;
+    this.saveData();
+    this.updateEnquiryBadge();
+    this.renderEnquiriesAdmin();
+    this.showToast(`Enquiry #${enq.id} status updated to "${newStatus}"`);
+  }
+
+  whatsappCurrentEnquiry() {
+    if (this.activeViewEnquiryId) {
+      this.whatsappEnquiryClient(this.activeViewEnquiryId);
+    }
+  }
+
+  whatsappEnquiryClient(enqId) {
+    const enq = (this.data.enquiries || []).find(e => e.id === enqId);
+    if (!enq) return;
+
+    const cleanPhone = enq.phone.replace(/[^0-9]/g, '');
+    let targetPhone = cleanPhone;
+    if (cleanPhone.length === 10) targetPhone = '91' + cleanPhone;
+
+    const msg = `Hello ${enq.contactPerson},\nGreetings from ZM Enterprises Tailoring Studio, Hyderabad!\n\nRegarding your uniform enquiry (*${enq.id}*) for *${enq.schoolOrCompany}* (${enq.category}, ${enq.quantity}):\nWe have reviewed your requirements and would like to share our itemized bulk quotation and sample fabric details. When would be a convenient time for a quick call or sample viewing?`;
+
+    const url = `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  convertCurrentEnquiryToOrder() {
+    if (this.activeViewEnquiryId) {
+      this.closeModal('modal-enquiry-detail');
+      this.convertEnquiryToOrder(this.activeViewEnquiryId);
+    }
+  }
+
+  convertEnquiryToOrder(enqId) {
+    const enq = (this.data.enquiries || []).find(e => e.id === enqId);
+    if (!enq) return;
+
+    // Check if customer already exists (by phone or name)
+    let cust = (this.data.customers || []).find(c => 
+      c.phone === enq.phone || 
+      (c.name && c.name.toLowerCase() === enq.schoolOrCompany.toLowerCase())
+    );
+
+    if (!cust) {
+      cust = {
+        id: 'CUST-' + Date.now().toString().slice(-4),
+        name: enq.schoolOrCompany,
+        gender: 'Kids',
+        phone: enq.phone,
+        email: enq.email || '',
+        address: enq.cityArea || 'Hyderabad, Telangana',
+        measurements: {
+          notes: `Contact: ${enq.contactPerson} (${enq.contactRole || 'Lead'}). Requirements: ${enq.requirements || ''}`
+        },
+        createdAt: new Date().toISOString()
+      };
+      this.data.customers.unshift(cust);
+      this.saveData();
+      this.populateCustomerDropdowns();
+      this.renderCustomersGrid();
+    }
+
+    const isCorporate = enq.category.toLowerCase().includes('corporate') || enq.category.toLowerCase().includes('hospitality');
+    const itemType = isCorporate ? "Corporate Staff Blazer & Shirt" : "School Uniform Batch Set";
+
+    let parsedQty = 50;
+    const qtyMatch = (enq.quantity || '').match(/\d+/);
+    if (qtyMatch) {
+      parsedQty = parseInt(qtyMatch[0], 10);
+    }
+
+    this.openNewOrderModal({ customerId: cust.id });
+
+    setTimeout(() => {
+      const catEl = document.getElementById('order-category');
+      if (catEl) {
+        catEl.value = 'Uniform';
+        catEl.dispatchEvent(new Event('change'));
+      }
+      const itemEl = document.getElementById('order-item-type');
+      if (itemEl) itemEl.value = itemType;
+
+      const titleEl = document.getElementById('order-title');
+      if (titleEl) titleEl.value = `${enq.category} batch for ${enq.schoolOrCompany}`;
+
+      const qtyEl = document.getElementById('order-qty');
+      if (qtyEl) qtyEl.value = parsedQty;
+
+      const delEl = document.getElementById('order-delivery-date');
+      if (delEl) delEl.value = enq.deliveryDate;
+
+      const notesEl = document.getElementById('order-notes');
+      if (notesEl) {
+        notesEl.value = `[Converted from Bulk Enquiry #${enq.id}]\nContact: ${enq.contactPerson} (${enq.phone})\nFabric: ${enq.fabricSource}\nEmbroidery: ${enq.embroidery || 'None'}\nSpecs: ${enq.requirements || 'N/A'}`;
+      }
+
+      this.calculateOrderTotal();
+    }, 150);
+
+    enq.status = 'Converted to Order';
+    this.saveData();
+    this.renderEnquiriesAdmin();
+    this.updateEnquiryBadge();
+    this.showToast(`Enquiry #${enq.id} converted into a new tailoring order!`);
+  }
+
+  deleteEnquiry(enqId) {
+    const enq = (this.data.enquiries || []).find(e => e.id === enqId);
+    if (!enq) return;
+
+    if (confirm(`Are you sure you want to delete enquiry #${enq.id} from ${enq.schoolOrCompany}?`)) {
+      this.data.enquiries = (this.data.enquiries || []).filter(e => e.id !== enqId);
+      this.saveData();
+      this.renderEnquiriesAdmin();
+      this.updateEnquiryBadge();
+      this.showToast(`Enquiry #${enq.id} deleted.`);
+    }
+  }
+
+  // ==================== UNIFORM PHOTO GALLERY ====================
+  renderUniformGallery(filter) {
+    if (filter) this.galleryFilter = filter;
+    const currentFilter = this.galleryFilter || 'all';
+    const container = document.getElementById('uniform-gallery-grid');
+    if (!container) return;
+
+    let photos = this.data.uniformGallery || [];
+    if (currentFilter !== 'all') {
+      photos = photos.filter(p => p.category === currentFilter);
+    }
+
+    if (photos.length === 0) {
+      container.innerHTML = `
+        <div class="gallery-card">
+          <div class="gallery-img-wrap" style="background:#0a0f1a; color:#34d399; font-size:2.5rem;">
+            🏫
+          </div>
+          <div class="gallery-caption">
+            <h4>School Uniform Batch Tailoring</h4>
+            <div class="gallery-caption-meta">
+              <span>Category: School</span>
+              <span style="color:#059669; font-weight:700;">Hyderabad Workshop</span>
+            </div>
+            <p style="font-size:0.775rem; color:#64748b; margin-top:4px;">Shirts, trousers, pleated pinafores & blazers with crest embroidery.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <div class="gallery-img-wrap" style="background:#0a0f1a; color:#34d399; font-size:2.5rem;">
+            🏢
+          </div>
+          <div class="gallery-caption">
+            <h4>Corporate Staff Suiting & Blazers</h4>
+            <div class="gallery-caption-meta">
+              <span>Category: Corporate</span>
+              <span style="color:#059669; font-weight:700;">Hyderabad Workshop</span>
+            </div>
+            <p style="font-size:0.775rem; color:#64748b; margin-top:4px;">Executive poly-viscose blazers, formal trousers & staff shirts.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <div class="gallery-img-wrap" style="background:#0a0f1a; color:#34d399; font-size:2.5rem;">
+            🩺
+          </div>
+          <div class="gallery-caption">
+            <h4>Healthcare Scrubs & Hospital Tunics</h4>
+            <div class="gallery-caption-meta">
+              <span>Category: Corporate</span>
+              <span style="color:#059669; font-weight:700;">Hyderabad Workshop</span>
+            </div>
+            <p style="font-size:0.775rem; color:#64748b; margin-top:4px;">Durable, breathable clinical scrubs & doctor consultation coats.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card" style="border: 2px dashed #cbd5e1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="app.openAddPhotoModal()">
+          <div style="font-size:2rem; margin-bottom:8px;">📷</div>
+          <strong style="color:var(--primary); font-size:0.95rem;">+ Add Your Workshop Photo</strong>
+          <p style="font-size:0.775rem; color:#64748b; margin-top:6px;">Upload real photos of your stitched uniform batches to showcase your work.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = photos.map(p => `
+      <div class="gallery-card">
+        <div class="gallery-img-wrap">
+          <img src="${p.imageUrl}" alt="${this.escapeHtml(p.title)}" class="gallery-img" onerror="this.src=''; this.alt='Image load error';">
+        </div>
+        <div class="gallery-caption">
+          <h4>${this.escapeHtml(p.title)}</h4>
+          <div class="gallery-caption-meta">
+            <span>Category: ${p.category}</span>
+            <button class="gallery-delete-btn" onclick="app.deleteUniformPhoto('${p.id}')">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  filterGallery(cat, btnEl) {
+    document.querySelectorAll('.gallery-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    this.renderUniformGallery(cat);
+  }
+
+  openAddPhotoModal() {
+    this.uploadedPhotoDataUrl = null;
+    const form = document.getElementById('add-photo-form');
+    if (form) form.reset();
+    const wrap = document.getElementById('photo-preview-wrap');
+    if (wrap) wrap.style.display = 'none';
+    this.openModal('modal-add-photo');
+  }
+
+  onPhotoFileSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 3 * 1024 * 1024) {
+      alert("File is too large. Please select an image under 3MB.");
+      event.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.uploadedPhotoDataUrl = e.target.result;
+      const previewWrap = document.getElementById('photo-preview-wrap');
+      const previewImg = document.getElementById('photo-preview-img');
+      if (previewWrap && previewImg) {
+        previewImg.src = e.target.result;
+        previewWrap.style.display = 'block';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  saveUniformPhoto(event) {
+    if (event && event.preventDefault) event.preventDefault();
+
+    const title = document.getElementById('photo-title')?.value.trim();
+    const category = document.getElementById('photo-category')?.value || 'School';
+    const url = document.getElementById('photo-url')?.value.trim();
+    const imgData = this.uploadedPhotoDataUrl || url;
+
+    if (!title) {
+      alert("Please enter a caption for the photo.");
+      return false;
+    }
+    if (!imgData) {
+      alert("Please select an image file or provide an image URL.");
+      return false;
+    }
+
+    if (!Array.isArray(this.data.uniformGallery)) {
+      this.data.uniformGallery = [];
+    }
+
+    const newPhoto = {
+      id: 'IMG-' + Date.now(),
+      title: title,
+      category: category,
+      imageUrl: imgData,
+      createdAt: new Date().toISOString()
+    };
+
+    this.data.uniformGallery.unshift(newPhoto);
+    this.saveData();
+    this.closeModal('modal-add-photo');
+    this.renderUniformGallery();
+    this.showToast("Uniform photograph saved to gallery!");
+    return false;
+  }
+
+  deleteUniformPhoto(photoId) {
+    if (confirm("Are you sure you want to delete this photograph from the gallery?")) {
+      this.data.uniformGallery = (this.data.uniformGallery || []).filter(p => p.id !== photoId);
+      this.saveData();
+      this.renderUniformGallery();
+      this.showToast("Photograph removed from gallery.");
+    }
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   // ==================== MODAL UTILITIES ====================
