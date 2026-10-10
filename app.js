@@ -152,15 +152,31 @@ const DEFAULT_DATA = {
   customers: [],
   orders: [],
   enquiries: [],
-  uniformGallery: []
+  uniformGallery: [],
+  ecommerceProducts: [],
+  ecommerceOrders: [],
+  wholesaleEnquiries: []
 };
+
+const CART_STORAGE_KEY = 'ZM_CART_V1';
 
 class TailorBusinessApp {
   constructor() {
     window.app = this;
     this.data = this.loadData();
+    this.cart = this.loadCart();
+    this.activeProductCategoryFilter = 'all';
+    this.activeProductSearch = '';
+    this.activeProductSort = 'featured';
+    this.selectedPaymentMode = 'cod';
+    this.activeDetailProduct = null;
+    this.activeConfirmationOrder = null;
+
     const hash = window.location.hash ? window.location.hash.substring(1) : '';
-    const validTabs = ['home', 'uniforms', 'enquiry', 'contact', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'];
+    const validTabs = [
+      'home', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
+      'products-admin', 'ecommerce-orders', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings', 'uniforms', 'enquiry'
+    ];
     this.currentTab = validTabs.includes(hash) ? hash : 'home';
     this.activeWhatsAppOrderId = null;
     this.activePaymentOrderId = null;
@@ -212,6 +228,15 @@ class TailorBusinessApp {
     }
     if (!Array.isArray(data.uniformGallery)) {
       data.uniformGallery = [];
+    }
+    if (!Array.isArray(data.ecommerceProducts)) {
+      data.ecommerceProducts = [];
+    }
+    if (!Array.isArray(data.ecommerceOrders)) {
+      data.ecommerceOrders = [];
+    }
+    if (!Array.isArray(data.wholesaleEnquiries)) {
+      data.wholesaleEnquiries = [];
     }
     if (!data.settings.city) data.settings.city = "Hyderabad";
     if (!data.settings.state) data.settings.state = "Telangana";
@@ -278,6 +303,11 @@ class TailorBusinessApp {
     this.renderCustomersGrid();
     this.renderCatalog();
     this.renderInvoicesTable();
+    this.renderCategoryChips();
+    this.renderProductsGrid();
+    this.renderAdminProductsTable();
+    this.renderAdminEcommerceOrders();
+    this.updateCartBadges();
     this.switchTab(this.currentTab);
   }
 
@@ -320,7 +350,10 @@ class TailorBusinessApp {
   }
 
   switchTab(tabName) {
-    const validTabs = ['home', 'uniforms', 'enquiry', 'contact', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'];
+    const validTabs = [
+      'home', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
+      'products-admin', 'ecommerce-orders', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings', 'uniforms', 'enquiry'
+    ];
     if (!validTabs.includes(tabName)) {
       tabName = 'home';
     }
@@ -341,16 +374,20 @@ class TailorBusinessApp {
 
     // Update topbar navigation pills
     const pillHome = document.getElementById('pill-home');
-    const pillUniforms = document.getElementById('pill-uniforms');
-    const pillEnquiry = document.getElementById('pill-enquiry');
+    const pillProducts = document.getElementById('pill-products');
+    const pillCategories = document.getElementById('pill-categories');
+    const pillMfg = document.getElementById('pill-manufacturing');
+    const pillWholesale = document.getElementById('pill-wholesale');
     const pillDashboard = document.getElementById('pill-dashboard');
     if (pillHome) pillHome.classList.toggle('active', tabName === 'home');
-    if (pillUniforms) pillUniforms.classList.toggle('active', tabName === 'uniforms');
-    if (pillEnquiry) pillEnquiry.classList.toggle('active', tabName === 'enquiry');
-    if (pillDashboard) pillDashboard.classList.toggle('active', ['dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'].includes(tabName));
+    if (pillProducts) pillProducts.classList.toggle('active', tabName === 'products');
+    if (pillCategories) pillCategories.classList.toggle('active', tabName === 'categories');
+    if (pillMfg) pillMfg.classList.toggle('active', tabName === 'manufacturing');
+    if (pillWholesale) pillWholesale.classList.toggle('active', tabName === 'wholesale');
+    if (pillDashboard) pillDashboard.classList.toggle('active', ['dashboard', 'products-admin', 'ecommerce-orders', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'].includes(tabName));
 
     // Dynamic Topbar Actions toggle
-    const isPublicTab = ['home', 'uniforms', 'enquiry', 'contact'].includes(tabName);
+    const isPublicTab = ['home', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order', 'uniforms', 'enquiry'].includes(tabName);
     const btnQuote = document.getElementById('btn-topbar-quote');
     const btnCust = document.getElementById('btn-quick-customer');
     const btnOrder = document.getElementById('btn-quick-order');
@@ -368,12 +405,20 @@ class TailorBusinessApp {
 
     const titleMap = {
       home: "ZM Enterprises",
+      products: "Product Store & Uniform Catalog",
+      categories: "Specialized Garment Categories",
+      manufacturing: "Manufacturing & Fabric Trading",
+      wholesale: "Wholesale & B2B Enquiries",
+      about: "About ZM Enterprises",
+      contact: "Contact & Workshop Studio",
+      'track-order': "Order Status & Tracking",
+      'products-admin': "Product Inventory (Admin)",
+      'ecommerce-orders': "Online Store Orders (Admin)",
       uniforms: "School & Corporate Uniform Stitching",
       enquiry: "Request a Bulk Quotation",
-      contact: "Contact & Workshop Location",
       dashboard: "Dashboard Overview",
       'enquiries-admin': "B2B Uniform Enquiries",
-      orders: "Orders & Production Tracking",
+      orders: "Custom Stitching Orders & Workflow",
       customers: "Customer Records & Measurements",
       catalog: "Tailoring Service Catalog & Rates",
       invoices: "Billing, Invoices & Payment History",
@@ -382,9 +427,17 @@ class TailorBusinessApp {
 
     const subtitleMap = {
       home: "School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
+      products: "Explore retail and bulk wholesale uniform styles, suiting, scrubs, and fabrics",
+      categories: "Browse our 6 core institutional, corporate, healthcare, and couture portfolios",
+      manufacturing: "State-of-the-art batch cutting, industrial stitching, and certified mill fabric trading",
+      wholesale: "Submit institutional specifications for direct workshop tiered quotation",
+      about: "25+ years of master cutting excellence and reliable school uniform manufacturing in Hyderabad",
+      contact: "Workshop & studio in Hyderabad, Telangana – Open Monday to Saturday",
+      'track-order': "Check live production stages, trial fittings, and delivery status for your order",
+      'products-admin': "Publish products, set retail & wholesale discount pricing, and update stock levels",
+      'ecommerce-orders': "Review incoming web orders, customer shipping addresses, and update fulfillment",
       uniforms: "Comprehensive uniform manufacturing programs for schools and enterprises across Telangana",
       enquiry: "Submit your institution's uniform specifications for an itemized bulk quotation",
-      contact: "Workshop & studio in Hyderabad, Telangana – Serving schools and corporate clients",
       dashboard: "Workshop production pipeline, upcoming fittings, and order deliveries",
       'enquiries-admin': "Review, track status, and convert incoming B2B uniform enquiries to production orders",
       orders: "Manage custom stitching, alterations, ethnic wear & uniform production",
@@ -396,9 +449,17 @@ class TailorBusinessApp {
 
     const seoTitleMap = {
       home: "ZM Enterprises | School & Corporate Uniform Stitching in Hyderabad, Telangana",
+      products: "Uniforms & Garment Store | ZM Enterprises Hyderabad",
+      categories: "Garment Categories & Portfolios | ZM Enterprises",
+      manufacturing: "Garment Manufacturing & Fabric Trading | ZM Enterprises Hyderabad",
+      wholesale: "Wholesale Uniform Stitching & B2B Enquiries | ZM Enterprises",
+      about: "About ZM Enterprises | Master Uniform Tailoring in Hyderabad",
+      contact: "Contact ZM Enterprises | Tailoring Workshop Hyderabad, Telangana",
+      'track-order': "Track My Order | ZM Enterprises",
+      'products-admin': "Product Inventory Admin | ZM Enterprises",
+      'ecommerce-orders': "Online Store Orders Admin | ZM Enterprises",
       uniforms: "School & Corporate Uniform Stitching Services in Hyderabad | ZM Enterprises",
       enquiry: "Request Bulk Uniform Stitching Quotation | ZM Enterprises Hyderabad",
-      contact: "Contact ZM Enterprises | Tailoring Workshop Hyderabad, Telangana",
       dashboard: "Production Dashboard | ZM Enterprises Tailoring Suite",
       'enquiries-admin': "B2B Enquiries Pipeline | ZM Enterprises",
       orders: "Production Orders & Workflow | ZM Enterprises",
@@ -3122,7 +3183,1264 @@ class TailorBusinessApp {
     };
     return map[status] || `<span class="badge badge-received">${status}</span>`;
   }
+
+  // ========================================================
+  // E-COMMERCE & B2B WHOLESALE SUITE METHODS
+  // ========================================================
+
+  getDefaultImageForCategory(cat) {
+    const photoMap = {
+      'School Uniforms': 'images/school-uniform.jpg',
+      'Corporate Attire': 'images/corporate-suit.jpg',
+      'Healthcare & Hospitality': 'images/medical-scrubs.jpg',
+      'Bespoke Tailoring': 'images/bespoke-tuxedo.jpg',
+      'Industrial & Workwear': 'images/industrial-workwear.jpg',
+      'Fabrics & Accessories': 'images/fabric-rolls.jpg'
+    };
+    return photoMap[cat] || 'images/hero-atelier.jpg';
+  }
+
+  renderCategoryChips() {
+    const container = document.getElementById('product-category-chips');
+    if (!container) return;
+
+    const categories = [
+      'All',
+      'School Uniforms',
+      'Corporate Attire',
+      'Healthcare & Hospitality',
+      'Bespoke Tailoring',
+      'Industrial & Workwear',
+      'Fabrics & Accessories'
+    ];
+
+    container.innerHTML = categories.map(cat => {
+      const activeClass = (this.activeProductCategoryFilter === cat || (cat === 'All' && this.activeProductCategoryFilter === 'all')) ? 'active' : '';
+      return `<button class="cat-chip ${activeClass}" onclick="app.setProductCategoryFilter('${cat}')">${cat}</button>`;
+    }).join('');
+  }
+
+  setProductCategoryFilter(cat) {
+    this.activeProductCategoryFilter = cat === 'All' ? 'all' : cat;
+    this.renderCategoryChips();
+    this.renderProductsGrid();
+  }
+
+  filterProductsByCategory(cat) {
+    this.switchTab('products');
+    this.setProductCategoryFilter(cat);
+  }
+
+  filterProducts() {
+    const searchInput = document.getElementById('product-search-input');
+    const sortSelect = document.getElementById('product-sort-select');
+    if (searchInput) this.activeProductSearch = searchInput.value.trim().toLowerCase();
+    if (sortSelect) this.activeProductSort = sortSelect.value;
+    this.renderProductsGrid();
+  }
+
+  renderProductsGrid() {
+    const grid = document.getElementById('products-grid-container');
+    if (!grid) return;
+
+    const products = this.data.ecommerceProducts || [];
+
+    if (products.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-catalog-state" style="grid-column: 1 / -1;">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <h3>Product Catalogue is Clean & Ready</h3>
+          <p>
+            No products are currently published in the online store. As an administrator, you can add genuine uniform styles, corporate attire, and tailor packages with actual rates.
+          </p>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="app.switchTab('products-admin')">
+              📦 Open Product Inventory (Admin)
+            </button>
+            <button class="btn btn-secondary" onclick="app.seedSampleProductsOptional()">
+              ⚡ Load Uniform Templates (Optional)
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Filter
+    let filtered = products.filter(p => {
+      const matchesCat = (this.activeProductCategoryFilter === 'all') || (p.category === this.activeProductCategoryFilter);
+      const matchesSearch = !this.activeProductSearch ||
+        p.name.toLowerCase().includes(this.activeProductSearch) ||
+        (p.desc && p.desc.toLowerCase().includes(this.activeProductSearch)) ||
+        (p.category && p.category.toLowerCase().includes(this.activeProductSearch)) ||
+        (p.sku && p.sku.toLowerCase().includes(this.activeProductSearch));
+      return matchesCat && matchesSearch;
+    });
+
+    // Sort
+    if (this.activeProductSort === 'price-asc') {
+      filtered.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    } else if (this.activeProductSort === 'price-desc') {
+      filtered.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    } else if (this.activeProductSort === 'name') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-catalog-state" style="grid-column: 1 / -1;">
+          <h3>No matching products found</h3>
+          <p>Try clearing your search query or changing the category filter.</p>
+          <button class="btn btn-outline" onclick="document.getElementById('product-search-input').value=''; app.setProductCategoryFilter('All');">
+            Clear Filters
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+      const img = p.image || this.getDefaultImageForCategory(p.category);
+      const stockStatus = p.stockStatus || 'In Stock';
+      const stockBadgeClass = {
+        'In Stock': 'badge-stock-in',
+        'Made to Order': 'badge-stock-made',
+        'Low Stock': 'badge-stock-low',
+        'Out of Stock': 'badge-stock-out'
+      }[stockStatus] || 'badge-stock-in';
+
+      const wholesaleBadge = p.wholesalePrice ? `
+        <span class="badge-wholesale-tag">Wholesale: ₹${Number(p.wholesalePrice).toLocaleString('en-IN')} (Min ${p.minWholesaleQty || 20} pcs)</span>
+      ` : '';
+
+      return `
+        <div class="product-card">
+          <div class="product-card-img-wrap" onclick="app.openProductDetail('${p.id}')" style="cursor:pointer;">
+            <img src="${this.escapeHtml(img)}" alt="${this.escapeHtml(p.name)}" onerror="this.src='${this.getDefaultImageForCategory(p.category)}'">
+            <div class="product-badge-group">
+              <span class="badge-stock ${stockBadgeClass}">${stockStatus}</span>
+              ${wholesaleBadge}
+            </div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-cat-tag">${this.escapeHtml(p.category || 'General')}</div>
+            <h3 class="product-title" onclick="app.openProductDetail('${p.id}')">${this.escapeHtml(p.name)}</h3>
+            <p class="product-desc-snippet">${this.escapeHtml(p.desc || '')}</p>
+            
+            <div class="product-pricing-box">
+              <div class="price-retail-row">
+                <span class="price-retail-val">₹${(Number(p.price) || 0).toLocaleString('en-IN')}</span>
+                <span class="price-retail-label">Retail / Single Piece</span>
+              </div>
+              ${p.wholesalePrice ? `
+                <div class="price-wholesale-row">
+                  <span>🏢 Bulk Lot:</span>
+                  <strong>₹${Number(p.wholesalePrice).toLocaleString('en-IN')}</strong> / piece (≥ ${p.minWholesaleQty || 20} pcs)
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="product-card-actions">
+              <button class="btn btn-outline" onclick="app.openProductDetail('${p.id}')">
+                Details & Tier
+              </button>
+              <button class="btn btn-primary" onclick="app.cartAddItem('${p.id}', 1)" ${stockStatus === 'Out of Stock' ? 'disabled' : ''}>
+                🛒 Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  openProductDetail(id) {
+    const product = (this.data.ecommerceProducts || []).find(p => p.id === id);
+    if (!product) return;
+
+    this.activeDetailProduct = product;
+    const body = document.getElementById('modal-product-detail-body');
+    const title = document.getElementById('modal-detail-title');
+    if (title) title.textContent = product.name;
+
+    const img = product.image || this.getDefaultImageForCategory(product.category);
+
+    if (body) {
+      body.innerHTML = `
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px;">
+          <div>
+            <div style="border-radius: var(--radius-lg); overflow:hidden; border: 1px solid var(--gray-200); background: var(--gray-50); aspect-ratio: 4/3;">
+              <img src="${this.escapeHtml(img)}" alt="${this.escapeHtml(product.name)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${this.getDefaultImageForCategory(product.category)}'">
+            </div>
+            ${product.sku ? `<p style="font-size:0.8rem; color:var(--gray-500); margin-top:8px;">Item Code: <strong>${this.escapeHtml(product.sku)}</strong></p>` : ''}
+          </div>
+
+          <div>
+            <span class="badge" style="background:var(--primary-light); color:var(--primary); border:1px solid var(--primary-border); margin-bottom:8px;">
+              ${this.escapeHtml(product.category)}
+            </span>
+            <h2 style="font-size:1.4rem; color:var(--navy-900); margin-bottom:12px; font-weight:800;">${this.escapeHtml(product.name)}</h2>
+            
+            <p style="color:var(--gray-700); font-size:0.925rem; line-height:1.6; margin-bottom:18px;">
+              ${this.escapeHtml(product.desc || 'High-quality garment crafted at ZM Enterprises workshop.')}
+            </p>
+
+            <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:var(--radius-md); padding:16px; margin-bottom:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                <span style="font-size:0.85rem; color:var(--gray-600);">Standard Retail Rate:</span>
+                <span style="font-size:1.5rem; font-weight:800; color:var(--navy-900);">₹${(Number(product.price) || 0).toLocaleString('en-IN')}</span>
+              </div>
+              
+              ${product.wholesalePrice ? `
+                <div style="border-top:1px dashed var(--gray-300); padding-top:8px; margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="color:var(--teal); font-size:0.9rem;">🏢 Institutional Wholesale Rate:</strong>
+                    <div style="font-size:0.75rem; color:var(--gray-500);">Applicable for bulk orders of ${product.minWholesaleQty || 20} units or more</div>
+                  </div>
+                  <span style="font-size:1.25rem; font-weight:800; color:var(--teal);">₹${Number(product.wholesalePrice).toLocaleString('en-IN')} <small style="font-size:0.75rem;">/ pc</small></span>
+                </div>
+              ` : ''}
+
+              <div style="margin-top:10px; font-size:0.825rem; color:var(--gray-600);">
+                Availability: <strong style="color:var(--navy-900);">${this.escapeHtml(product.stockStatus || 'In Stock')}</strong>
+              </div>
+            </div>
+
+            <!-- Quantity & Actions -->
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
+              <label style="font-weight:600; font-size:0.9rem; color:var(--gray-700);">Quantity:</label>
+              <div class="cart-qty-controls" style="border:1.5px solid var(--gray-300);">
+                <button type="button" class="cart-qty-btn" onclick="const input = document.getElementById('detail-qty-input'); if(input.value > 1) input.value = parseInt(input.value) - 1;">-</button>
+                <input type="number" id="detail-qty-input" class="cart-qty-input" value="1" min="1" style="width:48px;">
+                <button type="button" class="cart-qty-btn" onclick="const input = document.getElementById('detail-qty-input'); input.value = parseInt(input.value) + 1;">+</button>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-lg" style="flex:1;" onclick="const qty = parseInt(document.getElementById('detail-qty-input').value) || 1; app.cartAddItem('${product.id}', qty); app.closeModal('modal-product-detail');">
+                🛒 Add to Cart
+              </button>
+              <button class="btn btn-outline btn-lg" onclick="app.requestWholesaleQuoteForProduct('${this.escapeHtml(product.name)}', ${product.minWholesaleQty || 50}); app.closeModal('modal-product-detail');">
+                📋 Request B2B Quote
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    this.openModal('modal-product-detail');
+  }
+
+  requestWholesaleQuoteForProduct(productName, defaultQty = 50) {
+    this.switchTab('wholesale');
+    const notesInput = document.getElementById('ws-notes');
+    if (notesInput) {
+      notesInput.value = `Enquiry for: ${productName} (Approx ${defaultQty} pieces requested). Please provide institutional lot discount and fabric swatches.`;
+    }
+    const catSelect = document.getElementById('ws-category');
+    if (catSelect) {
+      for (let i = 0; i < catSelect.options.length; i++) {
+        if (catSelect.options[i].text.toLowerCase().includes(productName.toLowerCase())) {
+          catSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+  }
+
+  // ==================== SHOPPING CART METHODS ====================
+  loadCart() {
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch (e) {
+      console.warn("Failed to load cart", e);
+    }
+    return [];
+  }
+
+  saveCart() {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(this.cart));
+    } catch (e) {
+      console.warn("Failed to save cart", e);
+    }
+    this.updateCartBadges();
+  }
+
+  updateCartBadges() {
+    const totalCount = (this.cart || []).reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+    const topbarCount = document.getElementById('topbar-cart-count');
+    if (topbarCount) topbarCount.textContent = totalCount;
+    const storeCount = document.getElementById('store-cart-counter');
+    if (storeCount) storeCount.textContent = totalCount;
+  }
+
+  openCart() {
+    this.renderCart();
+    const backdrop = document.getElementById('cart-drawer-backdrop');
+    const drawer = document.getElementById('cart-drawer');
+    if (backdrop) backdrop.classList.add('active');
+    if (drawer) drawer.classList.add('active');
+  }
+
+  closeCart() {
+    const backdrop = document.getElementById('cart-drawer-backdrop');
+    const drawer = document.getElementById('cart-drawer');
+    if (backdrop) backdrop.classList.remove('active');
+    if (drawer) drawer.classList.remove('active');
+  }
+
+  cartAddItem(productId, qty = 1) {
+    const product = (this.data.ecommerceProducts || []).find(p => p.id === productId);
+    if (!product) return;
+
+    if (product.stockStatus === 'Out of Stock') {
+      this.showToast('This item is currently out of stock.');
+      return;
+    }
+
+    const existing = this.cart.find(item => item.productId === productId);
+    if (existing) {
+      existing.qty += Number(qty);
+    } else {
+      this.cart.push({
+        productId: product.id,
+        name: product.name,
+        category: product.category,
+        price: Number(product.price) || 0,
+        wholesalePrice: product.wholesalePrice ? Number(product.wholesalePrice) : null,
+        minWholesaleQty: Number(product.minWholesaleQty) || 20,
+        image: product.image || this.getDefaultImageForCategory(product.category),
+        qty: Number(qty)
+      });
+    }
+
+    this.saveCart();
+    this.showToast(`Added ${product.name} to cart!`);
+    this.openCart();
+  }
+
+  cartUpdateQty(productId, newQty) {
+    const item = this.cart.find(i => i.productId === productId);
+    if (!item) return;
+
+    const qty = parseInt(newQty);
+    if (isNaN(qty) || qty <= 0) {
+      this.cartRemoveItem(productId);
+    } else {
+      item.qty = qty;
+      this.saveCart();
+      this.renderCart();
+    }
+  }
+
+  cartRemoveItem(productId) {
+    this.cart = this.cart.filter(i => i.productId !== productId);
+    this.saveCart();
+    this.renderCart();
+  }
+
+  cartClear() {
+    this.cart = [];
+    this.saveCart();
+    this.renderCart();
+  }
+
+  renderCart() {
+    const container = document.getElementById('cart-items-container');
+    const footer = document.getElementById('cart-drawer-footer');
+    if (!container || !footer) return;
+
+    if (!this.cart || this.cart.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding: 40px 10px; color: var(--gray-500);">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:var(--gray-400);">
+            <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <h4 style="color:var(--navy-900); margin-bottom:6px;">Your cart is empty</h4>
+          <p style="font-size:0.85rem; margin-bottom:20px;">Browse our products to select uniform pieces and garments.</p>
+          <button class="btn btn-primary" onclick="app.closeCart(); app.switchTab('products');">
+            Explore Products
+          </button>
+        </div>
+      `;
+      footer.innerHTML = '';
+      return;
+    }
+
+    let subtotal = 0;
+    let totalSavings = 0;
+
+    container.innerHTML = this.cart.map(item => {
+      const isWholesale = item.wholesalePrice && item.qty >= item.minWholesaleQty;
+      const unitPrice = isWholesale ? item.wholesalePrice : item.price;
+      const lineTotal = unitPrice * item.qty;
+      subtotal += lineTotal;
+
+      if (isWholesale) {
+        const regularLineTotal = item.price * item.qty;
+        totalSavings += (regularLineTotal - lineTotal);
+      }
+
+      return `
+        <div class="cart-item-row">
+          <img src="${this.escapeHtml(item.image)}" alt="${this.escapeHtml(item.name)}" class="cart-item-thumb" onerror="this.src='${this.getDefaultImageForCategory(item.category)}'">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${this.escapeHtml(item.name)}</div>
+            <div class="cart-item-pricing">
+              <strong>₹${unitPrice.toLocaleString('en-IN')}</strong> / unit
+              ${isWholesale ? `<div class="cart-item-wholesale-badge">🎉 Wholesale Tier Applied</div>` : ''}
+            </div>
+          </div>
+          <div class="cart-qty-controls">
+            <button class="cart-qty-btn" onclick="app.cartUpdateQty('${item.productId}', ${item.qty - 1})">-</button>
+            <input type="number" class="cart-qty-input" value="${item.qty}" min="1" onchange="app.cartUpdateQty('${item.productId}', this.value)">
+            <button class="cart-qty-btn" onclick="app.cartUpdateQty('${item.productId}', ${item.qty + 1})">+</button>
+          </div>
+          <button class="cart-item-remove" onclick="app.cartRemoveItem('${item.productId}')" title="Remove item">&times;</button>
+        </div>
+      `;
+    }).join('');
+
+    footer.innerHTML = `
+      ${totalSavings > 0 ? `
+        <div class="cart-savings-pill">
+          🎉 You are saving <strong>₹${totalSavings.toLocaleString('en-IN')}</strong> with Wholesale bulk discount!
+        </div>
+      ` : ''}
+      <div class="cart-summary-row">
+        <span>Total Quantity:</span>
+        <strong>${this.cart.reduce((s, i) => s + i.qty, 0)} units</strong>
+      </div>
+      <div class="cart-summary-row cart-summary-total">
+        <span>Order Total:</span>
+        <span>₹${subtotal.toLocaleString('en-IN')}</span>
+      </div>
+      <div style="font-size:0.75rem; color:var(--gray-500); margin:6px 0 14px;">
+        * Free delivery & fittings in Hyderabad for qualifying institutional orders.
+      </div>
+      <button class="btn btn-primary btn-lg" style="width:100%; justify-content:center;" onclick="app.openCheckout()">
+        Proceed to Checkout →
+      </button>
+    `;
+  }
+
+  // ==================== CHECKOUT & ORDER SUBMISSION ====================
+  openCheckout() {
+    if (!this.cart || this.cart.length === 0) {
+      this.showToast('Please add items to your cart first.');
+      return;
+    }
+
+    this.closeCart();
+
+    const summaryBox = document.getElementById('checkout-summary-box');
+    if (summaryBox) {
+      let subtotal = 0;
+      let savings = 0;
+
+      const itemsHtml = this.cart.map(item => {
+        const isWholesale = item.wholesalePrice && item.qty >= item.minWholesaleQty;
+        const unitPrice = isWholesale ? item.wholesalePrice : item.price;
+        const lineTotal = unitPrice * item.qty;
+        subtotal += lineTotal;
+        if (isWholesale) savings += (item.price - item.wholesalePrice) * item.qty;
+
+        return `
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px; color:var(--gray-700);">
+            <span>${this.escapeHtml(item.name)} × ${item.qty} ${isWholesale ? '(Wholesale)' : ''}</span>
+            <strong>₹${lineTotal.toLocaleString('en-IN')}</strong>
+          </div>
+        `;
+      }).join('');
+
+      summaryBox.innerHTML = `
+        <h4 style="font-size:0.925rem; color:var(--navy-900); margin-bottom:10px;">Order Summary (${this.cart.reduce((s, i) => s + i.qty, 0)} items)</h4>
+        ${itemsHtml}
+        ${savings > 0 ? `<div style="font-size:0.8rem; color:var(--teal); margin:6px 0;">🎉 Bulk Savings: -₹${savings.toLocaleString('en-IN')}</div>` : ''}
+        <div style="border-top:1px dashed var(--gray-300); padding-top:8px; margin-top:8px; display:flex; justify-content:space-between; font-size:1.1rem; font-weight:800; color:var(--navy-900);">
+          <span>Payable Total:</span>
+          <span>₹${subtotal.toLocaleString('en-IN')}</span>
+        </div>
+      `;
+    }
+
+    this.openModal('modal-checkout');
+  }
+
+  selectPaymentMode(mode) {
+    this.selectedPaymentMode = mode;
+    const cardCod = document.getElementById('pay-card-cod');
+    const cardBank = document.getElementById('pay-card-bank');
+    if (cardCod) cardCod.classList.toggle('active', mode === 'cod');
+    if (cardBank) cardBank.classList.toggle('active', mode === 'bank');
+  }
+
+  submitCheckoutOrder(e) {
+    e.preventDefault();
+    if (!this.cart || this.cart.length === 0) {
+      this.showToast('Your cart is empty.');
+      return;
+    }
+
+    const name = document.getElementById('chk-name').value.trim();
+    const phone = document.getElementById('chk-phone').value.trim();
+    const email = document.getElementById('chk-email').value.trim();
+    const city = document.getElementById('chk-city').value.trim();
+    const address = document.getElementById('chk-address').value.trim();
+    const notes = document.getElementById('chk-notes').value.trim();
+
+    if (!name || !phone || !address) {
+      this.showToast('Please fill in your name, phone number, and delivery address.');
+      return;
+    }
+
+    // Calculate totals with verified pricing
+    let totalAmount = 0;
+    let totalSavings = 0;
+    const items = this.cart.map(item => {
+      const isWholesale = item.wholesalePrice && item.qty >= item.minWholesaleQty;
+      const unitPrice = isWholesale ? item.wholesalePrice : item.price;
+      const lineTotal = unitPrice * item.qty;
+      totalAmount += lineTotal;
+      if (isWholesale) totalSavings += (item.price - item.wholesalePrice) * item.qty;
+      return {
+        productId: item.productId,
+        name: item.name,
+        category: item.category,
+        unitPrice: unitPrice,
+        regularPrice: item.price,
+        qty: item.qty,
+        isWholesale: isWholesale,
+        lineTotal: lineTotal
+      };
+    });
+
+    const orderId = 'ZME-ORD-2026-' + Math.floor(1000 + Math.random() * 9000);
+    const newOrder = {
+      id: orderId,
+      createdAt: new Date().toISOString(),
+      customerName: name,
+      phone: phone,
+      email: email,
+      city: city || 'Hyderabad',
+      address: address,
+      notes: notes,
+      paymentMode: this.selectedPaymentMode === 'cod' ? 'Cash on Delivery / Pickup' : 'UPI / Bank Transfer (NEFT)',
+      paymentStatus: 'Pending Verification',
+      orderStatus: 'Pending Confirmation',
+      items: items,
+      totalAmount: totalAmount,
+      totalSavings: totalSavings
+    };
+
+    // Save genuinely to persistent storage
+    if (!Array.isArray(this.data.ecommerceOrders)) {
+      this.data.ecommerceOrders = [];
+    }
+    this.data.ecommerceOrders.unshift(newOrder);
+    this.saveData();
+
+    // Clear shopping cart
+    this.cart = [];
+    this.saveCart();
+
+    // Close checkout modal & show confirmation
+    this.closeModal('modal-checkout');
+    this.activeConfirmationOrder = newOrder;
+    this.showOrderConfirmation(newOrder);
+    this.renderAdminEcommerceOrders();
+    this.showToast(`Order ${orderId} confirmed successfully!`);
+  }
+
+  showOrderConfirmation(order) {
+    const body = document.getElementById('order-confirmation-body');
+    if (!body) return;
+
+    body.innerHTML = `
+      <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:var(--radius-md); padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <span style="font-size:0.75rem; text-transform:uppercase; color:#065f46; font-weight:700;">Order Reference ID</span>
+          <h2 style="font-size:1.5rem; color:#064e3b; margin:2px 0 0; font-family:monospace;">${order.id}</h2>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:0.8rem; color:#065f46;">Date: ${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+          <div style="font-weight:700; color:#064e3b;">Status: ${order.orderStatus}</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:20px; font-size:0.875rem;">
+        <div style="background:var(--gray-50); padding:14px; border-radius:var(--radius-md);">
+          <strong style="color:var(--navy-900);">Customer Details:</strong>
+          <div>${this.escapeHtml(order.customerName)}</div>
+          <div>📞 ${this.escapeHtml(order.phone)}</div>
+          ${order.email ? `<div>✉️ ${this.escapeHtml(order.email)}</div>` : ''}
+        </div>
+        <div style="background:var(--gray-50); padding:14px; border-radius:var(--radius-md);">
+          <strong style="color:var(--navy-900);">Delivery Destination:</strong>
+          <div>${this.escapeHtml(order.address)}</div>
+          <div>${this.escapeHtml(order.city)}</div>
+        </div>
+        <div style="background:var(--gray-50); padding:14px; border-radius:var(--radius-md);">
+          <strong style="color:var(--navy-900);">Payment & Verification:</strong>
+          <div>${this.escapeHtml(order.paymentMode)}</div>
+          <div style="color:var(--teal); font-weight:600;">Manual Confirmation Mode</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:0.95rem; color:var(--navy-900); margin-bottom:10px;">Itemized Order Receipt</h4>
+      <div class="admin-table-wrap" style="margin-bottom:20px;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Item Specification</th>
+              <th>Qty</th>
+              <th>Unit Rate</th>
+              <th style="text-align:right;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.items.map(item => `
+              <tr>
+                <td>
+                  <strong>${this.escapeHtml(item.name)}</strong>
+                  <div style="font-size:0.75rem; color:var(--gray-500);">${this.escapeHtml(item.category)} ${item.isWholesale ? '• (Bulk Lot Rate)' : ''}</div>
+                </td>
+                <td>${item.qty} pcs</td>
+                <td>₹${item.unitPrice.toLocaleString('en-IN')}</td>
+                <td style="text-align:right;">₹${item.lineTotal.toLocaleString('en-IN')}</td>
+              </tr>
+            `).join('')}
+            <tr>
+              <td colspan="3" style="text-align:right; font-weight:700;">Grand Total:</td>
+              <td style="text-align:right; font-weight:800; font-size:1.15rem; color:var(--navy-900);">
+                ₹${order.totalAmount.toLocaleString('en-IN')}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      ${order.notes ? `
+        <div style="background:var(--gray-50); padding:12px; border-radius:var(--radius-md); font-size:0.85rem; color:var(--gray-700); margin-bottom:16px;">
+          <strong>Order Notes / Custom Sizing:</strong> ${this.escapeHtml(order.notes)}
+        </div>
+      ` : ''}
+
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--radius-md); padding:12px; font-size:0.85rem; color:#1e40af;">
+        ℹ️ <strong>Next Steps:</strong> ZM Enterprises master tailor will review your item specifications and contact you on <strong>${this.escapeHtml(order.phone)}</strong> for sample approval and delivery schedule.
+      </div>
+    `;
+
+    this.openModal('modal-order-confirmation');
+  }
+
+  shareOrderConfirmationWhatsApp() {
+    const order = this.activeConfirmationOrder;
+    if (!order) return;
+
+    let targetPhone = this.data.settings.phone || "919876543210";
+    targetPhone = targetPhone.replace(/[^0-9]/g, '');
+
+    const lines = [
+      `*ZM ENTERPRISES - ONLINE ORDER CONFIRMATION*`,
+      `==============================`,
+      `*Order ID:* ${order.id}`,
+      `*Customer:* ${order.customerName}`,
+      `*Phone:* ${order.phone}`,
+      `*Delivery City:* ${order.city}`,
+      `*Address:* ${order.address}`,
+      `*Payment:* ${order.paymentMode}`,
+      ``,
+      `*ITEMS:*`
+    ];
+
+    order.items.forEach((item, idx) => {
+      lines.push(`${idx + 1}. ${item.name} × ${item.qty} pcs = ₹${item.lineTotal.toLocaleString('en-IN')}`);
+    });
+
+    lines.push(``);
+    lines.push(`*TOTAL AMOUNT:* ₹${order.totalAmount.toLocaleString('en-IN')}`);
+    if (order.notes) lines.push(`*Notes:* ${order.notes}`);
+    lines.push(``);
+    lines.push(`Please confirm this order and advise on delivery schedule.`);
+
+    const msg = encodeURIComponent(lines.join('\n'));
+    window.open(`https://wa.me/${targetPhone}?text=${msg}`, '_blank');
+  }
+
+  // ==================== ORDER TRACKING VIEW ====================
+  trackOrderLookup() {
+    const input = document.getElementById('track-order-input');
+    const container = document.getElementById('track-order-result');
+    if (!input || !container) return;
+
+    const query = input.value.trim().toLowerCase();
+    if (!query) {
+      container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--danger);">Please enter a valid Order Reference ID or 10-digit Phone Number.</div>`;
+      return;
+    }
+
+    // Search ecommerce orders first, then custom tailor orders
+    const ecomOrder = (this.data.ecommerceOrders || []).find(o =>
+      o.id.toLowerCase().includes(query) || (o.phone && o.phone.replace(/[^0-9]/g, '').includes(query.replace(/[^0-9]/g, '')))
+    );
+
+    const tailorOrder = (this.data.orders || []).find(o =>
+      o.id.toLowerCase().includes(query) || (o.customerPhone && o.customerPhone.includes(query))
+    );
+
+    if (ecomOrder) {
+      const statuses = ['Pending Confirmation', 'Confirmed', 'In Production', 'Dispatched / Ready', 'Delivered'];
+      const currentIndex = statuses.indexOf(ecomOrder.orderStatus);
+
+      container.innerHTML = `
+        <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; margin-top:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <div>
+              <span class="badge" style="background:#eff6ff; color:var(--primary);">Online Store Order</span>
+              <h3 style="font-size:1.2rem; color:var(--navy-900); margin:4px 0 0;">${ecomOrder.id}</h3>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">${ecomOrder.orderStatus}</span>
+              <div style="font-size:0.8rem; color:var(--gray-500); margin-top:4px;">Date: ${new Date(ecomOrder.createdAt).toLocaleDateString('en-IN')}</div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline-track-wrap">
+            ${statuses.map((s, idx) => {
+              const isCompleted = currentIndex >= idx;
+              const isCurrent = currentIndex === idx;
+              return `
+                <div class="timeline-step-row ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+                  <div class="timeline-dot"></div>
+                  <h4 style="font-size:0.95rem; color:${isCompleted ? 'var(--navy-900)' : 'var(--gray-500)'};">${s}</h4>
+                  <p style="font-size:0.8rem; color:var(--gray-500); margin:0;">
+                    ${idx === 0 ? 'Order registered in ZM Enterprises database' : ''}
+                    ${idx === 1 ? 'Reviewed and verified by workshop master' : ''}
+                    ${idx === 2 ? 'Pattern cutting and batch stitching underway' : ''}
+                    ${idx === 3 ? 'Quality inspection passed, ready for dispatch' : ''}
+                    ${idx === 4 ? 'Handover completed successfully' : ''}
+                  </p>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div style="background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius-md); padding:14px; margin-top:16px; font-size:0.875rem;">
+            <div><strong>Recipient:</strong> ${this.escapeHtml(ecomOrder.customerName)} (${this.escapeHtml(ecomOrder.phone)})</div>
+            <div><strong>Destination:</strong> ${this.escapeHtml(ecomOrder.address)}, ${this.escapeHtml(ecomOrder.city)}</div>
+            <div><strong>Items:</strong> ${ecomOrder.items.map(i => `${i.name} (${i.qty} pcs)`).join(', ')}</div>
+            <div style="margin-top:6px; font-weight:700; color:var(--navy-900);">Total Value: ₹${ecomOrder.totalAmount.toLocaleString('en-IN')} (${ecomOrder.paymentMode})</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    if (tailorOrder) {
+      container.innerHTML = `
+        <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; margin-top:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <div>
+              <span class="badge" style="background:var(--accent-gold-light); color:var(--accent-gold-hover);">Custom Atelier Order</span>
+              <h3 style="font-size:1.2rem; color:var(--navy-900); margin:4px 0 0;">${tailorOrder.id}</h3>
+            </div>
+            <div>
+              ${this.getStatusBadge(tailorOrder.status)}
+            </div>
+          </div>
+          <p><strong>Customer:</strong> ${this.escapeHtml(tailorOrder.customerName)}</p>
+          <p><strong>Garment:</strong> ${this.escapeHtml(tailorOrder.garmentType)}</p>
+          <p><strong>Trial Date:</strong> ${tailorOrder.trialDate || 'Not set'}</p>
+          <p><strong>Delivery Target:</strong> ${tailorOrder.deliveryDate || 'Not set'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="text-align:center; padding:30px; background:#fff; border:1px dashed var(--gray-300); border-radius:var(--radius-md); margin-top:20px;">
+        <h4 style="color:var(--navy-900); margin-bottom:6px;">No matching records found for "${this.escapeHtml(query)}"</h4>
+        <p style="font-size:0.85rem; color:var(--gray-600); margin-bottom:14px;">Please double-check the Order ID format (e.g. ZME-ORD-2026-XXXX) or the 10-digit mobile number provided during checkout.</p>
+        <button class="btn btn-whatsapp" onclick="app.openFloatingWhatsApp()">
+          Ask Master Tailor on WhatsApp
+        </button>
+      </div>
+    `;
+  }
+
+  // ==================== ADMIN PRODUCT MANAGEMENT ====================
+  renderAdminProductsTable() {
+    const tbody = document.getElementById('admin-products-table-body');
+    if (!tbody) return;
+
+    const products = this.data.ecommerceProducts || [];
+    const countBadge = document.getElementById('nav-products-count');
+    if (countBadge) countBadge.textContent = products.length;
+
+    if (products.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding: 40px; color: var(--gray-500);">
+            <p style="font-size:1rem; margin-bottom:12px;">No products currently listed in inventory.</p>
+            <div style="display:flex; justify-content:center; gap:10px;">
+              <button class="btn btn-primary" onclick="app.openProductModal()">+ Add Your First Product</button>
+              <button class="btn btn-secondary" onclick="app.seedSampleProductsOptional()">⚡ Load Uniform Templates</button>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = products.map(p => {
+      const img = p.image || this.getDefaultImageForCategory(p.category);
+      return `
+        <tr>
+          <td>
+            <img src="${this.escapeHtml(img)}" alt="${this.escapeHtml(p.name)}" class="admin-product-thumb" onerror="this.src='${this.getDefaultImageForCategory(p.category)}'">
+          </td>
+          <td>
+            <strong>${this.escapeHtml(p.name)}</strong>
+            ${p.sku ? `<div style="font-size:0.75rem; color:var(--gray-500);">SKU: ${this.escapeHtml(p.sku)}</div>` : ''}
+          </td>
+          <td>
+            <span class="badge" style="background:var(--gray-100); color:var(--gray-700);">${this.escapeHtml(p.category)}</span>
+          </td>
+          <td>
+            <strong>₹${(Number(p.price) || 0).toLocaleString('en-IN')}</strong>
+          </td>
+          <td>
+            ${p.wholesalePrice ? `
+              <span style="color:var(--teal); font-weight:700;">₹${Number(p.wholesalePrice).toLocaleString('en-IN')}</span>
+              <div style="font-size:0.75rem; color:var(--gray-500);">≥ ${p.minWholesaleQty || 20} pcs</div>
+            ` : '<span style="color:var(--gray-400);">None</span>'}
+          </td>
+          <td>
+            <select class="form-control" style="padding:4px 8px; font-size:0.8rem; width:auto;" onchange="app.updateProductStockStatus('${p.id}', this.value)">
+              <option value="In Stock" ${p.stockStatus === 'In Stock' ? 'selected' : ''}>In Stock</option>
+              <option value="Made to Order" ${p.stockStatus === 'Made to Order' ? 'selected' : ''}>Made to Order</option>
+              <option value="Low Stock" ${p.stockStatus === 'Low Stock' ? 'selected' : ''}>Low Stock</option>
+              <option value="Out of Stock" ${p.stockStatus === 'Out of Stock' ? 'selected' : ''}>Out of Stock</option>
+            </select>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:inline-flex; gap:6px;">
+              <button class="btn btn-sm btn-outline" onclick="app.openProductModal('${p.id}')">Edit</button>
+              <button class="btn btn-sm btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="app.deleteProduct('${p.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  updateProductStockStatus(id, newStatus) {
+    const product = (this.data.ecommerceProducts || []).find(p => p.id === id);
+    if (!product) return;
+    product.stockStatus = newStatus;
+    this.saveData();
+    this.renderProductsGrid();
+    this.showToast(`Updated ${product.name} stock to "${newStatus}"`);
+  }
+
+  openProductModal(id = null) {
+    const form = document.getElementById('admin-product-form');
+    const title = document.getElementById('modal-admin-product-title');
+    if (!form) return;
+
+    form.reset();
+    document.getElementById('admin-prod-id').value = '';
+
+    if (id) {
+      const product = (this.data.ecommerceProducts || []).find(p => p.id === id);
+      if (product) {
+        if (title) title.textContent = 'Edit Product';
+        document.getElementById('admin-prod-id').value = product.id;
+        document.getElementById('admin-prod-name').value = product.name;
+        document.getElementById('admin-prod-category').value = product.category;
+        document.getElementById('admin-prod-sku').value = product.sku || '';
+        document.getElementById('admin-prod-desc').value = product.desc || '';
+        document.getElementById('admin-prod-price').value = product.price || '';
+        document.getElementById('admin-prod-wholesale-price').value = product.wholesalePrice || '';
+        document.getElementById('admin-prod-min-wholesale-qty').value = product.minWholesaleQty || '20';
+        document.getElementById('admin-prod-stock').value = product.stockStatus || 'In Stock';
+        document.getElementById('admin-prod-image').value = product.image || '';
+      }
+    } else {
+      if (title) title.textContent = 'Add New Product';
+    }
+
+    this.openModal('modal-product-admin');
+  }
+
+  saveProduct(e) {
+    e.preventDefault();
+    const idInput = document.getElementById('admin-prod-id').value;
+    const name = document.getElementById('admin-prod-name').value.trim();
+    const category = document.getElementById('admin-prod-category').value;
+    const sku = document.getElementById('admin-prod-sku').value.trim();
+    const desc = document.getElementById('admin-prod-desc').value.trim();
+    const price = parseFloat(document.getElementById('admin-prod-price').value);
+    const wholesalePriceVal = document.getElementById('admin-prod-wholesale-price').value;
+    const wholesalePrice = wholesalePriceVal ? parseFloat(wholesalePriceVal) : null;
+    const minWholesaleQty = parseInt(document.getElementById('admin-prod-min-wholesale-qty').value) || 20;
+    const stockStatus = document.getElementById('admin-prod-stock').value;
+    const image = document.getElementById('admin-prod-image').value.trim();
+
+    if (!name || isNaN(price) || price < 0) {
+      this.showToast('Please enter a valid product name and retail price.');
+      return;
+    }
+
+    if (!Array.isArray(this.data.ecommerceProducts)) {
+      this.data.ecommerceProducts = [];
+    }
+
+    if (idInput) {
+      // Edit
+      const existing = this.data.ecommerceProducts.find(p => p.id === idInput);
+      if (existing) {
+        existing.name = name;
+        existing.category = category;
+        existing.sku = sku;
+        existing.desc = desc;
+        existing.price = price;
+        existing.wholesalePrice = wholesalePrice;
+        existing.minWholesaleQty = minWholesaleQty;
+        existing.stockStatus = stockStatus;
+        existing.image = image;
+        this.showToast(`Updated product: ${name}`);
+      }
+    } else {
+      // Create
+      const newId = 'PROD-' + Date.now().toString(36).toUpperCase();
+      this.data.ecommerceProducts.unshift({
+        id: newId,
+        name,
+        category,
+        sku,
+        desc,
+        price,
+        wholesalePrice,
+        minWholesaleQty,
+        stockStatus,
+        image
+      });
+      this.showToast(`Product added: ${name}`);
+    }
+
+    this.saveData();
+    this.closeModal('modal-product-admin');
+    this.renderAdminProductsTable();
+    this.renderProductsGrid();
+  }
+
+  deleteProduct(id) {
+    if (!confirm('Are you sure you want to remove this product from the inventory?')) return;
+    this.data.ecommerceProducts = (this.data.ecommerceProducts || []).filter(p => p.id !== id);
+    this.saveData();
+    this.renderAdminProductsTable();
+    this.renderProductsGrid();
+    this.showToast('Product removed.');
+  }
+
+  seedSampleProductsOptional() {
+    if (!confirm('Load standard ZM Enterprises uniform templates into your inventory? Existing products will be preserved.')) return;
+
+    const templates = [
+      {
+        id: 'PROD-SCH-01',
+        name: "Boys High School Uniform Shirt (Set of 2)",
+        category: "School Uniforms",
+        sku: "ZM-BS-01",
+        desc: "Durable Oxford poly-cotton weave (65/35), reinforced double collar with collar stiffener, chest pocket with badge stitching margin, breathable wash-fast fabric.",
+        price: 650,
+        wholesalePrice: 480,
+        minWholesaleQty: 25,
+        stockStatus: "In Stock",
+        image: "images/school-uniform.jpg"
+      },
+      {
+        id: 'PROD-SCH-02',
+        name: "School Pleated Pinafore & Salwar Kameez Set",
+        category: "School Uniforms",
+        sku: "ZM-GP-02",
+        desc: "Wrinkle-resistant poly-viscose box pleat pinafore with growth margin hems and inner lining. Includes durable white salwar and dupatta border stitching.",
+        price: 850,
+        wholesalePrice: 620,
+        minWholesaleQty: 25,
+        stockStatus: "In Stock",
+        image: "images/school-uniform.jpg"
+      },
+      {
+        id: 'PROD-CORP-01',
+        name: "Executive Corporate Blazer (Custom Fit)",
+        category: "Corporate Attire",
+        sku: "ZM-BLZ-01",
+        desc: "Tailored 2-button corporate blazer in premium matte poly-viscose suiting. Canvas fused lapels, twin back vents, inner phone pocket, and customized institutional crest embroidery.",
+        price: 2800,
+        wholesalePrice: 2100,
+        minWholesaleQty: 15,
+        stockStatus: "Made to Order",
+        image: "images/corporate-suit.jpg"
+      },
+      {
+        id: 'PROD-MED-01',
+        name: "Hospital Medical Scrubs (Top & Drawstring Pants)",
+        category: "Healthcare & Hospitality",
+        sku: "ZM-SCR-01",
+        desc: "Anti-microbial, chlorine-safe medical scrubs. 4-way comfort stretch, V-neck chest pocket, utility scissor pocket, reinforced double-needle stress points.",
+        price: 950,
+        wholesalePrice: 680,
+        minWholesaleQty: 20,
+        stockStatus: "In Stock",
+        image: "images/medical-scrubs.jpg"
+      },
+      {
+        id: 'PROD-BESP-01',
+        name: "Men's Bespoke 3-Piece Atelier Tuxedo",
+        category: "Bespoke Tailoring",
+        sku: "ZM-BES-01",
+        desc: "Hand-finished coat, tailored vest, and formal flat-front trousers. Drafted to individual anatomical measurements with 2 intermediate fitting trials in Hyderabad.",
+        price: 6500,
+        wholesalePrice: null,
+        minWholesaleQty: 1,
+        stockStatus: "Made to Order",
+        image: "images/bespoke-tuxedo.jpg"
+      },
+      {
+        id: 'PROD-IND-01',
+        name: "Heavy-Duty Industrial Boiler Suit Coverall",
+        category: "Industrial & Workwear",
+        sku: "ZM-IND-01",
+        desc: "Heavy 240 GSM pure cotton twill. 6 functional utility pockets, brass heavy-duty YKK zipper, elasticated waist back, bar-tacked stress loops for tools.",
+        price: 1200,
+        wholesalePrice: 850,
+        minWholesaleQty: 30,
+        stockStatus: "In Stock",
+        image: "images/industrial-workwear.jpg"
+      },
+      {
+        id: 'PROD-FAB-01',
+        name: "Poly-Cotton Uniform Fabric Roll (100m)",
+        category: "Fabrics & Accessories",
+        sku: "ZM-FAB-01",
+        desc: "Certified 65/35 Oxford poly-cotton uniform drill. 58-inch width, 210 GSM, wash-fast dye for institutional uniform batches.",
+        price: 16500,
+        wholesalePrice: 14200,
+        minWholesaleQty: 3,
+        stockStatus: "In Stock",
+        image: "images/fabric-rolls.jpg"
+      }
+    ];
+
+    if (!Array.isArray(this.data.ecommerceProducts)) {
+      this.data.ecommerceProducts = [];
+    }
+
+    const existingIds = new Set(this.data.ecommerceProducts.map(p => p.id));
+    let addedCount = 0;
+    templates.forEach(t => {
+      if (!existingIds.has(t.id)) {
+        this.data.ecommerceProducts.push(t);
+        addedCount++;
+      }
+    });
+
+    this.saveData();
+    this.renderAdminProductsTable();
+    this.renderProductsGrid();
+    this.showToast(`Loaded ${addedCount} uniform templates successfully!`);
+  }
+
+  // ==================== ADMIN E-COMMERCE ORDERS ====================
+  renderAdminEcommerceOrders() {
+    const tbody = document.getElementById('admin-ecom-orders-table-body');
+    const badge = document.getElementById('nav-ecom-orders-count');
+    const orders = this.data.ecommerceOrders || [];
+
+    if (badge) badge.textContent = orders.length;
+    if (!tbody) return;
+
+    if (orders.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; padding: 40px; color: var(--gray-500);">
+            No online orders placed yet. Orders submitted via the web store checkout will appear here in real time.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = orders.map(o => {
+      const itemCount = (o.items || []).reduce((sum, i) => sum + (Number(i.qty) || 0), 0);
+      return `
+        <tr>
+          <td>
+            <strong style="font-family:monospace; color:var(--primary);">${this.escapeHtml(o.id)}</strong>
+          </td>
+          <td>
+            ${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+          </td>
+          <td>
+            <strong>${this.escapeHtml(o.customerName)}</strong>
+            <div style="font-size:0.75rem; color:var(--gray-500);">📞 ${this.escapeHtml(o.phone)}</div>
+          </td>
+          <td>
+            ${itemCount} pcs
+            <div style="font-size:0.75rem; color:var(--gray-500);">${(o.items || []).length} lines</div>
+          </td>
+          <td>
+            <strong>₹${(Number(o.totalAmount) || 0).toLocaleString('en-IN')}</strong>
+          </td>
+          <td>
+            <span style="font-size:0.8rem;">${this.escapeHtml(o.paymentMode)}</span>
+          </td>
+          <td>
+            <select class="form-control" style="padding:4px 8px; font-size:0.8rem; width:auto;" onchange="app.updateOrderStatus('${o.id}', this.value)">
+              <option value="Pending Confirmation" ${o.orderStatus === 'Pending Confirmation' ? 'selected' : ''}>Pending Confirmation</option>
+              <option value="Confirmed" ${o.orderStatus === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="In Production" ${o.orderStatus === 'In Production' ? 'selected' : ''}>In Production</option>
+              <option value="Dispatched / Ready" ${o.orderStatus === 'Dispatched / Ready' ? 'selected' : ''}>Dispatched / Ready</option>
+              <option value="Delivered" ${o.orderStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="Cancelled" ${o.orderStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:inline-flex; gap:6px;">
+              <button class="btn btn-sm btn-outline" onclick="app.viewEcommerceOrderDetails('${o.id}')">View</button>
+              <button class="btn btn-sm btn-whatsapp" onclick="app.shareEcommerceOrderWhatsApp('${o.id}')" title="Message customer on WhatsApp">WhatsApp</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  updateOrderStatus(orderId, newStatus) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+    order.orderStatus = newStatus;
+    this.saveData();
+    this.showToast(`Order ${orderId} status set to "${newStatus}"`);
+  }
+
+  viewEcommerceOrderDetails(orderId) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+    this.activeConfirmationOrder = order;
+    this.showOrderConfirmation(order);
+  }
+
+  shareEcommerceOrderWhatsApp(orderId) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+    const phone = order.phone.replace(/[^0-9]/g, '');
+    const msg = encodeURIComponent(
+      `Hello ${order.customerName},\nThis is ZM Enterprises Tailoring Workshop regarding your Order *${order.id}*.\nCurrent status: *${order.orderStatus}*.\nTotal: ₹${order.totalAmount.toLocaleString('en-IN')}.\nWe will update you on delivery/trials!`
+    );
+    window.open(`https://wa.me/91${phone.slice(-10)}?text=${msg}`, '_blank');
+  }
+
+  // ==================== WHOLESALE ENQUIRY SUBMISSION ====================
+  submitWholesaleEnquiry(e) {
+    e.preventDefault();
+    const businessName = document.getElementById('ws-business-name').value.trim();
+    const contactName = document.getElementById('ws-contact-name').value.trim();
+    const phone = document.getElementById('ws-phone').value.trim();
+    const email = document.getElementById('ws-email').value.trim();
+    const category = document.getElementById('ws-category').value;
+    const quantity = document.getElementById('ws-quantity').value;
+    const location = document.getElementById('ws-location').value.trim();
+    const targetDate = document.getElementById('ws-target-date').value;
+    const notes = document.getElementById('ws-notes').value.trim();
+
+    if (!businessName || !contactName || !phone || !category) {
+      this.showToast('Please fill all required wholesale inquiry fields.');
+      return;
+    }
+
+    const refId = 'ZME-B2B-' + Math.floor(1000 + Math.random() * 9000);
+    const newEnquiry = {
+      id: refId,
+      createdAt: new Date().toISOString(),
+      schoolOrCompany: businessName,
+      contactPerson: contactName,
+      phone: phone,
+      email: email,
+      uniformCategory: category,
+      estimatedQuantity: quantity,
+      location: location,
+      targetDate: targetDate,
+      notes: notes,
+      status: 'New'
+    };
+
+    if (!Array.isArray(this.data.wholesaleEnquiries)) {
+      this.data.wholesaleEnquiries = [];
+    }
+    this.data.wholesaleEnquiries.unshift(newEnquiry);
+    this.saveData();
+
+    // Reset form
+    document.getElementById('wholesale-b2b-form').reset();
+    this.showToast(`Wholesale Enquiry ${refId} submitted successfully!`);
+
+    // Prepare WhatsApp message
+    let targetPhone = this.data.settings.phone || "919876543210";
+    targetPhone = targetPhone.replace(/[^0-9]/g, '');
+
+    const lines = [
+      `*ZM ENTERPRISES - B2B WHOLESALE ENQUIRY*`,
+      `==============================`,
+      `*Enquiry Ref:* ${refId}`,
+      `*Institution / Shop:* ${businessName}`,
+      `*Contact Person:* ${contactName}`,
+      `*Phone:* ${phone}`,
+      `*Category:* ${category}`,
+      `*Required Lot:* ${quantity}`,
+      `*Location:* ${location}`,
+      `*Target Date:* ${targetDate}`,
+      notes ? `*Notes:* ${notes}` : '',
+      ``,
+      `Kindly provide an itemized institutional quotation and fabric sample approval appointment.`
+    ].filter(Boolean);
+
+    const msg = encodeURIComponent(lines.join('\n'));
+    if (confirm(`Enquiry ${refId} saved! Would you like to send this inquiry directly to ZM Enterprises on WhatsApp now?`)) {
+      window.open(`https://wa.me/${targetPhone}?text=${msg}`, '_blank');
+    }
+  }
+
+  // ==================== PAYMENT GATEWAY ARCHITECTURE HOOK ====================
+  /**
+   * Prepared architectural handler for automated payment gateways (Razorpay, Stripe, Cashfree).
+   * Note: In compliance with project guidelines, no credentials or private keys are hardcoded in the frontend.
+   * Real production gateways require a secure Node.js / serverless endpoint to sign checkout orders.
+   */
+  async processPaymentGateway(order, gatewayType = 'razorpay') {
+    console.info(`[Payment Gateway Readiness] Initiating payment flow for ${order.id} via ${gatewayType}`);
+    // When backend endpoint is active:
+    // const res = await fetch('/api/create-payment-intent', { method: 'POST', body: JSON.stringify({ orderId: order.id, amount: order.totalAmount }) });
+    // const { orderSecret } = await res.json();
+    return {
+      status: 'manual_verification_required',
+      message: 'Automatic payment gateway will be enabled upon backend server configuration.'
+    };
+  }
 }
+
 
 // Instantiate Global Application
 const app = new TailorBusinessApp();
