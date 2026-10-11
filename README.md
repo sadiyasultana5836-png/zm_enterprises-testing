@@ -16,7 +16,14 @@ Welcome to **ZM Enterprises**, a professional production-ready web platform buil
 ## 🚀 Features & Architecture
 
 ### 1. 🌐 Public Business Homepage
-- **Prominent ZM Enterprises Branding:** Emerald Green (`#059669`, `#10b981`), Deep Obsidian (`#070a10`), and Warm Gold (`#d97706`) luxury atelier aesthetic.
+- **Unified 7-Token Brand Identity:**
+  - **Primary:** Royal Blue (`#234E8A`) – Main brand headers, nav, core CTAs
+  - **Secondary:** Emerald Green (`#167A62`) – Secondary CTAs, WhatsApp buttons, badges
+  - **Main Background:** Warm Ivory (`#FAF8F2`) – Clean, bright textile-atelier canvas
+  - **Card Background:** Pure White (`#FFFFFF`) – Crisp elevated content cards
+  - **Accent:** Muted Champagne Gold (`#C5A46D`) – Subtle luxury borders, star ratings, highlights
+  - **Main Text:** Charcoal (`#292D32`) – High-contrast readable typography
+  - **Secondary Text:** Soft Grey (`#68717D`) – Clean descriptive labels and subtext
 - **Clear Value Proposition:** Precision tailoring & bulk uniform stitching in Hyderabad.
 - **Core Services Showcase:**
   1. *Bulk School Uniform Stitching* (Boys & Girls complete academic sets, blazers, pinafores, sportswear, crest embroidery).
@@ -139,37 +146,51 @@ Welcome to **ZM Enterprises**, a professional production-ready web platform buil
 
 The application is built as a zero-dependency, ultra-fast static web application that is 100% compatible with GitHub repositories and Vercel static deployments.
 
-### Safe GitHub Update Steps:
-1. Open a terminal or Git command prompt in this project folder:
-   ```bash
-   cd "C:\Users\sadiy\Desktop\ZM Enterprises Tailoring App"
-   ```
-2. Check modified files:
-   ```bash
-   git status
-   ```
-3. Stage the files:
-   ```bash
-   git add index.html styles.css app.js vercel.json .gitignore server.ps1 README.md
-   ```
-4. Commit your changes:
-   ```bash
-   git commit -m "feat: Upgrade ZM Enterprises with B2B uniform stitching website, enquiry form, and SEO"
-   ```
-5. Push to your GitHub repository:
-   ```bash
-   git push origin main
-   ```
+### Method A: Direct Web Upload to GitHub (Easiest)
+1. Open your GitHub repository in your web browser:
+   `https://github.com/sadiyasultana5836-png/zm_enterprises-testing`
+2. Click **Add file** ➔ **Upload files**.
+3. From your computer, open:
+   `C:\Users\sadiy\Desktop\ZM Enterprises Tailoring App`
+4. Drag and drop the modified files into the upload box:
+   - `index.html`
+   - `styles.css`
+   - `app.js`
+   - `README.md`
+   - The entire `images` folder (all 12 optimized photos)
+5. In the commit message box at the bottom, enter:
+   `Redesign: Royal blue & warm ivory theme with authentic Indian uniform & atelier photography`
+6. Click **Commit changes**.
+7. Vercel will automatically detect the commit on `main` and deploy the updated site in ~30 seconds.
 
-### Safe Vercel Deployment Steps:
-1. If your Vercel project is connected to your GitHub repository:
-   - Pushing your commit to `main` will **automatically trigger an instant deployment** on Vercel.
-2. If deploying via Vercel CLI:
-   ```bash
-   npx vercel --prod
-   ```
-3. Verify your live Vercel deployment:
-   - Check that the homepage loads with the B2B uniform highlights.
-   - Test submitting a quotation enquiry.
-   - Verify WhatsApp button links.
-   - Confirm that the Tailor Management Suite (Dashboard, Orders, Customers) remains fully operational.
+### Method B: Via Git Command Line
+```bash
+cd "C:\Users\sadiy\Desktop\ZM Enterprises Tailoring App"
+git add index.html styles.css app.js README.md images/
+git commit -m "feat: Royal blue & warm ivory theme with authentic Indian uniform & atelier photography"
+git push origin main
+```
+
+---
+
+## 🔒 Fixing the Vercel Public Access Problem (No Login Required)
+
+If visitors or friends are prompted to log in when you share a link, it is because of one of two common reasons:
+
+### Reason 1: Sharing an Internal Vercel URL Instead of the Public Domain
+- **Incorrect Links:** Links starting with `https://vercel.com/...` or preview branch URLs like `https://zmenterprises-testing-xxx-sadiyasultana5836-pngs-projects.vercel.app` require a Vercel team account or trigger authentication.
+- **Correct Public Link:** Always share the canonical public production domain:
+  👉 **`https://zmenterprises-testing.vercel.app/`**
+  This URL is configured for public access and serves `HTTP 200 OK` directly without any login requirement.
+
+### Reason 2: Vercel "Deployment Protection" (Vercel Authentication) is Enabled
+If preview links or production links still ask visitors to log in, disable Vercel Authentication:
+1. Open your Vercel Dashboard at **[vercel.com](https://vercel.com/)**.
+2. Click on your project: **`zm_enterprises-testing`** (or `zmenterprises-testing`).
+3. Click the **Settings** tab at the top.
+4. In the left navigation menu, click **Deployment Protection**.
+5. Check the following:
+   - **Vercel Authentication:** Set to **Disabled** (or ensure it does NOT apply to Preview / Production deployments).
+   - **Password Protection:** Ensure this is **Disabled** (unless you deliberately set a password).
+6. Click **Save** if prompted.
+7. Anyone opening **`https://zmenterprises-testing.vercel.app/`** in any browser (even Incognito/Private mode) will view the site immediately without any login prompt!
