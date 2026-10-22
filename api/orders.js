@@ -1,6 +1,6 @@
-https://synergy-legal-consultancy.vercel.app// api/orders.js
+// api/orders.js
 // Vercel Serverless Function: ZM Enterprises Order Management System
-// Provides persistent storage for online orders, status tracking, and admin management.
+// Persistent order storage, status tracking, audit log, and admin management.
 
 const fs = require('fs');
 const path = require('path');
@@ -73,6 +73,8 @@ async function syncToSupabase(order) {
         payment_mode: order.paymentMode,
         payment_status: order.paymentStatus,
         order_status: order.orderStatus,
+        expected_delivery_date: order.expectedDeliveryDate || null,
+        history: order.history || [],
         created_at: order.createdAt
       })
     });
@@ -89,7 +91,7 @@ async function syncToSupabase(order) {
 // Helper: Dispatch Email Notification (via Resend or Webhook)
 async function dispatchOrderNotification(order) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const recipientEmail = process.env.OWNER_EMAIL || process.env.NOTIFICATION_EMAIL;
+  const recipientEmail = process.env.OWNER_EMAIL || process.env.NOTIFICATION_EMAIL || 'sadiyasultana5836@gmail.com';
   const webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
 
   // 1. Resend Email Dispatch
@@ -114,25 +116,28 @@ async function dispatchOrderNotification(order) {
           
           <div style="background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
             <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px;">
-              <span style="font-size: 12px; color: #065f46; text-transform: uppercase; font-weight: bold;">Order Reference ID</span>
-              <h2 style="margin: 2px 0 0; color: #064e3b; font-family: monospace;">${order.id}</h2>
-              <div style="font-size: 13px; color: #047857; margin-top: 4px;">Status: <strong>${order.orderStatus}</strong> â€¢ Payment: <strong>${order.paymentStatus}</strong></div>
+              <span style="font-size: 12px; text-transform: uppercase; color: #065f46; font-weight: bold; letter-spacing: 0.5px;">Order Reference ID</span>
+              <div style="font-size: 22px; font-weight: bold; color: #064e3b; font-family: monospace;">${order.id}</div>
+              <div style="font-size: 13px; color: #047857; margin-top: 4px;">Status: <strong>${order.orderStatus}</strong> (Received on ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST)</div>
             </div>
 
             <h3 style="color: #234E8A; border-bottom: 2px solid #FAF8F2; padding-bottom: 8px; margin-top: 0;">Customer Information</h3>
-            <table style="width: 100%; font-size: 14px; margin-bottom: 20px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
               <tr>
-                <td style="width: 140px; color: #68717D; padding: 4px 0;">Customer Name:</td>
-                <td style="font-weight: bold; color: #292D32;">${order.customerName}</td>
+                <td style="color: #68717D; width: 140px; padding: 4px 0;">Customer Name:</td>
+                <td style="font-weight: bold;">${order.customerName}</td>
               </tr>
               <tr>
-                <td style="color: #68717D; padding: 4px 0;">Mobile Phone:</td>
-                <td><a href="tel:${order.phone}" style="color: #234E8A; font-weight: bold;">${order.phone}</a> (<a href="https://wa.me/91${String(order.phone).replace(/[^0-9]/g, '').slice(-10)}" style="color:#167A62;">Message on WhatsApp</a>)</td>
+                <td style="color: #68717D; padding: 4px 0;">Contact Phone:</td>
+                <td><a href="tel:${order.phone}" style="color: #234E8A; font-weight: bold; text-decoration: none;">${order.phone}</a></td>
               </tr>
-              ${order.email ? `<tr><td style="color: #68717D; padding: 4px 0;">Email Address:</td><td>${order.email}</td></tr>` : ''}
               <tr>
-                <td style="color: #68717D; padding: 4px 0;">City / Locality:</td>
-                <td>${order.city || 'Hyderabad'}</td>
+                <td style="color: #68717D; padding: 4px 0;">Email:</td>
+                <td>${order.email || 'None provided'}</td>
+              </tr>
+              <tr>
+                <td style="color: #68717D; padding: 4px 0;">Destination City:</td>
+                <td>${order.city}</td>
               </tr>
               <tr>
                 <td style="color: #68717D; padding: 4px 0; vertical-align: top;">Delivery Address:</td>
@@ -176,7 +181,7 @@ async function dispatchOrderNotification(order) {
             </table>
 
             <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 12px; font-size: 12px; color: #92400e; margin-top: 20px;">
-              <strong>â„¹ï¸ Atelier Order Notice:</strong> Payment is marked as <strong>${order.paymentStatus}</strong>. Confirm the order with the customer via phone or WhatsApp before initiating workshop production.
+              <strong>âš ï¸ Atelier Order Notice:</strong> Payment is marked as <strong>${order.paymentStatus}</strong>. Confirm the order with the customer via phone or WhatsApp before initiating workshop production.
             </div>
           </div>
           
@@ -195,7 +200,7 @@ async function dispatchOrderNotification(order) {
         body: JSON.stringify({
           from: process.env.SENDER_EMAIL || 'ZM Enterprises <orders@resend.dev>',
           to: recipientEmail,
-          subject: `ðŸ›’ New Online Order #${order.id} (â‚¹${Number(order.totalAmount).toLocaleString('en-IN')}) - ZM Enterprises`,
+          subject: `ðŸ“¦ New Online Order #${order.id} (â‚¹${Number(order.totalAmount).toLocaleString('en-IN')}) - ZM Enterprises`,
           html: emailHtml
         })
       });
@@ -213,8 +218,9 @@ async function dispatchOrderNotification(order) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event: 'order.created', data: order })
       });
+      console.log('[Order Notification] Webhook triggered successfully.');
     } catch (e) {
-      console.warn('[Order Notification] Failed to send webhook:', e.message);
+      console.warn('[Order Notification] Webhook trigger error:', e.message);
     }
   }
 }
@@ -251,7 +257,14 @@ module.exports = async function handler(req, res) {
 
       if (!customerName || !phone || !address) {
         return res.status(400).json({
-          error: 'Validation failed: customerName, phone, and address are mandatory.'
+          error: 'Validation failed: Customer name, phone number, and delivery address are required.'
+        });
+      }
+
+      const cleanDigits = phone.replace(/[^0-9]/g, '');
+      if (cleanDigits.length < 10) {
+        return res.status(400).json({
+          error: 'Validation failed: Please enter a valid 10-digit mobile number.'
         });
       }
 
@@ -261,7 +274,7 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Calculate and verify exact pricing on server side (No invented extra charges)
+      // Calculate and verify exact pricing on server side (Zero invented charges)
       let verifiedTotal = 0;
       const verifiedItems = items.map(it => {
         const qty = Math.max(1, parseInt(it.qty, 10) || 1);
@@ -284,6 +297,8 @@ module.exports = async function handler(req, res) {
         ? body.id 
         : `ZME-ORD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+      const createdAt = body.createdAt || new Date().toISOString();
+
       const newOrder = {
         id: orderId,
         customerName: customerName,
@@ -297,7 +312,16 @@ module.exports = async function handler(req, res) {
         paymentMode: String(body.paymentMode || 'Cash on Delivery / Pickup').trim(),
         paymentStatus: 'Pending Verification',
         orderStatus: 'Pending Confirmation',
-        createdAt: body.createdAt || new Date().toISOString()
+        expectedDeliveryDate: body.expectedDeliveryDate ? String(body.expectedDeliveryDate).trim() : null,
+        history: [
+          {
+            timestamp: createdAt,
+            fromStatus: null,
+            toStatus: 'Pending Confirmation',
+            note: 'Order submitted by customer via web store checkout.'
+          }
+        ],
+        createdAt: createdAt
       };
 
       // 1. Save to persistent file storage
@@ -319,6 +343,7 @@ module.exports = async function handler(req, res) {
         paymentStatus: newOrder.paymentStatus,
         orderStatus: newOrder.orderStatus,
         createdAt: newOrder.createdAt,
+        order: newOrder,
         message: 'Order recorded securely in database and notifications dispatched.'
       });
     } catch (err) {
@@ -327,19 +352,22 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // --- GET /api/orders: Retrieve orders for owner/admin ---
+  // --- GET /api/orders: Retrieve orders for owner/admin OR public order tracking ---
   if (req.method === 'GET') {
+    const headers = req.headers || {};
+    const query = req.query || {};
+
     // Authenticate Admin access
     const adminPin = process.env.ADMIN_PIN || '1234';
-    const providedPin = req.headers['x-admin-pin'] || req.query.pin || '';
-    const authHeader = req.headers['authorization'] || '';
+    const providedPin = headers['x-admin-pin'] || query.pin || '';
+    const authHeader = headers['authorization'] || '';
 
     const isPinMatch = providedPin && String(providedPin).trim() === String(adminPin).trim();
     const isBearerMatch = authHeader && authHeader.replace(/^Bearer\s+/i, '').trim() === String(adminPin).trim();
 
     // Check if looking up single order by Order ID + Phone (Customer Track Order mode)
-    const lookupId = req.query.lookupId;
-    const lookupPhone = req.query.lookupPhone;
+    const lookupId = query.lookupId;
+    const lookupPhone = query.lookupPhone;
 
     if (lookupId && lookupPhone) {
       const orders = loadStoredOrders();
@@ -348,7 +376,7 @@ module.exports = async function handler(req, res) {
         String(o.phone).replace(/[^0-9]/g, '').endsWith(String(lookupPhone).replace(/[^0-9]/g, '').slice(-10))
       );
       if (match) {
-        // Return limited public tracking details (omit other sensitive internal fields)
+        // Return limited public tracking details (omit private sensitive internal data)
         return res.status(200).json({
           found: true,
           order: {
@@ -357,8 +385,10 @@ module.exports = async function handler(req, res) {
             createdAt: match.createdAt,
             orderStatus: match.orderStatus,
             paymentStatus: match.paymentStatus,
+            expectedDeliveryDate: match.expectedDeliveryDate || null,
             itemCount: (match.items || []).reduce((s, i) => s + i.qty, 0),
-            totalAmount: match.totalAmount
+            totalAmount: match.totalAmount,
+            history: match.history || []
           }
         });
       } else {
@@ -369,7 +399,7 @@ module.exports = async function handler(req, res) {
     // Otherwise, full list requires Owner Admin Authentication
     if (!isPinMatch && !isBearerMatch) {
       return res.status(401).json({
-        error: 'Unauthorized: Admin authentication required to inspect customer order records.'
+        error: 'Unauthorized: Owner Admin PIN required to view customer order records.'
       });
     }
 
@@ -381,17 +411,20 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // --- PATCH /api/orders: Update order status or payment status ---
+  // --- PATCH /api/orders: Update order status, payment status, delivery date, notes ---
   if (req.method === 'PATCH') {
+    const headers = req.headers || {};
+    const query = req.query || {};
+
     const adminPin = process.env.ADMIN_PIN || '1234';
-    const providedPin = req.headers['x-admin-pin'] || req.query.pin || '';
-    const authHeader = req.headers['authorization'] || '';
+    const providedPin = headers['x-admin-pin'] || query.pin || '';
+    const authHeader = headers['authorization'] || '';
 
     const isAuth = (providedPin && String(providedPin).trim() === String(adminPin).trim()) ||
                    (authHeader && authHeader.replace(/^Bearer\s+/i, '').trim() === String(adminPin).trim());
 
     if (!isAuth) {
-      return res.status(401).json({ error: 'Unauthorized: Admin PIN required to modify order status.' });
+      return res.status(401).json({ error: 'Unauthorized: Admin PIN required to modify order records.' });
     }
 
     try {
@@ -409,10 +442,51 @@ module.exports = async function handler(req, res) {
         return res.status(404).json({ error: `Order ${orderId} not found in database.` });
       }
 
-      if (body.orderStatus) target.orderStatus = String(body.orderStatus).trim();
-      if (body.paymentStatus) target.paymentStatus = String(body.paymentStatus).trim();
-      if (body.notes) target.notes = String(body.notes).trim();
-      target.updatedAt = new Date().toISOString();
+      if (!Array.isArray(target.history)) {
+        target.history = [];
+      }
+
+      const now = new Date().toISOString();
+
+      if (body.orderStatus && body.orderStatus !== target.orderStatus) {
+        const oldStatus = target.orderStatus;
+        target.orderStatus = String(body.orderStatus).trim();
+        target.history.push({
+          timestamp: now,
+          fromStatus: oldStatus,
+          toStatus: target.orderStatus,
+          note: body.note || body.historyNote || `Status changed from ${oldStatus} to ${target.orderStatus}`
+        });
+      }
+
+      if (body.paymentStatus && body.paymentStatus !== target.paymentStatus) {
+        const oldPayment = target.paymentStatus;
+        target.paymentStatus = String(body.paymentStatus).trim();
+        target.history.push({
+          timestamp: now,
+          fromStatus: oldPayment,
+          toStatus: target.paymentStatus,
+          note: `Payment status updated to ${target.paymentStatus}`
+        });
+      }
+
+      if (body.expectedDeliveryDate !== undefined) {
+        const dateVal = body.expectedDeliveryDate ? String(body.expectedDeliveryDate).trim() : null;
+        if (dateVal !== target.expectedDeliveryDate) {
+          target.expectedDeliveryDate = dateVal;
+          target.history.push({
+            timestamp: now,
+            status: target.orderStatus,
+            note: dateVal ? `Expected delivery date scheduled: ${dateVal}` : 'Expected delivery date cleared'
+          });
+        }
+      }
+
+      if (body.notes !== undefined) {
+        target.notes = String(body.notes).trim();
+      }
+
+      target.updatedAt = now;
 
       saveOrdersToFile(orders);
 
@@ -421,6 +495,9 @@ module.exports = async function handler(req, res) {
         orderId: target.id,
         orderStatus: target.orderStatus,
         paymentStatus: target.paymentStatus,
+        expectedDeliveryDate: target.expectedDeliveryDate,
+        history: target.history,
+        order: target,
         message: `Order ${orderId} updated successfully.`
       });
     } catch (err) {
@@ -430,4 +507,3 @@ module.exports = async function handler(req, res) {
 
   return res.status(405).json({ error: `Method ${req.method} not allowed` });
 };
-
