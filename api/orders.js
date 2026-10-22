@@ -102,8 +102,8 @@ async function dispatchOrderNotification(order) {
           <td style="padding:8px; border-bottom:1px solid #e2e8f0;">${idx + 1}</td>
           <td style="padding:8px; border-bottom:1px solid #e2e8f0;"><strong>${it.name || 'Uniform Item'}</strong></td>
           <td style="padding:8px; border-bottom:1px solid #e2e8f0; text-align:center;">${it.qty || 1}</td>
-          <td style="padding:8px; border-bottom:1px solid #e2e8f0; text-align:right;">₹${(Number(it.unitPrice) || 0).toLocaleString('en-IN')}</td>
-          <td style="padding:8px; border-bottom:1px solid #e2e8f0; text-align:right; font-weight:bold;">₹${(Number(it.lineTotal) || 0).toLocaleString('en-IN')}</td>
+          <td style="padding:8px; border-bottom:1px solid #e2e8f0; text-align:right;">â‚¹${(Number(it.unitPrice) || 0).toLocaleString('en-IN')}</td>
+          <td style="padding:8px; border-bottom:1px solid #e2e8f0; text-align:right; font-weight:bold;">â‚¹${(Number(it.lineTotal) || 0).toLocaleString('en-IN')}</td>
         </tr>
       `).join('');
 
@@ -167,26 +167,26 @@ async function dispatchOrderNotification(order) {
               <tfoot>
                 <tr>
                   <td colspan="4" style="padding: 8px; text-align: right; color: #68717D;">Standard Delivery / Pickup:</td>
-                  <td style="padding: 8px; text-align: right; font-weight: bold; color: #167A62;">FREE (₹0)</td>
+                  <td style="padding: 8px; text-align: right; font-weight: bold; color: #167A62;">FREE (â‚¹0)</td>
                 </tr>
                 <tr>
                   <td colspan="4" style="padding: 8px; text-align: right; color: #68717D;">Taxes / Fees:</td>
-                  <td style="padding: 8px; text-align: right; font-weight: bold;">₹0</td>
+                  <td style="padding: 8px; text-align: right; font-weight: bold;">â‚¹0</td>
                 </tr>
                 <tr style="background: #f1f5f9; font-size: 16px;">
                   <td colspan="4" style="padding: 10px; text-align: right; font-weight: bold; color: #234E8A;">Final Order Total:</td>
-                  <td style="padding: 10px; text-align: right; font-weight: 800; color: #234E8A;">₹${Number(order.totalAmount).toLocaleString('en-IN')}</td>
+                  <td style="padding: 10px; text-align: right; font-weight: 800; color: #234E8A;">â‚¹${Number(order.totalAmount).toLocaleString('en-IN')}</td>
                 </tr>
               </tfoot>
             </table>
 
             <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 12px; font-size: 12px; color: #92400e; margin-top: 20px;">
-              <strong>⚠️ Atelier Order Notice:</strong> Payment is marked as <strong>${order.paymentStatus}</strong>. Confirm the order with the customer via phone or WhatsApp before initiating workshop production.
+              <strong>âš ï¸ Atelier Order Notice:</strong> Payment is marked as <strong>${order.paymentStatus}</strong>. Confirm the order with the customer via phone or WhatsApp before initiating workshop production.
             </div>
           </div>
           
           <div style="text-align: center; padding: 16px; font-size: 12px; color: #94a3b8;">
-            ZM Enterprises • High-Quality School & Corporate Uniforms • Hyderabad, Telangana
+            ZM Enterprises â€¢ High-Quality School & Corporate Uniforms â€¢ Hyderabad, Telangana
           </div>
         </div>
       `;
@@ -200,7 +200,7 @@ async function dispatchOrderNotification(order) {
         body: JSON.stringify({
           from: process.env.SENDER_EMAIL || 'ZM Enterprises <orders@resend.dev>',
           to: recipientEmail,
-          subject: `📦 New Online Order #${order.id} (₹${Number(order.totalAmount).toLocaleString('en-IN')}) - ZM Enterprises`,
+          subject: `ðŸ“¦ New Online Order #${order.id} (â‚¹${Number(order.totalAmount).toLocaleString('en-IN')}) - ZM Enterprises`,
           html: emailHtml
         })
       });
