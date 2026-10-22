@@ -121,6 +121,11 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           <span>Manufacturing & Trading</span>
         </button>
+        <button class="nav-item" data-tab="fabric-explorer">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          <span>Fabric Layer Explorer</span>
+          <span class="nav-badge" style="background:var(--accent-gold); color:#142C4E; font-weight:800; font-size:0.65rem;">4K</span>
+        </button>
         <button class="nav-item" data-tab="wholesale">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           <span>Wholesale & B2B Enquiries</span>
@@ -138,7 +143,10 @@
           <span>Track Order</span>
         </button>
 
-        <div class="nav-section-title mt-sm">✂️ Atelier & Admin Suite</div>
+        <div class="nav-section-title mt-sm" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>✂️ Atelier & Admin Suite</span>
+          <button class="btn-admin-lock" style="display:none; background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.75rem; font-weight:700;" onclick="app.lockAdmin()" title="Lock Admin Session">🔒 Lock</button>
+        </div>
         <button class="nav-item" data-tab="dashboard">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           <span>Dashboard Overview</span>
@@ -210,11 +218,13 @@
         <div class="topbar-actions">
           <div class="topbar-nav-pills">
             <button class="topbar-pill active" id="pill-home" onclick="app.switchTab('home')">🏠 Home</button>
+            <button class="topbar-pill" id="pill-fabric-explorer" onclick="app.switchTab('fabric-explorer')">🧵 Fabric Explorer</button>
             <button class="topbar-pill" id="pill-products" onclick="app.switchTab('products')">🛍️ Store</button>
             <button class="topbar-pill" id="pill-categories" onclick="app.switchTab('categories')">🏷️ Categories</button>
             <button class="topbar-pill" id="pill-manufacturing" onclick="app.switchTab('manufacturing')">🏭 Manufacturing</button>
             <button class="topbar-pill" id="pill-wholesale" onclick="app.switchTab('wholesale')">🏢 Wholesale</button>
             <button class="topbar-pill" id="pill-dashboard" onclick="app.switchTab('dashboard')">✂️ Tailor Suite</button>
+            <button class="topbar-pill btn-admin-lock" style="display:none; background:#fee2e2; color:#991b1b; border-color:#fca5a5;" onclick="app.lockAdmin()">🔒 Lock Admin</button>
           </div>
 
           <!-- Shopping Cart Topbar Button -->
@@ -385,7 +395,10 @@
                 <span class="stitched-card-tag">Education Uniforms</span>
                 <h3>Academic School Sets</h3>
                 <p>Double-stitched Oxford shirts, box-pleat pinafores, growth-hem trousers, and school ties with embroidered badges.</p>
-                <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('School Uniforms')">View School Uniforms →</button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('School Uniforms')">View School Uniforms →</button>
+                  <button class="btn btn-outline btn-sm" onclick="app.exploreFabricForProduct('school-shirt')">🔬 Fabric Layers</button>
+                </div>
               </div>
             </div>
 
@@ -398,7 +411,10 @@
                 <span class="stitched-card-tag">Corporate Wear</span>
                 <h3>Executive Blazers & Suits</h3>
                 <p>Wrinkle-resistant poly-viscose daily blazers, formal trousers, front-office hospitality wear, and executive sets.</p>
-                <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('Corporate Attire')">View Corporate Line →</button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('Corporate Attire')">View Corporate Line →</button>
+                  <button class="btn btn-outline btn-sm" onclick="app.exploreFabricForProduct('corp-blazer')">🔬 Fabric Layers</button>
+                </div>
               </div>
             </div>
 
@@ -411,7 +427,10 @@
                 <span class="stitched-card-tag">Healthcare Grade</span>
                 <h3>Medical Scrubs & Lab Coats</h3>
                 <p>Anti-microbial, chlorine-safe medical scrubs with utility scissor pockets, lab coats, and nursing staff attire.</p>
-                <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('Healthcare & Hospitality')">View Medical Scrubs →</button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('Healthcare & Hospitality')">View Medical Scrubs →</button>
+                  <button class="btn btn-outline btn-sm" onclick="app.exploreFabricForProduct('medical-scrubs')">🔬 Fabric Layers</button>
+                </div>
               </div>
             </div>
 
@@ -424,45 +443,268 @@
                 <span class="stitched-card-tag">Industrial Utility</span>
                 <h3>Industrial Workwear & Boiler Suits</h3>
                 <p>Heavy 240 GSM twill boiler suits, warehouse cargo trousers, reflective workwear, and technician utility sets.</p>
-                <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('Industrial & Workwear')">View Industrial Line →</button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="app.filterProductsByCategory('Industrial & Workwear')">View Industrial Line →</button>
+                  <button class="btn btn-outline btn-sm" onclick="app.exploreFabricForProduct('industrial-twill')">🔬 Fabric Layers</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- ==================== DISTINCT SECTION 2: CURATED FABRICS ==================== -->
-          <div class="fabric-showcase-box">
-            <div class="section-header-block" style="text-align:left; margin-bottom:12px;">
-              <h2>Curated Fabrics & Material Selection</h2>
-              <p>We source directly from certified Indian textile mills to guarantee zero color bleed, durable GSM weight, and soft skin feel.</p>
+          <!-- ==================== DISTINCT SECTION 2: FABRIC LAYER EXPLORER ==================== -->
+          <div id="home-fabric-explorer-mount">
+          <div class="fabric-explorer-section" id="fabric-explorer-section">
+            <div class="fabric-explorer-header">
+              <div class="fabric-header-topline">
+                <div class="fabric-badge-pill">
+                  <span class="pulse-dot"></span>
+                  <span>Textile Engineering &amp; Layer Architecture</span>
+                </div>
+                <div class="fabric-view-mode-toggles">
+                  <button class="fabric-mode-btn active" id="btn-mode-interactive" onclick="app.setFabricPlayerMode('interactive')">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>3D Layer Explorer</span>
+                  </button>
+                  <button class="fabric-mode-btn" id="btn-mode-cinema" onclick="app.setFabricPlayerMode('cinema')">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <span>Cinematic Player</span>
+                  </button>
+                </div>
+              </div>
+              <h2 class="fabric-explorer-title">
+                Discover the Fabric <span>Beneath the Surface</span>
+              </h2>
+              <p class="fabric-explorer-sub">
+                Explore the construction, texture, and craftsmanship behind fabric and garment materials.
+              </p>
             </div>
 
-            <div class="fabric-showcase-grid">
-              <div class="fabric-hero-img-box">
-                <img src="images/fabric-rolls.jpg" alt="Textile rolls and uniform fabrics" onerror="this.onerror=null; this.src='images/fabric-rolls.jpg'">
+            <!-- Material / Category Selector Strip -->
+            <div class="fabric-category-strip" id="fabric-category-pills">
+              <!-- Rendered via JS for verified products -->
+            </div>
+
+            <!-- Dual-Column Theatre & Layer Studio -->
+            <div class="fabric-theater-grid">
+              <!-- Left Column: Cinema Video Theatre -->
+              <div class="fabric-cinema-theater">
+                <div class="fabric-theater-topbar">
+                  <div class="theater-indicator">
+                    <span class="theater-dot"></span>
+                    <span class="theater-scene-name" id="theater-scene-label">Scene 1 — The Hero Shot: "More Than Meets the Eye"</span>
+                  </div>
+                  <span class="theater-mode-label" id="theater-resolution-tag">4K Exploded Motion</span>
+                </div>
+
+                <div class="fabric-video-screen" id="fabric-video-screen-container">
+                  <!-- Native HTML5 Video Element -->
+                  <video id="fabric-cinematic-video" class="fabric-native-video" preload="none" poster="images/fabric-video-poster.svg" playsinline>
+                    <source src="videos/fabric-explainer.mp4" type="video/mp4">
+                    Your browser does not support HTML5 video playback.
+                  </video>
+
+                  <!-- Real-Time Interactive Motion Storyboard Canvas -->
+                  <div class="storyboard-motion-canvas" id="storyboard-canvas-overlay">
+                    <div class="scene-hero-macro">
+                      <div class="macro-texture-plate" id="canvas-macro-plate"></div>
+                      <div class="macro-lens-scan"></div>
+                      <div class="scene-hero-title-group">
+                        <div class="hero-cinematic-tag" id="canvas-hero-tag">SCENE 1 • THE HERO SHOT</div>
+                        <h3 class="hero-cinematic-h2" id="canvas-hero-title">More Than Meets the Eye</h3>
+                        <p class="hero-cinematic-desc" id="canvas-hero-desc">
+                          High-resolution macro inspection of yarn geometry, surface texture, and construction memory.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Missing Video Pipeline Notice Overlay (Honest & Informative) -->
+                  <div class="video-pipeline-notice" id="video-pipeline-notice">
+                    <div class="pipeline-status-text">
+                      <span>🎬</span>
+                      <span>Master Video Asset: <code id="pipeline-asset-name">videos/fabric-explainer.mp4</code></span>
+                    </div>
+                    <button class="btn-pipeline-preview" onclick="app.toggleStoryboardPlay()">
+                      ⚡ Play Live Storyboard
+                    </button>
+                  </div>
+
+                  <!-- Central Play / Pause Button -->
+                  <button class="screen-play-trigger" id="screen-play-btn" onclick="app.toggleVideoPlayPause()" aria-label="Play fabric video">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+                  </button>
+                </div>
+
+                <!-- Custom Control Bar -->
+                <div class="theater-control-bar">
+                  <div class="scrub-track-wrapper" id="video-scrub-track" onclick="app.handleScrubClick(event)">
+                    <div class="scrub-rail">
+                      <div class="scrub-progress-fill" id="video-progress-fill" style="width: 0%;"></div>
+                      <div class="scrub-handle" id="video-scrub-handle" style="left: 0%;"></div>
+                    </div>
+                    <div class="storyboard-cue-markers">
+                      <span class="scene-cue-dot active" style="left: 0%;" title="Scene 1: The Hero Shot" onclick="event.stopPropagation(); app.jumpToScene(1);"></span>
+                      <span class="scene-cue-dot" style="left: 20%;" title="Scene 2: Fabric Construction & Weave" onclick="event.stopPropagation(); app.jumpToScene(2);"></span>
+                      <span class="scene-cue-dot" style="left: 45%;" title="Scene 3: Layer-by-Layer Exploded View" onclick="event.stopPropagation(); app.jumpToScene(3);"></span>
+                      <span class="scene-cue-dot" style="left: 70%;" title="Scene 4: Material Detail & Specs" onclick="event.stopPropagation(); app.jumpToScene(4);"></span>
+                      <span class="scene-cue-dot" style="left: 95%;" title="Scene 5: Final Assembly & Handover" onclick="event.stopPropagation(); app.jumpToScene(5);"></span>
+                    </div>
+                  </div>
+
+                  <div class="theater-actions-row">
+                    <div class="theater-btn-group">
+                      <button class="btn-ctrl" id="btn-play-pause" onclick="app.toggleVideoPlayPause()" aria-label="Play/Pause">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" id="play-pause-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                      </button>
+                      <button class="btn-ctrl" id="btn-mute" onclick="app.toggleVideoMute()" aria-label="Mute/Unmute">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" id="mute-icon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                      </button>
+                      <span class="theater-timestamp" id="video-time-display">00:00 / 01:25</span>
+                    </div>
+
+                    <div class="theater-btn-group">
+                      <select class="theater-speed-select" id="video-speed-select" onchange="app.setPlaybackSpeed(this.value)">
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1.0x Normal</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                      </select>
+                      <button class="btn-ctrl" id="btn-fullscreen" onclick="app.toggleVideoFullscreen()" aria-label="Fullscreen">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5 Storyboard Scene Chapters Navigation -->
+                <div class="theater-scene-tabs">
+                  <button class="scene-tab-item active" id="scene-tab-1" onclick="app.jumpToScene(1)">
+                    <span class="scene-tab-num">SCENE 1</span>
+                    <span class="scene-tab-label">The Hero Shot</span>
+                  </button>
+                  <button class="scene-tab-item" id="scene-tab-2" onclick="app.jumpToScene(2)">
+                    <span class="scene-tab-num">SCENE 2</span>
+                    <span class="scene-tab-label">Weave Anatomy</span>
+                  </button>
+                  <button class="scene-tab-item" id="scene-tab-3" onclick="app.jumpToScene(3)">
+                    <span class="scene-tab-num">SCENE 3</span>
+                    <span class="scene-tab-label">Layer Exploded</span>
+                  </button>
+                  <button class="scene-tab-item" id="scene-tab-4" onclick="app.jumpToScene(4)">
+                    <span class="scene-tab-num">SCENE 4</span>
+                    <span class="scene-tab-label">Material Specs</span>
+                  </button>
+                  <button class="scene-tab-item" id="scene-tab-5" onclick="app.jumpToScene(5)">
+                    <span class="scene-tab-num">SCENE 5</span>
+                    <span class="scene-tab-label">Final Assembly</span>
+                  </button>
+                </div>
               </div>
-              <div class="fabric-items-grid">
-                <div class="fabric-card">
-                  <h4>🧵 Poly-Cotton Uniform Drill</h4>
-                  <p>65/35 blended weave engineered for 100+ institutional machine washes with zero color fading or shrinkage.</p>
-                  <span class="fabric-spec">210 GSM • High Durability</span>
+
+              <!-- Right Column: Interactive 3D Exploded Layer Studio -->
+              <div class="fabric-layer-studio">
+                <div class="studio-title-bar">
+                  <div>
+                    <h3 id="studio-garment-title">Executive Corporate Blazer</h3>
+                    <small style="color:var(--text-secondary);" id="studio-garment-cat">Suiting Materials / Lined Garment</small>
+                  </div>
+                  <div class="layer-counter-badge" id="studio-layer-counter">
+                    <span>🧵</span>
+                    <strong id="layer-counter-text">Layer 1 of 4</strong>
+                  </div>
                 </div>
-                <div class="fabric-card">
-                  <h4>👔 Italian Poly-Viscose Blend</h4>
-                  <p>Premium matte texture with breathable drape for executive corporate blazers, trousers, and administrative uniforms.</p>
-                  <span class="fabric-spec">260 GSM • Wrinkle Resistant</span>
+
+                <!-- 3D Exploded Stage Container -->
+                <div class="isometric-stage-wrapper">
+                  <div class="isometric-stage" id="isometric-stage-container">
+                    <!-- Layer slabs dynamically rendered based on selected material -->
+                  </div>
                 </div>
-                <div class="fabric-card">
-                  <h4>🏥 Medical Grade Poplin</h4>
-                  <p>Chlorine-safe and autoclave-wash resistant with anti-microbial treatment for hospitals and pathology clinics.</p>
-                  <span class="fabric-spec">180 GSM • Hypoallergenic</span>
+
+                <!-- Clickable Layer Pill Selector -->
+                <div class="layer-pills-bar" id="layer-pills-container">
+                  <!-- Rendered dynamically -->
                 </div>
-                <div class="fabric-card">
-                  <h4>⚙️ Heavy-Duty Cotton Twill</h4>
-                  <p>Reinforced double-twisted yarn for industrial boiler suits, technician overalls, and maintenance utility wear.</p>
-                  <span class="fabric-spec">240 GSM • High Tensile</span>
+
+                <!-- Exploded View Interaction Controls -->
+                <div class="layer-action-controls">
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn-layer-action btn-separate active" id="btn-separate-layers" onclick="app.toggleExplodedView(true)">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                      <span>Separate Layers</span>
+                    </button>
+                    <button class="btn-layer-action btn-reassemble" id="btn-reassemble-layers" onclick="app.toggleExplodedView(false)">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                      <span>Reassemble Fabric</span>
+                    </button>
+                  </div>
+
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn btn-outline btn-sm" id="btn-prev-layer" onclick="app.stepLayer(-1)" aria-label="Previous layer">
+                      ← Prev
+                    </button>
+                    <button class="btn btn-outline btn-sm" id="btn-next-layer" onclick="app.stepLayer(1)" aria-label="Next layer">
+                      Next →
+                    </button>
+                    <button class="btn-layer-action btn-play-walkthrough" id="btn-walkthrough" onclick="app.toggleFullExplanation()">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                      <span id="btn-walkthrough-label">Play Full Explanation</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Layer Detail Info Card -->
+                <div class="layer-detail-card" id="active-layer-card">
+                  <div class="layer-detail-header">
+                    <div>
+                      <h4 class="layer-detail-h4" id="layer-detail-title">Layer 1: Outer Shell Fabric</h4>
+                      <small style="color:var(--text-secondary);" id="layer-material-name">260 GSM Italian-Weave Poly-Viscose Twill</small>
+                    </div>
+                    <span class="layer-role-tag" id="layer-role-badge">Surface &amp; Drape</span>
+                  </div>
+                  <p class="layer-detail-desc" id="layer-detail-desc">
+                    Constructed with worsted twill yarns that resist wrinkling while providing sharp executive drape over 12-hour workdays.
+                  </p>
+                  <div class="layer-tailor-tip">
+                    <span style="font-size:1.1rem;">✂️</span>
+                    <div>
+                      <strong>Master Tailor's Insight:</strong>
+                      <span id="layer-tailor-text">Twill weave provides natural mechanical resilience without synthetic elastane degradation.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Verified Material Specifications Matrix -->
+                <div class="fabric-specs-matrix">
+                  <div class="specs-matrix-header">
+                    <h4>
+                      <span>🔬 Verified Material Specifications</span>
+                    </h4>
+                    <span class="verified-badge">✓ Certified Mill Data</span>
+                  </div>
+                  <div class="specs-grid-items" id="specs-grid-container">
+                    <!-- Populated dynamically via JS -->
+                  </div>
+                </div>
+
+                <!-- Atelier Consultation Action Footer -->
+                <div class="fabric-atelier-cta">
+                  <div class="cta-left-text">
+                    <h5>Need This Material for Institutional Stitching?</h5>
+                    <p>Request physical swatch samples or inquire about bulk workshop batch rates in Hyderabad.</p>
+                  </div>
+                  <div class="cta-btn-group">
+                    <button class="btn-fabric-enquire" onclick="app.enquireAboutCurrentFabric()">
+                      📋 Enquire About This Fabric
+                    </button>
+                    <button class="btn btn-whatsapp" onclick="app.whatsappAboutCurrentFabric()">
+                      💬 WhatsApp Swatches
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
           </div>
 
           <!-- Services Showcase Section -->
@@ -640,7 +882,7 @@
                 </div>
                 <div class="footer-contact-item">
                   <span class="footer-contact-icon">📞</span>
-                  <span>Bulk Order Helpline: +91 90000 00000</span>
+                  <span>Helpline & WhatsApp: <a href="https://wa.me/919391414502" target="_blank" style="color:inherit; text-decoration:none; font-weight:600;">+91 93914 14502</a></span>
                 </div>
                 <div class="footer-contact-item">
                   <span class="footer-contact-icon">💬</span>
@@ -817,6 +1059,23 @@
               </div>
               <a class="category-card-cta" onclick="app.filterProductsByCategory('Fabrics & Accessories')">Browse Fabrics & Trims →</a>
             </div>
+          </div>
+        </section>
+
+        <!-- ==================== DEDICATED FABRIC LAYER EXPLORER VIEW ==================== -->
+        <section id="view-fabric-explorer" class="tab-view">
+          <div class="card mb-lg" style="background: var(--bg-card); color: var(--text-main); border: 1.5px solid var(--border-light); border-left: 6px solid var(--primary); box-shadow: var(--shadow-sm);">
+            <div style="padding: 16px;">
+              <span class="badge" style="background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-border); margin-bottom: 12px;">Interactive Textile Education &amp; Storytelling</span>
+              <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 10px; color: var(--primary);">Discover the Fabric Beneath the Surface</h2>
+              <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; max-width: 820px;">
+                Explore the construction, texture, and craftsmanship behind fabric and garment materials. Inspect woven yarn structures, localized interfacing, canvas chest pieces, and silky linings in cinematic 4K exploded motion.
+              </p>
+            </div>
+          </div>
+
+          <div id="dedicated-fabric-explorer-mount">
+            <!-- Mount target for dedicated view -->
           </div>
         </section>
 
@@ -1092,6 +1351,11 @@
               <div class="card-title-group">
                 <h2>Customer Online Store Orders</h2>
                 <p>Manage incoming retail & wholesale web store orders, review delivery addresses, and update fulfillment status.</p>
+              </div>
+              <div class="flex-row gap-sm">
+                <button class="btn btn-outline" onclick="app.fetchServerOrders(true)">
+                  🔄 Sync from Database
+                </button>
               </div>
             </div>
           </div>
@@ -1907,7 +2171,7 @@
                 </div>
                 <div class="form-group">
                   <label class="form-label">WhatsApp Business Contact Phone *</label>
-                  <input type="text" id="setting-biz-phone" class="form-input" placeholder="e.g. 919876543210 or 9876543210">
+                  <input type="text" id="setting-biz-phone" class="form-input" placeholder="e.g. 9391414502 or 919391414502" value="919391414502">
                   <small style="color:var(--primary); font-size:0.75rem; font-weight:600;">
                     Powers all website WhatsApp chat buttons and quotation routing. Enter your active 10-digit number.
                   </small>
@@ -1928,14 +2192,48 @@
                   <label class="form-label">State</label>
                   <input type="text" id="setting-biz-state" class="form-input" value="Telangana">
                 </div>
+                <div class="form-group">
+                  <label class="form-label">Owner Admin Access PIN *</label>
+                  <input type="password" id="setting-admin-pin" class="form-input" placeholder="1234" maxlength="10">
+                  <small style="color:var(--text-secondary); font-size:0.75rem;">Protects customer orders & measurements. Default: <code>1234</code></small>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Order Notification Email</label>
+                  <input type="email" id="setting-notify-email" class="form-input" placeholder="sadiyasultana5836@gmail.com">
+                  <small style="color:var(--text-secondary); font-size:0.75rem;">Receives new online customer order notifications.</small>
+                </div>
                 <div class="form-group full-width">
                   <label class="form-label">Invoice Footer Note / Terms</label>
                   <input type="text" id="setting-biz-terms" class="form-input">
                 </div>
                 <div class="full-width">
-                  <button type="submit" class="btn btn-primary">Save Business Details</button>
+                  <button type="submit" class="btn btn-primary">Save Settings</button>
                 </div>
               </form>
+            </div>
+
+            <!-- Order Notifications & System Diagnostics Card -->
+            <div class="card mb-lg">
+              <div class="card-header flex-between flex-wrap gap-md">
+                <div>
+                  <h3>Order Notifications & System Diagnostics</h3>
+                  <p>Configure real email notifications and test live delivery</p>
+                </div>
+                <button type="button" class="btn btn-outline" id="btn-test-notification" onclick="app.testEmailNotification()">
+                  📨 Send Test Notification
+                </button>
+              </div>
+              <div style="padding: 18px; background: var(--gray-50); border-radius: var(--radius-md); font-size: 0.875rem;">
+                <div id="test-notification-result" style="display:none; padding:12px 16px; border-radius:6px; margin-bottom:14px; background:#fff; border:1px solid var(--gray-200);"></div>
+                <p style="margin: 0 0 10px; color: var(--navy-900); font-weight:700;">
+                  How Order Notifications Function:
+                </p>
+                <ul style="padding-left: 20px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">
+                  <li><strong>Target Email:</strong> Every customer order triggers an alert to <code><span id="display-notify-email">sadiyasultana5836@gmail.com</span></code>.</li>
+                  <li><strong>Vercel Cloud Integration:</strong> Add <code>RESEND_API_KEY</code> and <code>OWNER_EMAIL</code> to your <em>Vercel Project Settings &gt; Environment Variables</em> for zero-config live email delivery via Resend.</li>
+                  <li><strong>WhatsApp Bridge:</strong> Customers are also presented with an instant <em>"Send Order to ZM Enterprises on WhatsApp"</em> button pre-filling the complete order breakdown directly to your WhatsApp business number.</li>
+                </ul>
+              </div>
             </div>
 
             <!-- Data Backup, Restore & Cloud Architecture Guide -->
@@ -2922,6 +3220,66 @@
     </div>
   </div>
 
+  <!-- ==================== ADMIN ORDER DETAIL & MANAGEMENT MODAL ==================== -->
+  <div class="modal-overlay" id="modal-admin-order-detail">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header" style="background:var(--primary); color:#fff;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <h3 style="color:#fff; margin:0;" id="admin-order-detail-title">Order Management</h3>
+          <span class="badge" id="admin-order-detail-status-badge" style="font-size:0.8rem;">Pending</span>
+        </div>
+        <button class="modal-close" style="color:#fff;" onclick="app.closeModal('modal-admin-order-detail')">&times;</button>
+      </div>
+      <div class="modal-body" id="admin-order-detail-body">
+        <!-- Rendered by app.renderAdminOrderDetailModal() -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-admin-order-detail')">Close</button>
+        <button type="button" class="btn btn-whatsapp" id="btn-admin-order-wa" onclick="app.messageCustomerFromModal()">
+          💬 Message Customer on WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CUSTOMER WHATSAPP ASSISTANCE MODAL ==================== -->
+  <div class="modal-overlay" id="modal-customer-whatsapp-help">
+    <div class="modal-dialog">
+      <div class="modal-header" style="background:var(--primary); color:#fff;">
+        <h3 style="color:#fff; margin:0;">Contact ZM Enterprises</h3>
+        <button class="modal-close" style="color:#fff;" onclick="app.closeModal('modal-customer-whatsapp-help')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:24px;">
+        <p style="font-size:0.95rem; color:var(--dark); line-height:1.6; margin-bottom:16px;">
+          Welcome to <strong>ZM Enterprises</strong>. Our master tailors and wholesale uniform specialists are ready to assist you.
+        </p>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:1.2rem;">📍</span>
+            <span><strong>Workshop Location:</strong> Hyderabad, Telangana, India</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:1.2rem;">📧</span>
+            <span><strong>Email:</strong> contact@zmenterprises.com</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:1.2rem;">⏱️</span>
+            <span><strong>Hours:</strong> Mon - Sat: 9:30 AM – 8:30 PM IST</span>
+          </div>
+        </div>
+        <p style="font-size:0.875rem; color:var(--gray-600); margin-bottom:0;">
+          You can submit a bulk uniform enquiry via our <strong>Wholesale Enquiry</strong> form or track your existing order using the <strong>Track Order</strong> tab.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-customer-whatsapp-help')">Close</button>
+        <button type="button" class="btn btn-primary" onclick="app.closeModal('modal-customer-whatsapp-help'); app.switchTab('wholesale');">
+          Open Wholesale Enquiry Form
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== ADMIN PRODUCT MODAL ==================== -->
   <div class="modal-overlay" id="modal-product-admin">
     <div class="modal-dialog modal-lg">
@@ -2992,6 +3350,43 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-product-admin')">Cancel</button>
           <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN PIN AUTHENTICATION MODAL ==================== -->
+  <div class="modal-overlay" id="modal-admin-auth">
+    <div class="modal-dialog" style="max-width: 440px;">
+      <div class="modal-header" style="background: var(--primary); color: #fff;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <h3 style="color:#fff; margin:0; font-size:1.15rem;">Owner Admin Authentication</h3>
+        </div>
+        <button class="modal-close" style="color:#fff;" onclick="app.closeAdminAuthModal()">&times;</button>
+      </div>
+      <form id="admin-auth-form" onsubmit="app.submitAdminAuth(event)">
+        <div class="modal-body" style="padding: 24px;">
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 16px;">
+            This area contains sensitive customer records, addresses, and order management. Enter your 4-digit Owner Admin PIN to unlock the Atelier Suite.
+          </p>
+          <div class="form-group mb-md">
+            <label class="form-label">Owner Access PIN *</label>
+            <input type="password" id="admin-auth-pin" class="form-control" placeholder="••••" maxlength="10" autocomplete="current-password" required style="font-size: 1.5rem; text-align: center; letter-spacing: 6px; font-weight: 700;">
+            <small style="color: var(--text-secondary); font-size: 0.75rem; display:block; margin-top: 6px;">
+              Default PIN: <code>1234</code> (Configurable in Store Settings).
+            </small>
+          </div>
+          <div id="admin-auth-error" style="display:none; color: #dc2626; font-size: 0.825rem; font-weight: 600; margin-bottom: 12px; text-align: center;"></div>
+        </div>
+        <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn btn-outline" onclick="app.closeAdminAuthModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-admin-auth-submit">
+            <span>Unlock Admin Suite 🔓</span>
+          </button>
         </div>
       </form>
     </div>

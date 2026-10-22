@@ -192,7 +192,7 @@ const DEFAULT_DATA = {
   settings: {
     businessName: "ZM Enterprises",
     tagline: "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
-    phone: "", // Configurable: user configures their actual WhatsApp number in Store Settings
+    phone: "919391414502", // Verified Owner WhatsApp: +91 93914 14502: user configures their actual WhatsApp number in Store Settings
     email: "contact@zmenterprises.com",
     ownerEmail: "sadiyasultana5836@gmail.com",
     adminPin: "1234",
@@ -294,6 +294,7 @@ class TailorBusinessApp {
     if (!data.settings.city) data.settings.city = "Hyderabad";
     if (!data.settings.state) data.settings.state = "Telangana";
     if (!data.settings.adminPin) data.settings.adminPin = "1234";
+    if (!data.settings.phone || data.settings.phone === "919876543210") data.settings.phone = "919391414502";
     if (!data.settings.ownerEmail) data.settings.ownerEmail = data.settings.email || "sadiyasultana5836@gmail.com";
     if (data.settings.phone === "919876543210") {
       data.settings.phone = ""; // Reset demo placeholder
@@ -2647,7 +2648,7 @@ class TailorBusinessApp {
   getCleanBizPhone() {
     const raw = (this.data.settings && this.data.settings.phone) ? String(this.data.settings.phone).trim() : '';
     const digits = raw.replace(/[^0-9]/g, '');
-    if (!digits || digits.length < 10) return '';
+    if (!digits || digits.length < 10) return '919391414502';
     if (digits.length === 10) return '91' + digits;
     if (digits.startsWith('91') && digits.length === 12) return digits;
     if (digits.startsWith('0') && digits.length === 11) return '91' + digits.slice(1);
@@ -5108,7 +5109,7 @@ class TailorBusinessApp {
     this.showToast(`Wholesale Enquiry ${refId} submitted successfully!`);
 
     // Prepare WhatsApp message
-    let targetPhone = this.data.settings.phone || "919876543210";
+    let targetPhone = this.getCleanBizPhone();
     targetPhone = targetPhone.replace(/[^0-9]/g, '');
 
     const lines = [
@@ -5981,7 +5982,7 @@ class TailorBusinessApp {
 
   whatsappAboutCurrentFabric() {
     const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
-    const targetPhone = this.data.settings.phone || "919000000000";
+    const targetPhone = this.getCleanBizPhone();
     const msg = encodeURIComponent(
       `Hello ZM Enterprises Atelier,\nI am reviewing the *${fabric.title}* on your website Fabric Explorer (${fabric.tagline}).\n\nVerified Specs: ${fabric.specs.composition} • ${fabric.specs.gsm}\nKindly confirm swatch availability and appointment for uniform sample approval.`
     );
