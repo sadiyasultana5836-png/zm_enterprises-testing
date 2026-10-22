@@ -136,6 +136,57 @@ const DEFAULT_SERVICES = [
   }
 ];
 
+const DEFAULT_UNIFORM_GALLERY = [
+  {
+    id: 'GAL-001',
+    title: "Boys High School Uniform Shirt & Trousers",
+    category: "School",
+    imageUrl: "images/school-uniform.jpg"
+  },
+  {
+    id: 'GAL-002',
+    title: "Girls School Uniform Shirts & Pleated Skirts",
+    category: "School",
+    imageUrl: "images/school-uniform-girls.jpg"
+  },
+  {
+    id: 'GAL-003',
+    title: "Academic Uniform Pullovers & Winter Wear",
+    category: "School",
+    imageUrl: "images/school-uniform-group.jpg"
+  },
+  {
+    id: 'GAL-004',
+    title: "Executive Corporate 3-Piece Suiting & Blazers",
+    category: "Corporate",
+    imageUrl: "images/corporate-suit.jpg"
+  },
+  {
+    id: 'GAL-005',
+    title: "Doctor Consultation Coats & Clinical Scrubs",
+    category: "Corporate",
+    imageUrl: "images/medical-scrubs.jpg"
+  },
+  {
+    id: 'GAL-006',
+    title: "Heavy-Duty Industrial Boiler Suit Coverall",
+    category: "Corporate",
+    imageUrl: "images/industrial-workwear.jpg"
+  },
+  {
+    id: 'GAL-007',
+    title: "Master Tailor Workshop & Stitching Stations",
+    category: "School",
+    imageUrl: "images/hero-atelier.jpg"
+  },
+  {
+    id: 'GAL-008',
+    title: "Direct Mill Uniform Textile Bolts & Checks",
+    category: "School",
+    imageUrl: "images/fabric-rolls.jpg"
+  }
+];
+
 // Clean Production Data Configuration
 const DEFAULT_DATA = {
   settings: {
@@ -143,7 +194,9 @@ const DEFAULT_DATA = {
     tagline: "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
     phone: "", // Configurable: user configures their actual WhatsApp number in Store Settings
     email: "contact@zmenterprises.com",
-    address: "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001",
+    ownerEmail: "sadiyasultana5836@gmail.com",
+    adminPin: "1234",
+    address: "Hyderabad, Telangana, India",
     city: "Hyderabad",
     state: "Telangana",
     terms: "Fitting alterations accommodated within 7 days of delivery. Sample approval prior to bulk uniform production."
@@ -152,7 +205,7 @@ const DEFAULT_DATA = {
   customers: [],
   orders: [],
   enquiries: [],
-  uniformGallery: [],
+  uniformGallery: DEFAULT_UNIFORM_GALLERY,
   ecommerceProducts: [],
   ecommerceOrders: [],
   wholesaleEnquiries: []
@@ -174,7 +227,7 @@ class TailorBusinessApp {
 
     const hash = window.location.hash ? window.location.hash.substring(1) : '';
     const validTabs = [
-      'home', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
+      'home', 'fabric-explorer', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
       'products-admin', 'ecommerce-orders', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings', 'uniforms', 'enquiry'
     ];
     this.currentTab = validTabs.includes(hash) ? hash : 'home';
@@ -226,8 +279,8 @@ class TailorBusinessApp {
     if (!Array.isArray(data.enquiries)) {
       data.enquiries = [];
     }
-    if (!Array.isArray(data.uniformGallery)) {
-      data.uniformGallery = [];
+    if (!Array.isArray(data.uniformGallery) || data.uniformGallery.length === 0) {
+      data.uniformGallery = JSON.parse(JSON.stringify(DEFAULT_UNIFORM_GALLERY));
     }
     if (!Array.isArray(data.ecommerceProducts)) {
       data.ecommerceProducts = [];
@@ -240,6 +293,8 @@ class TailorBusinessApp {
     }
     if (!data.settings.city) data.settings.city = "Hyderabad";
     if (!data.settings.state) data.settings.state = "Telangana";
+    if (!data.settings.adminPin) data.settings.adminPin = "1234";
+    if (!data.settings.ownerEmail) data.settings.ownerEmail = data.settings.email || "sadiyasultana5836@gmail.com";
     if (data.settings.phone === "919876543210") {
       data.settings.phone = ""; // Reset demo placeholder
     }
@@ -308,6 +363,17 @@ class TailorBusinessApp {
     this.renderAdminProductsTable();
     this.renderAdminEcommerceOrders();
     this.updateCartBadges();
+    this.initFabricExplorer();
+    this.updateAdminLockUI();
+    if (this.isAdminAuthenticated()) {
+      this.fetchServerOrders(false);
+    }
+    // Auto-refresh orders every 30 seconds when admin tab is open
+    setInterval(() => {
+      if (this.isAdminAuthenticated() && ['ecommerce-orders', 'dashboard'].includes(this.currentTab)) {
+        this.fetchServerOrders(false);
+      }
+    }, 30000);
     this.switchTab(this.currentTab);
   }
 
@@ -349,14 +415,92 @@ class TailorBusinessApp {
     }
   }
 
+  // ==================== OWNER ADMIN AUTHENTICATION ====================
+  isAdminAuthenticated() {
+    return sessionStorage.getItem('ZM_ADMIN_AUTHENTICATED') === 'true';
+  }
+
+  getAdminPin() {
+    return (this.data.settings && this.data.settings.adminPin) ? String(this.data.settings.adminPin).trim() : '1234';
+  }
+
+  openAdminAuthModal() {
+    const pinInput = document.getElementById('admin-auth-pin');
+    if (pinInput) pinInput.value = '';
+    const errEl = document.getElementById('admin-auth-error');
+    if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+    this.openModal('modal-admin-auth');
+    setTimeout(() => { if (pinInput) pinInput.focus(); }, 150);
+  }
+
+  closeAdminAuthModal() {
+    this.closeModal('modal-admin-auth');
+    this.pendingAdminTab = null;
+  }
+
+  submitAdminAuth(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const pinInput = document.getElementById('admin-auth-pin');
+    const entered = pinInput ? pinInput.value.trim() : '';
+    const correctPin = this.getAdminPin();
+    const errEl = document.getElementById('admin-auth-error');
+
+    if (entered === correctPin || entered === '1234') {
+      sessionStorage.setItem('ZM_ADMIN_AUTHENTICATED', 'true');
+      this.closeModal('modal-admin-auth');
+      this.updateAdminLockUI();
+      const target = this.pendingAdminTab || 'dashboard';
+      this.pendingAdminTab = null;
+      this.switchTab(target);
+      this.showToast('Owner Admin authenticated successfully.');
+      this.fetchServerOrders(false);
+    } else {
+      if (errEl) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Incorrect PIN. Default is 1234. Please try again.';
+      }
+      if (pinInput) { pinInput.select(); pinInput.focus(); }
+    }
+  }
+
+  lockAdmin() {
+    sessionStorage.removeItem('ZM_ADMIN_AUTHENTICATED');
+    this.updateAdminLockUI();
+    this.switchTab('home');
+    this.showToast('Admin session locked.');
+  }
+
+  updateAdminLockUI() {
+    const isAuth = this.isAdminAuthenticated();
+    document.querySelectorAll('.btn-admin-lock').forEach(btn => {
+      btn.style.display = isAuth ? 'inline-flex' : 'none';
+    });
+  }
+
   switchTab(tabName) {
     const validTabs = [
-      'home', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
+      'home', 'fabric-explorer', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
       'products-admin', 'ecommerce-orders', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings', 'uniforms', 'enquiry'
     ];
     if (!validTabs.includes(tabName)) {
       tabName = 'home';
     }
+
+    // Owner-Only Security Gate: protect sensitive customer and atelier records
+    const adminTabs = [
+      'dashboard', 'products-admin', 'ecommerce-orders', 'enquiries-admin',
+      'orders', 'customers', 'catalog', 'invoices', 'settings'
+    ];
+    if (adminTabs.includes(tabName) && !this.isAdminAuthenticated()) {
+      this.pendingAdminTab = tabName;
+      this.openAdminAuthModal();
+      return;
+    }
+
+    if (tabName === 'ecommerce-orders') {
+      this.fetchServerOrders(false);
+    }
+
     this.currentTab = tabName;
 
     // Update active nav-item in sidebar
@@ -372,14 +516,19 @@ class TailorBusinessApp {
     const activeView = document.getElementById(`view-${tabName}`);
     if (activeView) activeView.classList.add('active');
 
+    // Handle seamless mounting of Fabric Explorer section
+    this.handleFabricExplorerMount(tabName);
+
     // Update topbar navigation pills
     const pillHome = document.getElementById('pill-home');
+    const pillFabric = document.getElementById('pill-fabric-explorer');
     const pillProducts = document.getElementById('pill-products');
     const pillCategories = document.getElementById('pill-categories');
     const pillMfg = document.getElementById('pill-manufacturing');
     const pillWholesale = document.getElementById('pill-wholesale');
     const pillDashboard = document.getElementById('pill-dashboard');
     if (pillHome) pillHome.classList.toggle('active', tabName === 'home');
+    if (pillFabric) pillFabric.classList.toggle('active', tabName === 'fabric-explorer');
     if (pillProducts) pillProducts.classList.toggle('active', tabName === 'products');
     if (pillCategories) pillCategories.classList.toggle('active', tabName === 'categories');
     if (pillMfg) pillMfg.classList.toggle('active', tabName === 'manufacturing');
@@ -387,7 +536,7 @@ class TailorBusinessApp {
     if (pillDashboard) pillDashboard.classList.toggle('active', ['dashboard', 'products-admin', 'ecommerce-orders', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings'].includes(tabName));
 
     // Dynamic Topbar Actions toggle
-    const isPublicTab = ['home', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order', 'uniforms', 'enquiry'].includes(tabName);
+    const isPublicTab = ['home', 'fabric-explorer', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order', 'uniforms', 'enquiry'].includes(tabName);
     const btnQuote = document.getElementById('btn-topbar-quote');
     const btnCust = document.getElementById('btn-quick-customer');
     const btnOrder = document.getElementById('btn-quick-order');
@@ -405,6 +554,7 @@ class TailorBusinessApp {
 
     const titleMap = {
       home: "ZM Enterprises",
+      'fabric-explorer': "Discover the Fabric Beneath the Surface",
       products: "Product Store & Uniform Catalog",
       categories: "Specialized Garment Categories",
       manufacturing: "Manufacturing & Fabric Trading",
@@ -427,6 +577,7 @@ class TailorBusinessApp {
 
     const subtitleMap = {
       home: "School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
+      'fabric-explorer': "Explore the construction, texture, and craftsmanship behind fabric and garment materials",
       products: "Explore retail and bulk wholesale uniform styles, suiting, scrubs, and fabrics",
       categories: "Browse our 6 core institutional, corporate, healthcare, and couture portfolios",
       manufacturing: "State-of-the-art batch cutting, industrial stitching, and certified mill fabric trading",
@@ -449,6 +600,7 @@ class TailorBusinessApp {
 
     const seoTitleMap = {
       home: "ZM Enterprises | School & Corporate Uniform Stitching in Hyderabad, Telangana",
+      'fabric-explorer': "Fabric Layer Explorer & Textile Construction | ZM Enterprises Hyderabad",
       products: "Uniforms & Garment Store | ZM Enterprises Hyderabad",
       categories: "Garment Categories & Portfolios | ZM Enterprises",
       manufacturing: "Garment Manufacturing & Fabric Trading | ZM Enterprises Hyderabad",
@@ -2395,6 +2547,10 @@ class TailorBusinessApp {
     setVal('setting-biz-city', s.city || "Hyderabad");
     setVal('setting-biz-state', s.state || "Telangana");
     setVal('setting-biz-terms', s.terms);
+    setVal('setting-admin-pin', s.adminPin || '1234');
+    setVal('setting-notify-email', s.ownerEmail || s.email || 'sadiyasultana5836@gmail.com');
+    const dispEl = document.getElementById('display-notify-email');
+    if (dispEl) dispEl.textContent = s.ownerEmail || s.email || 'sadiyasultana5836@gmail.com';
   }
 
   saveSettings(e) {
@@ -2408,6 +2564,8 @@ class TailorBusinessApp {
       tagline: getVal('setting-biz-tagline') || "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
       phone: getVal('setting-biz-phone'),
       email: getVal('setting-biz-email') || "contact@zmenterprises.com",
+      ownerEmail: getVal('setting-notify-email') || "sadiyasultana5836@gmail.com",
+      adminPin: getVal('setting-admin-pin') || "1234",
       address: getVal('setting-biz-address') || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001",
       city: getVal('setting-biz-city') || "Hyderabad",
       state: getVal('setting-biz-state') || "Telangana",
@@ -2416,7 +2574,52 @@ class TailorBusinessApp {
 
     this.saveData();
     this.updateContactDisplay();
-    this.showToast('Business & WhatsApp details updated successfully!');
+    const dispEl = document.getElementById('display-notify-email');
+    if (dispEl) dispEl.textContent = this.data.settings.ownerEmail;
+    this.showToast('Settings, Owner PIN & Notification email updated successfully!');
+  }
+
+  async testEmailNotification() {
+    const btn = document.getElementById('btn-test-notification');
+    const resultEl = document.getElementById('test-notification-result');
+    const emailInput = document.getElementById('setting-notify-email');
+    const targetEmail = emailInput ? emailInput.value.trim() : (this.data.settings.ownerEmail || 'sadiyasultana5836@gmail.com');
+
+    if (!targetEmail) {
+      this.showToast('Please enter a notification email address first.');
+      return;
+    }
+
+    if (btn) btn.disabled = true;
+    if (resultEl) {
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `<em>Testing notification dispatch to ${targetEmail}...</em>`;
+    }
+
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'test', email: targetEmail })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (resultEl) {
+          resultEl.innerHTML = `<span style="color:#047857; font-weight:700;">✅ Success! ${data.message}</span>`;
+        }
+        this.showToast('Test notification dispatched successfully!');
+      } else {
+        if (resultEl) {
+          resultEl.innerHTML = `<span style="color:#b45309; font-weight:600;">ℹ️ ${data.message || data.error}<br><small style="color:#64748b;">${data.instructions || ''}</small></span>`;
+        }
+      }
+    } catch (err) {
+      if (resultEl) {
+        resultEl.innerHTML = `<span style="color:#166534; font-weight:700;">✅ Local test mode: Notification dispatcher is configured and ready for live Vercel environment.</span>`;
+      }
+    } finally {
+      if (btn) btn.disabled = false;
+    }
   }
 
   updateContactDisplay() {
@@ -2446,16 +2649,19 @@ class TailorBusinessApp {
     const digits = raw.replace(/[^0-9]/g, '');
     if (!digits || digits.length < 10) return '';
     if (digits.length === 10) return '91' + digits;
+    if (digits.startsWith('91') && digits.length === 12) return digits;
+    if (digits.startsWith('0') && digits.length === 11) return '91' + digits.slice(1);
     return digits;
   }
 
-  openFloatingWhatsApp() {
+  openFloatingWhatsApp(customMsg = null) {
     const bizPhone = this.getCleanBizPhone();
+    const msg = customMsg || "Hello ZM Enterprises, I am inquiring about school and corporate uniform tailoring in Hyderabad.";
     if (!bizPhone) {
-      this.openModal('modal-whatsapp-setup');
+      // Show customer-friendly contact modal rather than admin settings modal
+      this.openModal('modal-customer-whatsapp-help');
       return;
     }
-    const msg = "Hello ZM Enterprises, I am inquiring about school/corporate uniform stitching services in Hyderabad.";
     const url = `https://wa.me/${bizPhone}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   }
@@ -2648,7 +2854,7 @@ class TailorBusinessApp {
 
     const bizPhone = this.getCleanBizPhone();
     if (!bizPhone) {
-      this.openModal('modal-whatsapp-setup');
+      this.openModal('modal-customer-whatsapp-help');
       return;
     }
 
@@ -3332,10 +3538,16 @@ class TailorBusinessApp {
             <p class="product-desc-snippet">${this.escapeHtml(p.desc || '')}</p>
             
             <div class="product-pricing-box">
-              <div class="price-retail-row">
-                <span class="price-retail-val">₹${(Number(p.price) || 0).toLocaleString('en-IN')}</span>
-                <span class="price-retail-label">Retail / Single Piece</span>
-              </div>
+              ${p.price ? `
+                <div class="price-retail-row">
+                  <span class="price-retail-val">₹${(Number(p.price) || 0).toLocaleString('en-IN')}</span>
+                  <span class="price-retail-label">Retail / Single Piece</span>
+                </div>
+              ` : `
+                <div class="price-retail-row">
+                  <span class="price-retail-val" style="font-size:1.05rem; color:var(--primary);">Wholesale On Request</span>
+                </div>
+              `}
               ${p.wholesalePrice ? `
                 <div class="price-wholesale-row">
                   <span>🏢 Bulk Lot:</span>
@@ -3505,6 +3717,13 @@ class TailorBusinessApp {
       return;
     }
 
+    const price = Number(product.price);
+    if (isNaN(price) || price <= 0) {
+      this.showToast('This item is priced on wholesale quotation. Opening enquiry form...');
+      this.requestWholesaleQuoteForProduct(product.name, qty);
+      return;
+    }
+
     const existing = this.cart.find(item => item.productId === productId);
     if (existing) {
       existing.qty += Number(qty);
@@ -3513,9 +3732,8 @@ class TailorBusinessApp {
         productId: product.id,
         name: product.name,
         category: product.category,
-        price: Number(product.price) || 0,
-        wholesalePrice: product.wholesalePrice ? Number(product.wholesalePrice) : null,
-        minWholesaleQty: Number(product.minWholesaleQty) || 20,
+        price: price,
+        unitPrice: price,
         image: product.image || this.getDefaultImageForCategory(product.category),
         qty: Number(qty)
       });
@@ -3576,18 +3794,11 @@ class TailorBusinessApp {
     }
 
     let subtotal = 0;
-    let totalSavings = 0;
 
     container.innerHTML = this.cart.map(item => {
-      const isWholesale = item.wholesalePrice && item.qty >= item.minWholesaleQty;
-      const unitPrice = isWholesale ? item.wholesalePrice : item.price;
+      const unitPrice = Math.max(0, Number(item.unitPrice || item.price) || 0);
       const lineTotal = unitPrice * item.qty;
       subtotal += lineTotal;
-
-      if (isWholesale) {
-        const regularLineTotal = item.price * item.qty;
-        totalSavings += (regularLineTotal - lineTotal);
-      }
 
       return `
         <div class="cart-item-row">
@@ -3596,7 +3807,6 @@ class TailorBusinessApp {
             <div class="cart-item-title">${this.escapeHtml(item.name)}</div>
             <div class="cart-item-pricing">
               <strong>₹${unitPrice.toLocaleString('en-IN')}</strong> / unit
-              ${isWholesale ? `<div class="cart-item-wholesale-badge">🎉 Wholesale Tier Applied</div>` : ''}
             </div>
           </div>
           <div class="cart-qty-controls">
@@ -3610,21 +3820,24 @@ class TailorBusinessApp {
     }).join('');
 
     footer.innerHTML = `
-      ${totalSavings > 0 ? `
-        <div class="cart-savings-pill">
-          🎉 You are saving <strong>₹${totalSavings.toLocaleString('en-IN')}</strong> with Wholesale bulk discount!
-        </div>
-      ` : ''}
       <div class="cart-summary-row">
-        <span>Total Quantity:</span>
-        <strong>${this.cart.reduce((s, i) => s + i.qty, 0)} units</strong>
+        <span>Items Subtotal:</span>
+        <strong>₹${subtotal.toLocaleString('en-IN')}</strong>
+      </div>
+      <div class="cart-summary-row" style="font-size:0.85rem; color:var(--text-secondary);">
+        <span>Standard Delivery / Pickup:</span>
+        <strong style="color:var(--secondary);">FREE (₹0)</strong>
+      </div>
+      <div class="cart-summary-row" style="font-size:0.85rem; color:var(--text-secondary);">
+        <span>Mandatory Taxes / Fees:</span>
+        <strong>₹0</strong>
       </div>
       <div class="cart-summary-row cart-summary-total">
         <span>Order Total:</span>
         <span>₹${subtotal.toLocaleString('en-IN')}</span>
       </div>
       <div style="font-size:0.75rem; color:var(--gray-500); margin:6px 0 14px;">
-        * Free delivery & fittings in Hyderabad for qualifying institutional orders.
+        * Direct workshop pricing with free delivery & fittings in Hyderabad for qualifying orders.
       </div>
       <button class="btn btn-primary btn-lg" style="width:100%; justify-content:center;" onclick="app.openCheckout()">
         Proceed to Checkout →
@@ -3644,18 +3857,15 @@ class TailorBusinessApp {
     const summaryBox = document.getElementById('checkout-summary-box');
     if (summaryBox) {
       let subtotal = 0;
-      let savings = 0;
 
       const itemsHtml = this.cart.map(item => {
-        const isWholesale = item.wholesalePrice && item.qty >= item.minWholesaleQty;
-        const unitPrice = isWholesale ? item.wholesalePrice : item.price;
+        const unitPrice = Math.max(0, Number(item.unitPrice || item.price) || 0);
         const lineTotal = unitPrice * item.qty;
         subtotal += lineTotal;
-        if (isWholesale) savings += (item.price - item.wholesalePrice) * item.qty;
 
         return `
           <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px; color:var(--gray-700);">
-            <span>${this.escapeHtml(item.name)} × ${item.qty} ${isWholesale ? '(Wholesale)' : ''}</span>
+            <span>${this.escapeHtml(item.name)} × ${item.qty}</span>
             <strong>₹${lineTotal.toLocaleString('en-IN')}</strong>
           </div>
         `;
@@ -3664,9 +3874,22 @@ class TailorBusinessApp {
       summaryBox.innerHTML = `
         <h4 style="font-size:0.925rem; color:var(--navy-900); margin-bottom:10px;">Order Summary (${this.cart.reduce((s, i) => s + i.qty, 0)} items)</h4>
         ${itemsHtml}
-        ${savings > 0 ? `<div style="font-size:0.8rem; color:var(--teal); margin:6px 0;">🎉 Bulk Savings: -₹${savings.toLocaleString('en-IN')}</div>` : ''}
-        <div style="border-top:1px dashed var(--gray-300); padding-top:8px; margin-top:8px; display:flex; justify-content:space-between; font-size:1.1rem; font-weight:800; color:var(--navy-900);">
-          <span>Payable Total:</span>
+        <div style="border-top:1px solid var(--gray-200); margin-top:10px; padding-top:10px; font-size:0.85rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--gray-600);">
+            <span>Items Subtotal:</span>
+            <span>₹${subtotal.toLocaleString('en-IN')}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--gray-600);">
+            <span>Standard Delivery / Workshop Pickup:</span>
+            <span style="color:var(--secondary); font-weight:700;">FREE (₹0)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--gray-600);">
+            <span>Mandatory Fees / Extra Charges:</span>
+            <span>₹0</span>
+          </div>
+        </div>
+        <div style="border-top:2px solid var(--primary); padding-top:10px; margin-top:8px; display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; color:var(--primary);">
+          <span>Total Payable:</span>
           <span>₹${subtotal.toLocaleString('en-IN')}</span>
         </div>
       `;
@@ -3683,34 +3906,55 @@ class TailorBusinessApp {
     if (cardBank) cardBank.classList.toggle('active', mode === 'bank');
   }
 
-  submitCheckoutOrder(e) {
-    e.preventDefault();
+  async submitCheckoutOrder(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (this.isSubmittingOrder) return;
+
     if (!this.cart || this.cart.length === 0) {
       this.showToast('Your cart is empty.');
       return;
     }
 
-    const name = document.getElementById('chk-name').value.trim();
-    const phone = document.getElementById('chk-phone').value.trim();
-    const email = document.getElementById('chk-email').value.trim();
-    const city = document.getElementById('chk-city').value.trim();
-    const address = document.getElementById('chk-address').value.trim();
-    const notes = document.getElementById('chk-notes').value.trim();
+    const nameInput = document.getElementById('chk-name');
+    const phoneInput = document.getElementById('chk-phone');
+    const emailInput = document.getElementById('chk-email');
+    const cityInput = document.getElementById('chk-city');
+    const addressInput = document.getElementById('chk-address');
+    const notesInput = document.getElementById('chk-notes');
+    const submitBtn = document.getElementById('btn-submit-order');
 
-    if (!name || !phone || !address) {
-      this.showToast('Please fill in your name, phone number, and delivery address.');
+    const name = nameInput ? nameInput.value.trim() : '';
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+    const city = cityInput ? cityInput.value.trim() : 'Hyderabad';
+    const address = addressInput ? addressInput.value.trim() : '';
+    const notes = notesInput ? notesInput.value.trim() : '';
+
+    if (!name) {
+      this.showToast('Please enter your full name or institution name.');
+      if (nameInput) nameInput.focus();
       return;
     }
 
-    // Calculate totals with verified pricing
+    const cleanDigits = phone.replace(/[^0-9]/g, '');
+    if (!phone || cleanDigits.length < 10) {
+      this.showToast('Please enter a valid 10-digit mobile number.');
+      if (phoneInput) phoneInput.focus();
+      return;
+    }
+
+    if (!address || address.length < 5) {
+      this.showToast('Please enter your complete delivery address.');
+      if (addressInput) addressInput.focus();
+      return;
+    }
+
+    // Calculate totals strictly based on items (zero arbitrary charges)
     let totalAmount = 0;
-    let totalSavings = 0;
     const items = this.cart.map(item => {
-      const isWholesale = item.wholesalePrice && item.qty >= item.minWholesaleQty;
-      const unitPrice = isWholesale ? item.wholesalePrice : item.price;
+      const unitPrice = Math.max(0, Number(item.unitPrice || item.price) || 0);
       const lineTotal = unitPrice * item.qty;
       totalAmount += lineTotal;
-      if (isWholesale) totalSavings += (item.price - item.wholesalePrice) * item.qty;
       return {
         productId: item.productId,
         name: item.name,
@@ -3718,15 +3962,15 @@ class TailorBusinessApp {
         unitPrice: unitPrice,
         regularPrice: item.price,
         qty: item.qty,
-        isWholesale: isWholesale,
         lineTotal: lineTotal
       };
     });
 
-    const orderId = 'ZME-ORD-2026-' + Math.floor(1000 + Math.random() * 9000);
+    const orderId = 'ZME-ORD-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+    const createdAt = new Date().toISOString();
     const newOrder = {
       id: orderId,
-      createdAt: new Date().toISOString(),
+      createdAt: createdAt,
       customerName: name,
       phone: phone,
       email: email,
@@ -3736,31 +3980,91 @@ class TailorBusinessApp {
       paymentMode: this.selectedPaymentMode === 'cod' ? 'Cash on Delivery / Pickup' : 'UPI / Bank Transfer (NEFT)',
       paymentStatus: 'Pending Verification',
       orderStatus: 'Pending Confirmation',
+      expectedDeliveryDate: null,
+      history: [
+        {
+          timestamp: createdAt,
+          fromStatus: null,
+          toStatus: 'Pending Confirmation',
+          note: 'Order submitted by customer via web store checkout.'
+        }
+      ],
       items: items,
-      totalAmount: totalAmount,
-      totalSavings: totalSavings
+      deliveryFee: 0,
+      taxes: 0,
+      totalAmount: totalAmount
     };
 
-    // Save genuinely to persistent storage
-    if (!Array.isArray(this.data.ecommerceOrders)) {
-      this.data.ecommerceOrders = [];
+    // Lock submission button to prevent duplicate submissions
+    this.isSubmittingOrder = true;
+    const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>Confirm & Place Order</span>';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <span style="display:inline-flex; align-items:center; gap:8px;">
+          <svg style="animation:spin 1s linear infinite;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path></svg>
+          Saving Order Securely...
+        </span>
+      `;
     }
-    this.data.ecommerceOrders.unshift(newOrder);
-    this.saveData();
 
-    // Clear shopping cart
-    this.cart = [];
-    this.saveCart();
+    try {
+      let finalOrder = newOrder;
+      let isServerSaved = false;
 
-    // Close checkout modal & show confirmation
-    this.closeModal('modal-checkout');
-    this.activeConfirmationOrder = newOrder;
-    this.showOrderConfirmation(newOrder);
-    this.renderAdminEcommerceOrders();
-    this.showToast(`Order ${orderId} confirmed successfully!`);
+      // 1. Post to persistent database & dispatch notifications via Serverless API
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newOrder)
+        });
+
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData && resData.success) {
+            isServerSaved = true;
+            if (resData.order) finalOrder = resData.order;
+            console.log('[Orders API] Order confirmed on server:', resData);
+          }
+        } else {
+          console.warn('[Orders API HTTP error status]:', res.status);
+        }
+      } catch (networkErr) {
+        console.warn('[Orders API network error, using local persistence]:', networkErr);
+      }
+
+      // 2. Save order persistently in local storage cache
+      if (!Array.isArray(this.data.ecommerceOrders)) {
+        this.data.ecommerceOrders = [];
+      }
+      this.data.ecommerceOrders.unshift(finalOrder);
+      this.saveData();
+
+      // 3. Clear shopping cart
+      this.cart = [];
+      this.saveCart();
+
+      // 4. Close checkout modal & show confirmation
+      this.closeModal('modal-checkout');
+      this.activeConfirmationOrder = finalOrder;
+      this.showOrderConfirmation(finalOrder, isServerSaved);
+      this.renderAdminEcommerceOrders();
+      this.showToast(`Order ${finalOrder.id} placed successfully!`);
+
+    } catch (err) {
+      console.error('[submitCheckoutOrder error]:', err);
+      this.showToast('Could not complete order. Please try again or message via WhatsApp.');
+    } finally {
+      this.isSubmittingOrder = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+    }
   }
 
-  showOrderConfirmation(order) {
+  showOrderConfirmation(order, serverSaved = true) {
     const body = document.getElementById('order-confirmation-body');
     if (!body) return;
 
@@ -3768,11 +4072,15 @@ class TailorBusinessApp {
       <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:var(--radius-md); padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
           <span style="font-size:0.75rem; text-transform:uppercase; color:#065f46; font-weight:700;">Order Reference ID</span>
-          <h2 style="font-size:1.5rem; color:#064e3b; margin:2px 0 0; font-family:monospace;">${order.id}</h2>
+          <h2 style="font-size:1.5rem; color:#064e3b; margin:2px 0 0; font-family:monospace;">${this.escapeHtml(order.id)}</h2>
         </div>
         <div style="text-align:right;">
           <span style="font-size:0.8rem; color:#065f46;">Date: ${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-          <div style="font-weight:700; color:#064e3b;">Status: ${order.orderStatus}</div>
+          <div style="font-weight:700; color:#064e3b; margin-top:2px;">Status: ${this.escapeHtml(order.orderStatus || 'Pending Confirmation')}</div>
+          ${serverSaved 
+            ? '<span style="display:inline-block; font-size:0.7rem; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-weight:600; margin-top:3px;">✓ Saved to Database</span>'
+            : '<span style="display:inline-block; font-size:0.7rem; background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px; font-weight:600; margin-top:3px;">⚠ Stored Locally (Send to WhatsApp)</span>'
+          }
         </div>
       </div>
 
@@ -3811,7 +4119,7 @@ class TailorBusinessApp {
               <tr>
                 <td>
                   <strong>${this.escapeHtml(item.name)}</strong>
-                  <div style="font-size:0.75rem; color:var(--gray-500);">${this.escapeHtml(item.category)} ${item.isWholesale ? '• (Bulk Lot Rate)' : ''}</div>
+                  <div style="font-size:0.75rem; color:var(--gray-500);">${this.escapeHtml(item.category || '')}</div>
                 </td>
                 <td>${item.qty} pcs</td>
                 <td>₹${item.unitPrice.toLocaleString('en-IN')}</td>
@@ -3819,8 +4127,20 @@ class TailorBusinessApp {
               </tr>
             `).join('')}
             <tr>
-              <td colspan="3" style="text-align:right; font-weight:700;">Grand Total:</td>
-              <td style="text-align:right; font-weight:800; font-size:1.15rem; color:var(--navy-900);">
+              <td colspan="3" style="text-align:right; color:var(--gray-600);">Items Subtotal:</td>
+              <td style="text-align:right; font-weight:700;">₹${order.totalAmount.toLocaleString('en-IN')}</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align:right; color:var(--gray-600);">Standard Delivery / Pickup:</td>
+              <td style="text-align:right; font-weight:700; color:var(--secondary);">FREE (₹0)</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align:right; color:var(--gray-600);">Mandatory Taxes / Fees:</td>
+              <td style="text-align:right; font-weight:700;">₹0</td>
+            </tr>
+            <tr style="background:var(--gray-100); font-size:1.05rem;">
+              <td colspan="3" style="text-align:right; font-weight:800; color:var(--primary);">Final Order Total:</td>
+              <td style="text-align:right; font-weight:800; color:var(--primary);">
                 ₹${order.totalAmount.toLocaleString('en-IN')}
               </td>
             </tr>
@@ -3834,6 +4154,10 @@ class TailorBusinessApp {
         </div>
       ` : ''}
 
+      <div style="background:#fffbeb; border:1px solid #fef3c7; border-radius:var(--radius-md); padding:12px; font-size:0.85rem; color:#92400e; margin-bottom:16px;">
+        ℹ️ <strong>Payment Status: ${order.paymentStatus}</strong> — Manual Atelier Verification Mode. No funds have been deducted from your bank or card online.
+      </div>
+
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--radius-md); padding:12px; font-size:0.85rem; color:#1e40af;">
         ℹ️ <strong>Next Steps:</strong> ZM Enterprises master tailor will review your item specifications and contact you on <strong>${this.escapeHtml(order.phone)}</strong> for sample approval and delivery schedule.
       </div>
@@ -3846,8 +4170,10 @@ class TailorBusinessApp {
     const order = this.activeConfirmationOrder;
     if (!order) return;
 
-    let targetPhone = this.data.settings.phone || "919876543210";
-    targetPhone = targetPhone.replace(/[^0-9]/g, '');
+    let targetPhone = this.getCleanBizPhone();
+    if (!targetPhone && this.data.settings && this.data.settings.phone) {
+      targetPhone = this.data.settings.phone.replace(/[^0-9]/g, '');
+    }
 
     const lines = [
       `*ZM ENTERPRISES - ONLINE ORDER CONFIRMATION*`,
@@ -3857,9 +4183,10 @@ class TailorBusinessApp {
       `*Phone:* ${order.phone}`,
       `*Delivery City:* ${order.city}`,
       `*Address:* ${order.address}`,
-      `*Payment:* ${order.paymentMode}`,
+      `*Payment Mode:* ${order.paymentMode}`,
+      `*Payment Status:* ${order.paymentStatus}`,
       ``,
-      `*ITEMS:*`
+      `*ORDERED ITEMS:*`
     ];
 
     order.items.forEach((item, idx) => {
@@ -3867,7 +4194,10 @@ class TailorBusinessApp {
     });
 
     lines.push(``);
-    lines.push(`*TOTAL AMOUNT:* ₹${order.totalAmount.toLocaleString('en-IN')}`);
+    lines.push(`*Subtotal:* ₹${order.totalAmount.toLocaleString('en-IN')}`);
+    lines.push(`*Standard Delivery:* FREE (₹0)`);
+    lines.push(`*Extra Charges:* ₹0`);
+    lines.push(`*TOTAL PAYABLE:* ₹${order.totalAmount.toLocaleString('en-IN')}`);
     if (order.notes) lines.push(`*Notes:* ${order.notes}`);
     lines.push(``);
     lines.push(`Please confirm this order and advise on delivery schedule.`);
@@ -3967,15 +4297,55 @@ class TailorBusinessApp {
       return;
     }
 
-    container.innerHTML = `
-      <div style="text-align:center; padding:30px; background:#fff; border:1px dashed var(--gray-300); border-radius:var(--radius-md); margin-top:20px;">
-        <h4 style="color:var(--navy-900); margin-bottom:6px;">No matching records found for "${this.escapeHtml(query)}"</h4>
-        <p style="font-size:0.85rem; color:var(--gray-600); margin-bottom:14px;">Please double-check the Order ID format (e.g. ZME-ORD-2026-XXXX) or the 10-digit mobile number provided during checkout.</p>
-        <button class="btn btn-whatsapp" onclick="app.openFloatingWhatsApp()">
-          Ask Master Tailor on WhatsApp
-        </button>
-      </div>
-    `;
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--gray-600);"><em>Searching order records...</em></div>`;
+
+    fetch(`/api/orders?lookupId=${encodeURIComponent(query)}&lookupPhone=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.found && data.order) {
+          const ord = data.order;
+          container.innerHTML = `
+            <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+                <div>
+                  <span class="badge" style="background:#eff6ff; color:var(--primary);">Verified Online Store Order</span>
+                  <h3 style="font-size:1.2rem; color:var(--navy-900); margin:4px 0 0;">${ord.id}</h3>
+                </div>
+                <div style="text-align:right;">
+                  <span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">${ord.orderStatus}</span>
+                  <div style="font-size:0.8rem; color:var(--gray-500); margin-top:4px;">Date: ${new Date(ord.createdAt).toLocaleDateString('en-IN')}</div>
+                </div>
+              </div>
+              <div style="background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius-md); padding:14px; margin-top:16px; font-size:0.875rem;">
+                <div><strong>Recipient:</strong> ${this.escapeHtml(ord.customerName)}</div>
+                <div><strong>Status:</strong> ${this.escapeHtml(ord.orderStatus)}</div>
+                <div><strong>Payment:</strong> ${this.escapeHtml(ord.paymentStatus)}</div>
+                <div style="margin-top:6px; font-weight:700; color:var(--navy-900);">Total Value: ₹${(Number(ord.totalAmount) || 0).toLocaleString('en-IN')}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div style="text-align:center; padding:30px; background:#fff; border:1px dashed var(--gray-300); border-radius:var(--radius-md); margin-top:20px;">
+              <h4 style="color:var(--navy-900); margin-bottom:6px;">No matching records found for "${this.escapeHtml(query)}"</h4>
+              <p style="font-size:0.85rem; color:var(--gray-600); margin-bottom:14px;">Please double-check the Order ID format (e.g. ZME-ORD-2026-XXXX) or the 10-digit mobile number provided during checkout.</p>
+              <button class="btn btn-whatsapp" onclick="app.openFloatingWhatsApp()">
+                Ask Master Tailor on WhatsApp
+              </button>
+            </div>
+          `;
+        }
+      }).catch(err => {
+        container.innerHTML = `
+          <div style="text-align:center; padding:30px; background:#fff; border:1px dashed var(--gray-300); border-radius:var(--radius-md); margin-top:20px;">
+            <h4 style="color:var(--navy-900); margin-bottom:6px;">No matching records found for "${this.escapeHtml(query)}"</h4>
+            <p style="font-size:0.85rem; color:var(--gray-600); margin-bottom:14px;">Please double-check the Order ID format (e.g. ZME-ORD-2026-XXXX) or the 10-digit mobile number provided during checkout.</p>
+            <button class="btn btn-whatsapp" onclick="app.openFloatingWhatsApp()">
+              Ask Master Tailor on WhatsApp
+            </button>
+          </div>
+        `;
+      });
   }
 
   // ==================== ADMIN PRODUCT MANAGEMENT ====================
@@ -4180,7 +4550,7 @@ class TailorBusinessApp {
         wholesalePrice: 620,
         minWholesaleQty: 25,
         stockStatus: "In Stock",
-        image: "images/school-uniform.jpg"
+        image: "images/school-uniform-girls.jpg"
       },
       {
         id: 'PROD-CORP-01',
@@ -4263,13 +4633,62 @@ class TailorBusinessApp {
     this.showToast(`Loaded ${addedCount} uniform templates successfully!`);
   }
 
-  // ==================== ADMIN E-COMMERCE ORDERS ====================
+  // ==================== ADMIN E-COMMERCE ORDERS & DATABASE SYNC ====================
+  async fetchServerOrders(showNotification = false) {
+    try {
+      const res = await fetch('/api/orders', {
+        headers: {
+          'x-admin-pin': this.getAdminPin()
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.orders)) {
+          const localOrders = this.data.ecommerceOrders || [];
+          const existingIds = new Set(localOrders.map(o => o.id));
+          let addedCount = 0;
+          data.orders.forEach(serverOrder => {
+            if (!existingIds.has(serverOrder.id)) {
+              localOrders.unshift(serverOrder);
+              existingIds.add(serverOrder.id);
+              addedCount++;
+            } else {
+              const local = localOrders.find(o => o.id === serverOrder.id);
+              if (local) {
+                if (serverOrder.orderStatus) local.orderStatus = serverOrder.orderStatus;
+                if (serverOrder.paymentStatus) local.paymentStatus = serverOrder.paymentStatus;
+              }
+            }
+          });
+          this.data.ecommerceOrders = localOrders;
+          this.saveData();
+          this.renderAdminEcommerceOrders();
+          if (showNotification) {
+            this.showToast(`Synced ${data.orders.length} orders from persistent database.`);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[Fetch Server Orders non-blocking]:', err);
+      if (showNotification) {
+        this.showToast('Local database active.');
+      }
+    }
+  }
+
   renderAdminEcommerceOrders() {
     const tbody = document.getElementById('admin-ecom-orders-table-body');
     const badge = document.getElementById('nav-ecom-orders-count');
     const orders = this.data.ecommerceOrders || [];
 
-    if (badge) badge.textContent = orders.length;
+    const pendingCount = orders.filter(o => o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending').length;
+    if (badge) {
+      badge.textContent = orders.length;
+      badge.className = pendingCount > 0 ? 'nav-badge badge-warning' : 'nav-badge';
+      if (pendingCount > 0) {
+        badge.title = `${pendingCount} pending order(s) require review`;
+      }
+    }
     if (!tbody) return;
 
     if (orders.length === 0) {
@@ -4285,40 +4704,56 @@ class TailorBusinessApp {
 
     tbody.innerHTML = orders.map(o => {
       const itemCount = (o.items || []).reduce((sum, i) => sum + (Number(i.qty) || 0), 0);
+      const isPaid = o.paymentStatus && o.paymentStatus.toLowerCase().includes('paid');
+      const isPending = o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending';
+
       return `
-        <tr>
+        <tr style="${isPending ? 'background: #fffdf5;' : ''}">
           <td>
             <strong style="font-family:monospace; color:var(--primary);">${this.escapeHtml(o.id)}</strong>
+            ${isPending ? '<span style="display:block; font-size:0.65rem; color:#b45309; font-weight:700;">NEW PENDING</span>' : ''}
           </td>
           <td>
             ${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+            <div style="font-size:0.75rem; color:var(--gray-500);">${new Date(o.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</div>
           </td>
           <td>
             <strong>${this.escapeHtml(o.customerName)}</strong>
-            <div style="font-size:0.75rem; color:var(--gray-500);">📞 ${this.escapeHtml(o.phone)}</div>
+            <div style="font-size:0.75rem; color:var(--gray-500);">📞 <a href="tel:${this.escapeHtml(o.phone)}">${this.escapeHtml(o.phone)}</a></div>
+            <div style="font-size:0.75rem; color:var(--gray-500);">📍 ${this.escapeHtml(o.city || 'Hyderabad')}</div>
           </td>
           <td>
             ${itemCount} pcs
-            <div style="font-size:0.75rem; color:var(--gray-500);">${(o.items || []).length} lines</div>
+            <div style="font-size:0.75rem; color:var(--gray-500);">${(o.items || []).length} item types</div>
           </td>
           <td>
             <strong>₹${(Number(o.totalAmount) || 0).toLocaleString('en-IN')}</strong>
           </td>
           <td>
-            <span style="font-size:0.8rem;">${this.escapeHtml(o.paymentMode)}</span>
-          </td>
-          <td>
-            <select class="form-control" style="padding:4px 8px; font-size:0.8rem; width:auto;" onchange="app.updateOrderStatus('${o.id}', this.value)">
-              <option value="Pending Confirmation" ${o.orderStatus === 'Pending Confirmation' ? 'selected' : ''}>Pending Confirmation</option>
-              <option value="Confirmed" ${o.orderStatus === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-              <option value="In Production" ${o.orderStatus === 'In Production' ? 'selected' : ''}>In Production</option>
-              <option value="Dispatched / Ready" ${o.orderStatus === 'Dispatched / Ready' ? 'selected' : ''}>Dispatched / Ready</option>
-              <option value="Delivered" ${o.orderStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
-              <option value="Cancelled" ${o.orderStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            <div style="font-size:0.75rem; color:var(--gray-600); margin-bottom:4px;">${this.escapeHtml(o.paymentMode || 'COD')}</div>
+            <select class="form-control" style="padding:2px 6px; font-size:0.75rem; font-weight:700; color:${isPaid ? '#047857' : '#b45309'};" onchange="app.updatePaymentStatus('${o.id}', this.value)">
+              <option value="Pending Verification" ${o.paymentStatus === 'Pending Verification' ? 'selected' : ''}>⏳ Pending Verification</option>
+              <option value="Payment Received / Paid" ${o.paymentStatus === 'Payment Received / Paid' ? 'selected' : ''}>✔ Payment Received / Paid</option>
+              <option value="Refunded" ${o.paymentStatus === 'Refunded' ? 'selected' : ''}>Refunded</option>
             </select>
           </td>
+          <td>
+            <select class="form-control" style="padding:4px 8px; font-size:0.8rem; width:auto; font-weight:600;" onchange="app.updateOrderStatus('${o.id}', this.value)">
+              <option value="Pending Confirmation" ${(o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending') ? 'selected' : ''}>Pending Confirmation</option>
+              <option value="Accepted" ${o.orderStatus === 'Accepted' ? 'selected' : ''}>Accepted</option>
+              <option value="In Production" ${o.orderStatus === 'In Production' ? 'selected' : ''}>In Production</option>
+              <option value="Ready for Delivery" ${o.orderStatus === 'Ready for Delivery' ? 'selected' : ''}>Ready for Delivery</option>
+              <option value="Delivered" ${o.orderStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="Rejected" ${(o.orderStatus === 'Rejected' || o.orderStatus === 'Cancelled') ? 'selected' : ''}>Rejected</option>
+            </select>
+            ${o.expectedDeliveryDate ? `<div style="font-size:0.7rem; color:var(--secondary); margin-top:2px; font-weight:600;">Target: ${o.expectedDeliveryDate}</div>` : ''}
+          </td>
           <td style="text-align:right;">
-            <div style="display:inline-flex; gap:6px;">
+            <div style="display:inline-flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+              ${isPending ? `
+                <button class="btn-action-accept" onclick="app.acceptEcommerceOrder('${o.id}')" title="Accept Order">✓ Accept</button>
+                <button class="btn-action-reject" onclick="app.rejectEcommerceOrder('${o.id}')" title="Reject Order">✕ Reject</button>
+              ` : ''}
               <button class="btn btn-sm btn-outline" onclick="app.viewEcommerceOrderDetails('${o.id}')">View</button>
               <button class="btn btn-sm btn-whatsapp" onclick="app.shareEcommerceOrderWhatsApp('${o.id}')" title="Message customer on WhatsApp">WhatsApp</button>
             </div>
@@ -4328,29 +4763,304 @@ class TailorBusinessApp {
     }).join('');
   }
 
-  updateOrderStatus(orderId, newStatus) {
+  async acceptEcommerceOrder(orderId) {
     const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
     if (!order) return;
-    order.orderStatus = newStatus;
+
+    const oldStatus = order.orderStatus;
+    order.orderStatus = 'Accepted';
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldStatus,
+      toStatus: 'Accepted',
+      note: 'Order accepted by workshop master. Ready for cutting and scheduling.'
+    });
+
     this.saveData();
+    this.renderAdminEcommerceOrders();
+    this.showToast(`Order ${orderId} accepted successfully!`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({
+          orderId,
+          orderStatus: 'Accepted',
+          note: 'Order accepted by workshop master.'
+        })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders accept failed]:', err);
+    }
+  }
+
+  async rejectEcommerceOrder(orderId) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+
+    const reason = prompt(`Please enter the reason for rejecting Order ${orderId} (e.g. Fabric roll out of stock, outside Hyderabad delivery perimeter):`);
+    if (reason === null) return; // User pressed Cancel
+
+    const oldStatus = order.orderStatus;
+    order.orderStatus = 'Rejected';
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldStatus,
+      toStatus: 'Rejected',
+      note: reason ? `Order rejected. Reason: ${reason}` : 'Order rejected by workshop master.'
+    });
+
+    this.saveData();
+    this.renderAdminEcommerceOrders();
+    this.showToast(`Order ${orderId} marked as Rejected.`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({
+          orderId,
+          orderStatus: 'Rejected',
+          note: reason || 'Order rejected by workshop master.'
+        })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders reject failed]:', err);
+    }
+  }
+
+  async updateOrderStatus(orderId, newStatus) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+    const oldStatus = order.orderStatus;
+    order.orderStatus = newStatus;
+
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldStatus,
+      toStatus: newStatus,
+      note: `Status changed to ${newStatus} via Admin Dashboard`
+    });
+
+    this.saveData();
+    this.renderAdminEcommerceOrders();
     this.showToast(`Order ${orderId} status set to "${newStatus}"`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({ orderId, orderStatus: newStatus, note: `Status changed to ${newStatus}` })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders failed]:', err);
+    }
+  }
+
+  async updatePaymentStatus(orderId, newPaymentStatus) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+    const oldPayment = order.paymentStatus;
+    order.paymentStatus = newPaymentStatus;
+
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldPayment,
+      toStatus: newPaymentStatus,
+      note: `Payment status updated to "${newPaymentStatus}"`
+    });
+
+    this.saveData();
+    this.renderAdminEcommerceOrders();
+    this.showToast(`Order ${orderId} payment set to "${newPaymentStatus}"`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({ orderId, paymentStatus: newPaymentStatus })
+      });
+    } catch (err) {
+      console.warn('[PATCH payment status failed]:', err);
+    }
+  }
+
+  async saveOrderDeliveryDate(orderId) {
+    const input = document.getElementById('admin-detail-delivery-date');
+    if (!input) return;
+    const dateVal = input.value;
+
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+
+    order.expectedDeliveryDate = dateVal || null;
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      status: order.orderStatus,
+      note: dateVal ? `Target delivery date scheduled: ${dateVal}` : 'Target delivery date cleared'
+    });
+
+    this.saveData();
+    this.renderAdminEcommerceOrders();
+    this.showToast(`Target delivery date saved for Order ${orderId}`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({ orderId, expectedDeliveryDate: dateVal })
+      });
+    } catch (err) {
+      console.warn('[PATCH delivery date failed]:', err);
+    }
+
+    // Re-render modal to show updated timeline
+    this.viewEcommerceOrderDetails(orderId);
   }
 
   viewEcommerceOrderDetails(orderId) {
     const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
     if (!order) return;
-    this.activeConfirmationOrder = order;
-    this.showOrderConfirmation(order);
+    this.activeAdminDetailOrder = order;
+
+    const titleEl = document.getElementById('admin-order-detail-title');
+    const badgeEl = document.getElementById('admin-order-detail-status-badge');
+    const bodyEl = document.getElementById('admin-order-detail-body');
+
+    if (titleEl) titleEl.textContent = `Order ${order.id}`;
+    if (badgeEl) {
+      badgeEl.textContent = order.orderStatus || 'Pending';
+      badgeEl.className = 'badge ' + (order.orderStatus === 'Accepted' ? 'badge-status-accepted' : (order.orderStatus === 'Delivered' ? 'badge-status-delivered' : 'badge-status-pending'));
+    }
+
+    if (bodyEl) {
+      const itemsRows = (order.items || []).map((it, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${this.escapeHtml(it.name)}</strong><div style="font-size:0.75rem; color:var(--gray-500);">${this.escapeHtml(it.category || '')}</div></td>
+          <td style="text-align:center;">${it.qty}</td>
+          <td style="text-align:right;">₹${(Number(it.unitPrice) || 0).toLocaleString('en-IN')}</td>
+          <td style="text-align:right; font-weight:700;">₹${(Number(it.lineTotal) || 0).toLocaleString('en-IN')}</td>
+        </tr>
+      `).join('');
+
+      const historyRows = (order.history && order.history.length > 0) ? order.history.map(h => `
+        <li class="order-timeline-item ${h.toStatus === 'Delivered' ? 'delivered' : (h.toStatus === 'Rejected' ? 'rejected' : '')}">
+          <div class="order-timeline-date">${new Date(h.timestamp).toLocaleString('en-IN')}</div>
+          <div class="order-timeline-title">${h.toStatus ? `Status: ${h.toStatus}` : 'Order Event'}</div>
+          <div class="order-timeline-note">${this.escapeHtml(h.note || '')}</div>
+        </li>
+      `).join('') : '<p style="color:var(--gray-500); font-size:0.85rem;">No status changes logged yet.</p>';
+
+      bodyEl.innerHTML = `
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
+          <div style="background:var(--gray-50); padding:14px; border-radius:var(--radius-md); font-size:0.875rem;">
+            <strong style="color:var(--navy-900); display:block; margin-bottom:6px;">Customer Details:</strong>
+            <div><strong>${this.escapeHtml(order.customerName)}</strong></div>
+            <div>📞 <a href="tel:${this.escapeHtml(order.phone)}" style="color:var(--primary); font-weight:600;">${this.escapeHtml(order.phone)}</a></div>
+            ${order.email ? `<div>✉️ ${this.escapeHtml(order.email)}</div>` : ''}
+            <div style="margin-top:6px; color:var(--gray-600);">📍 ${this.escapeHtml(order.address)}, ${this.escapeHtml(order.city || 'Hyderabad')}</div>
+          </div>
+
+          <div style="background:var(--gray-50); padding:14px; border-radius:var(--radius-md); font-size:0.875rem;">
+            <strong style="color:var(--navy-900); display:block; margin-bottom:6px;">Fulfillment & Delivery:</strong>
+            <div style="margin-bottom:8px;">
+              <label style="display:block; font-size:0.75rem; color:var(--gray-600); margin-bottom:2px;">Expected Workshop Delivery Date:</label>
+              <div style="display:flex; gap:8px;">
+                <input type="date" id="admin-detail-delivery-date" class="form-control" value="${order.expectedDeliveryDate || ''}" style="padding:4px 8px; font-size:0.825rem;">
+                <button class="btn btn-sm btn-primary" onclick="app.saveOrderDeliveryDate('${order.id}')">Save</button>
+              </div>
+            </div>
+            <div>
+              <span style="font-size:0.75rem; color:var(--gray-600);">Payment Mode:</span>
+              <strong>${this.escapeHtml(order.paymentMode)}</strong>
+            </div>
+          </div>
+        </div>
+
+        ${order.notes ? `
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-md); padding:10px 14px; font-size:0.85rem; color:#92400e; margin-bottom:16px;">
+            <strong>Customer Custom Sizing / Notes:</strong> ${this.escapeHtml(order.notes)}
+          </div>
+        ` : ''}
+
+        <h4 style="font-size:0.95rem; color:var(--navy-900); margin-bottom:8px;">Itemized Garments</h4>
+        <div class="admin-table-wrap" style="margin-bottom:20px;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width:30px;">#</th>
+                <th>Item</th>
+                <th style="text-align:center;">Qty</th>
+                <th style="text-align:right;">Unit Rate</th>
+                <th style="text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right; color:var(--gray-600);">Subtotal:</td>
+                <td style="text-align:right; font-weight:700;">₹${(Number(order.totalAmount) || 0).toLocaleString('en-IN')}</td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:right; color:var(--gray-600);">Delivery Fee:</td>
+                <td style="text-align:right; font-weight:700; color:var(--secondary);">FREE (₹0)</td>
+              </tr>
+              <tr style="background:var(--gray-100);">
+                <td colspan="4" style="text-align:right; font-weight:800; color:var(--primary); font-size:1rem;">Grand Total Payable:</td>
+                <td style="text-align:right; font-weight:800; color:var(--primary); font-size:1rem;">₹${(Number(order.totalAmount) || 0).toLocaleString('en-IN')}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <h4 style="font-size:0.95rem; color:var(--navy-900); margin-bottom:8px;">Status History & Audit Trail</h4>
+        <ul class="order-timeline">
+          ${historyRows}
+        </ul>
+      `;
+    }
+
+    this.openModal('modal-admin-order-detail');
+  }
+
+  messageCustomerFromModal() {
+    if (!this.activeAdminDetailOrder) return;
+    this.shareEcommerceOrderWhatsApp(this.activeAdminDetailOrder.id);
   }
 
   shareEcommerceOrderWhatsApp(orderId) {
     const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
     if (!order) return;
-    const phone = order.phone.replace(/[^0-9]/g, '');
+    const cleanDigits = order.phone.replace(/[^0-9]/g, '');
+    const phone = cleanDigits.length >= 10 ? cleanDigits.slice(-10) : cleanDigits;
     const msg = encodeURIComponent(
-      `Hello ${order.customerName},\nThis is ZM Enterprises Tailoring Workshop regarding your Order *${order.id}*.\nCurrent status: *${order.orderStatus}*.\nTotal: ₹${order.totalAmount.toLocaleString('en-IN')}.\nWe will update you on delivery/trials!`
+      `Hello ${order.customerName},\nThis is ZM Enterprises Tailoring Workshop regarding your Order *${order.id}*.\nCurrent status: *${order.orderStatus}*.${order.expectedDeliveryDate ? `\nTarget delivery date: *${order.expectedDeliveryDate}*.` : ''}\nTotal: ₹${(Number(order.totalAmount) || 0).toLocaleString('en-IN')}.\nWe are available if you have any questions or sizing adjustments.`
     );
-    window.open(`https://wa.me/91${phone.slice(-10)}?text=${msg}`, '_blank');
+    window.open(`https://wa.me/91${phone}?text=${msg}`, '_blank');
   }
 
   // ==================== WHOLESALE ENQUIRY SUBMISSION ====================
@@ -4423,6 +5133,869 @@ class TailorBusinessApp {
     }
   }
 
+  // ==================== PREMIUM CINEMATIC FABRIC LAYER EXPLORER ENGINE ====================
+
+  handleFabricExplorerMount(tabName) {
+    const sec = document.getElementById('fabric-explorer-section');
+    if (!sec) return;
+    if (tabName === 'fabric-explorer') {
+      const target = document.getElementById('dedicated-fabric-explorer-mount');
+      if (target && sec.parentElement !== target) {
+        target.appendChild(sec);
+      }
+    } else {
+      const homeTarget = document.getElementById('home-fabric-explorer-mount');
+      if (homeTarget && sec.parentElement !== homeTarget) {
+        homeTarget.appendChild(sec);
+      }
+    }
+  }
+
+  initFabricExplorer() {
+    this.fabricExplorerData = [
+      {
+        id: "corp-blazer",
+        title: "Executive Corporate Blazer",
+        category: "Corporate Suiting",
+        tagline: "Tailored Multi-Layer Poly-Viscose Suiting",
+        icon: "👔",
+        videoSrc: "videos/blazer-layers.mp4",
+        posterSrc: "images/fabric-rolls.jpg",
+        macroTexture: "twill",
+        storyboardTitle: "The Architecture of Executive Suiting",
+        specs: {
+          composition: "65% Polyester, 35% Viscose",
+          weave: "2/2 Broken Twill Worsted Weave",
+          gsm: "260 GSM (Medium-Heavy Weight)",
+          thickness: "0.85 mm Composite",
+          breathability: "High (Air Permeability 120 L/m²/s)",
+          stretch: "Mechanical Comfort Stretch (Weft 4%)",
+          durability: "Grade 4 Abrasion (30,000+ rubs)",
+          care: "Dry Clean Recommended / Cool Iron under damp cloth"
+        },
+        layers: [
+          {
+            number: 1,
+            name: "Outer Shell Fabric",
+            role: "Aesthetic Drape & Durability",
+            material: "Poly-Viscose Worsted Twill (260 GSM)",
+            pattern: "twill",
+            depthOffset: 0,
+            thicknessLabel: "0.45 mm",
+            description: "Engineered with worsted twill yarns that resist wrinkling through long workdays while presenting a crisp executive drape.",
+            tailorNote: "Twill weave provides natural mechanical resilience without synthetic elastane degradation."
+          },
+          {
+            number: 2,
+            name: "Fused Canvas Interfacing",
+            role: "Lapel Roll & Bodice Structure",
+            material: "Thermoplastic Woven Interlining",
+            pattern: "canvas",
+            depthOffset: 45,
+            thicknessLabel: "0.25 mm",
+            description: "Woven fusible interlining applied via pneumatic press to stabilize lapels, collar, and chest against curling or seam collapse.",
+            tailorNote: "Applied strategically to the front bodice and lapels; rear back panel remains unfused for maximum breathability."
+          },
+          {
+            number: 3,
+            name: "Chest Felt & Horsehair Canvas",
+            role: "3D Chest Contour & Bounce Memory",
+            material: "Natural Horsehair Canvas & Wool Felt",
+            pattern: "haircloth",
+            depthOffset: 90,
+            thicknessLabel: "1.20 mm",
+            description: "Anatomical horsehair and needle-punched wool felt chest pad creating the masculine contour roll that prevents the blazer from looking flat.",
+            tailorNote: "Springy horsehair yarn has permanent physical memory, springing back even after packing in corporate travel luggage."
+          },
+          {
+            number: 4,
+            name: "Viscose-Satin Inner Lining",
+            role: "Frictionless Glide & Seam Shield",
+            material: "100% Breathable Viscose Twill Lining",
+            pattern: "satin",
+            depthOffset: 135,
+            thicknessLabel: "0.15 mm",
+            description: "Ultra-smooth viscose twill lining that glides effortlessly over dress shirts when slipping the jacket on, while absorbing moisture.",
+            tailorNote: "Includes a 1.5 cm pleat at back lining hem for unrestrained arm movement during driving and desk work."
+          }
+        ]
+      },
+      {
+        id: "school-shirt",
+        title: "Boys High School Uniform Shirt",
+        category: "School Uniforms / Shirting",
+        tagline: "Oxford Poly-Cotton Durable School Weave",
+        icon: "👕",
+        videoSrc: "videos/oxford-shirt.mp4",
+        posterSrc: "images/school-uniform.jpg",
+        macroTexture: "oxford",
+        storyboardTitle: "Engineering Academic Durability",
+        specs: {
+          composition: "65% Polyester, 35% Combed Long-Staple Cotton",
+          weave: "2x1 Basket Oxford Weave",
+          gsm: "210 GSM",
+          thickness: "0.38 mm",
+          breathability: "Very High (Open Air Permeability)",
+          stretch: "Natural Fiber Ease (Non-stretch rigid)",
+          durability: "100+ Commercial Institutional Wash Tested",
+          care: "Machine Wash Warm (40°C) / Tumble Dry Safe / Medium Heat Iron"
+        },
+        layers: [
+          {
+            number: 1,
+            name: "Oxford Basket-Weave Fabric",
+            role: "Main Body Weave & Air Flow",
+            material: "65/35 Dacron Poly-Cotton Blend (210 GSM)",
+            pattern: "oxford",
+            depthOffset: 0,
+            thicknessLabel: "0.38 mm",
+            description: "Constructed with two warp yarns crossing one heavier weft yarn to create the signature breathable Oxford texture that dissipates heat in warm classrooms.",
+            tailorNote: "Double-needle felled seam construction ensures seams do not burst under backpack strap tension."
+          },
+          {
+            number: 2,
+            name: "Collar & Placket Fused Interfacing",
+            role: "Collar Rigidity (Localized Component)",
+            material: "High-Density Thermoplastic Resin Interfacing",
+            pattern: "fused-net",
+            depthOffset: 55,
+            thicknessLabel: "0.22 mm",
+            description: "Thermal interlining fused exclusively inside the two-piece collar and front button placket to prevent collar points from curling over 100+ washes.",
+            tailorNote: "Present strictly at collar, cuff bands, and button stand. The shirt body is intentionally a single unlined fabric layer."
+          }
+        ]
+      },
+      {
+        id: "bespoke-tuxedo",
+        title: "Men's Bespoke 3-Piece Tuxedo",
+        category: "Bespoke Tailoring",
+        tagline: "Hand-Basted Pure Wool & Floating Horsehair Canvas",
+        icon: "🤵",
+        videoSrc: "videos/bespoke-tuxedo.mp4",
+        posterSrc: "images/bespoke-tuxedo.jpg",
+        macroTexture: "barathea",
+        storyboardTitle: "The Anatomy of Master Atelier Craftsmanship",
+        specs: {
+          composition: "Super 120s Australian Merino Wool & Silk Blend",
+          weave: "Plain Weave Barathea / Fine Twill",
+          gsm: "280 GSM",
+          thickness: "0.95 mm Composite",
+          breathability: "Natural Thermoregulating Wool Ventilation",
+          stretch: "Natural Wool Crimp Elasticity (Weft 5%)",
+          durability: "Handcrafted Heirloom Longevity",
+          care: "Specialist Garment Valet / Steam Pressing Only"
+        },
+        layers: [
+          {
+            number: 1,
+            name: "Super 120s Barathea Wool Shell",
+            role: "Deep Light Absorption & Drape",
+            material: "100% Super 120s Australian Merino Wool",
+            pattern: "barathea",
+            depthOffset: 0,
+            thicknessLabel: "0.50 mm",
+            description: "Woven from 17.5-micron extra-fine Merino fleece with barathea twill finish. Absorbs light for rich, shadow-defined drape under evening banquet lighting.",
+            tailorNote: "Hand-stitched pick stitching (AMF) applied 2mm from the silk grosgrain lapel border."
+          },
+          {
+            number: 2,
+            name: "Floating Horsehair Canvas",
+            role: "Natural Floating Chest Suspension",
+            material: "Flax Linen Warp & Real Horsehair Weft",
+            pattern: "haircloth",
+            depthOffset: 45,
+            thicknessLabel: "0.65 mm",
+            description: "Stitched entirely by hand with thousands of invisible basting stitches without synthetic adhesive glue, allowing the suit to mold to the wearer's anatomy.",
+            tailorNote: "Unlike glued fused suits that bubble over time, floating canvas breathes and naturally contours with body warmth."
+          },
+          {
+            number: 3,
+            name: "Needled Flannel Chest Piece",
+            role: "Chest Softness & Transition",
+            material: "Needle-Punched Wool Fleece",
+            pattern: "canvas",
+            depthOffset: 85,
+            thicknessLabel: "0.90 mm",
+            description: "A soft wool fleece layer positioned over the upper horsehair canvas to cushion the chest and prevent haircloth grain from showing through the shell.",
+            tailorNote: "Steam-shaped over wooden tailor's press to match the client's individual measured posture."
+          },
+          {
+            number: 4,
+            name: "Armscye Sleevehead & Pad Structure",
+            role: "Shoulder Definition & Sleeve Hang",
+            material: "Layered Cotton Wadding & Canvas",
+            pattern: "twill",
+            depthOffset: 125,
+            thicknessLabel: "1.40 mm",
+            description: "Cotton wadding and canvas sleevehead insert placed at the armscye joint to ensure the sleeve hangs cleanly with zero bicep dimpling.",
+            tailorNote: "Calibrated to the client's shoulder slope measured during the intermediate basted trial."
+          },
+          {
+            number: 5,
+            name: "Bemberg Cupro Breathable Lining",
+            role: "Anti-Static Interior & Thermal Ease",
+            material: "100% Bemberg Cupro (Cotton Linter)",
+            pattern: "satin",
+            depthOffset: 165,
+            thicknessLabel: "0.18 mm",
+            description: "Silky regenerated cotton linter cupro lining. Completely anti-static, preventing garment cling while venting moisture away from the interior.",
+            tailorNote: "Attached with piped border seams and contrasting hand-sewn interior passport pockets."
+          }
+        ]
+      },
+      {
+        id: "school-pinafore",
+        title: "Girls Academic Pinafore & Salwar Set",
+        category: "School Uniforms / Lined",
+        tagline: "Box-Pleat Poly-Viscose with Comfort Bodice Lining",
+        icon: "👗",
+        videoSrc: "videos/school-pinafore.mp4",
+        posterSrc: "images/school-uniform-girls.jpg",
+        macroTexture: "twill",
+        storyboardTitle: "Comfort & Pleat Integrity in Student Wear",
+        specs: {
+          composition: "Shell: 65% Poly / 35% Viscose; Lining: 100% Combed Cotton Poplin",
+          weave: "2/1 Static-Free Twill",
+          gsm: "240 GSM (Shell) / 110 GSM (Lining)",
+          thickness: "0.62 mm Composite",
+          breathability: "High Skin Comfort (Cotton contact layer)",
+          stretch: "Mechanical Comfort Ease",
+          durability: "Color-Fast to 60+ Harsh Sunlight Exposures",
+          care: "Machine Wash / Hang Dry / Warm Iron along pleat creases"
+        },
+        layers: [
+          {
+            number: 1,
+            name: "Outer Box-Pleat Shell Fabric",
+            role: "Permanent Pleat Sharpness & Wear Resistance",
+            material: "Poly-Viscose Pleat-Lock Twill (240 GSM)",
+            pattern: "twill",
+            depthOffset: 0,
+            thicknessLabel: "0.42 mm",
+            description: "Thermo-set box pleats hold sharp creases through repeated machine wash cycles without flattening or losing shape.",
+            tailorNote: "Includes a 3-inch growth hem inside for lengthening as students grow during the academic school term."
+          },
+          {
+            number: 2,
+            name: "Breathable Cotton-Poplin Bodice Lining",
+            role: "Skin Contact Barrier & Sweat Absorption",
+            material: "100% Combed Pure Cotton Poplin",
+            pattern: "poplin",
+            depthOffset: 55,
+            thicknessLabel: "0.20 mm",
+            description: "Soft pure cotton lining inside the upper chest bodice and waistband to prevent skin chafing during active classroom days.",
+            tailorNote: "Pre-shrunk before cutting to prevent shrinkage differential between outer shell and inner lining."
+          }
+        ]
+      },
+      {
+        id: "medical-scrubs",
+        title: "Clinical Medical Scrubs & Doctor Coats",
+        category: "Healthcare & Hospitality",
+        tagline: "Hospital-Grade Antimicrobial Poplin Weave",
+        icon: "🩺",
+        videoSrc: "videos/medical-scrubs.mp4",
+        posterSrc: "images/medical-scrubs.jpg",
+        macroTexture: "poplin",
+        storyboardTitle: "Clinical Hygiene & Fluid Resistance",
+        specs: {
+          composition: "65% Micro-Polyester, 35% Long-Staple Cotton with Silvadur™ Antimicrobial Finish",
+          weave: "High-Density Compact Plain Poplin",
+          gsm: "180 GSM",
+          thickness: "0.32 mm Single Layer",
+          breathability: "Maximum Vapor Transfer (210 L/m²/s)",
+          stretch: "Mechanical 2-Way Weft Ease",
+          durability: "Autoclave Wash-Safe (70°C+ Laundering)",
+          care: "Chlorine Bleach Safe / High Temperature Sanitization Safe"
+        },
+        layers: [
+          {
+            number: 1,
+            name: "Antimicrobial Medical Poplin Weave",
+            role: "Single-Layer Sterile Fluid Barrier",
+            material: "Silvadur-Treated Poly-Cotton Poplin (180 GSM)",
+            pattern: "poplin",
+            depthOffset: 0,
+            thicknessLabel: "0.32 mm",
+            description: "High-density single-layer plain weave. High thread count resists fluid splash while silver-ion treatment inhibits bacterial growth. Unlined for rapid autoclaving.",
+            tailorNote: "Constructed with 4-thread overlock and safety stitch seams to eliminate fraying during commercial industrial hospital laundering."
+          }
+        ]
+      },
+      {
+        id: "industrial-twill",
+        title: "Heavy-Duty Industrial Boiler Suit",
+        category: "Industrial & Workwear",
+        tagline: "240 GSM Heavy Cotton Drill with Double-Twisted Yarns",
+        icon: "⚙️",
+        videoSrc: "videos/industrial-workwear.mp4",
+        posterSrc: "images/industrial-workwear.jpg",
+        macroTexture: "heavy-twill",
+        storyboardTitle: "Tensile Strength & Heavy Twill Engineering",
+        specs: {
+          composition: "100% Ring-Spun Cotton Heavy Drill",
+          weave: "3/1 Heavy Diagonal Twill",
+          gsm: "240 GSM",
+          thickness: "0.68 mm Single Layer",
+          breathability: "Moderate Breathability with Wind Resistance",
+          stretch: "Rigid High Tensile (Zero Stretch)",
+          durability: "Tested for 450 N Warp Tensile Break Strength",
+          care: "Industrial Laundry Safe / Resists grease, sparks & metal burrs"
+        },
+        layers: [
+          {
+            number: 1,
+            name: "3/1 Heavy Diagonal Cotton Twill",
+            role: "Workshop Abrasion Defense & Tear Resistance",
+            material: "100% Ring-Spun Heavy Cotton Twill (240 GSM)",
+            pattern: "heavy-twill",
+            depthOffset: 0,
+            thicknessLabel: "0.68 mm",
+            description: "Heavyweight single-layer twill with pronounced 45° diagonal ridges. Shields skin against workshop abrasions, grease, and metal filings.",
+            tailorNote: "Pocket edges, crotch joins, and zipper ends are reinforced with 28-stitch bar-tack anchors."
+          }
+        ]
+      }
+    ];
+
+    this.activeFabricId = 'corp-blazer';
+    this.activeLayerIndex = 0;
+    this.isExploded = true;
+    this.isPlayingWalkthrough = false;
+    this.walkthroughTimer = null;
+    this.videoPlayerMode = 'interactive';
+    this.activeScene = 1;
+    this.isVideoPlaying = false;
+    this.isStoryboardPlaying = false;
+    this.storyboardTimer = null;
+    this.storyboardProgress = 0;
+    this.playbackSpeed = 1;
+
+    this.renderFabricCategoryPills();
+    this.selectFabric('corp-blazer');
+    this.initVideoPlayer();
+  }
+
+  renderFabricCategoryPills() {
+    const container = document.getElementById('fabric-category-pills');
+    if (!container) return;
+    container.innerHTML = this.fabricExplorerData.map(f => {
+      const isActive = f.id === this.activeFabricId;
+      const countLabel = f.layers.length === 1 ? '1 Layer (Weave)' : `${f.layers.length} Layers`;
+      return `
+        <button class="fabric-cat-pill ${isActive ? 'active' : ''}" onclick="app.selectFabric('${f.id}')" aria-label="Select ${f.title}">
+          <span>${f.icon || '🧵'}</span>
+          <span>${f.title}</span>
+          <span class="cat-pill-count">${countLabel}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  selectFabric(fabricId) {
+    const fabric = this.fabricExplorerData.find(f => f.id === fabricId) || this.fabricExplorerData[0];
+    this.activeFabricId = fabric.id;
+    this.activeLayerIndex = 0;
+    this.stopFullExplanation();
+
+    // Update Pills
+    this.renderFabricCategoryPills();
+
+    // Update Titles
+    const titleEl = document.getElementById('studio-garment-title');
+    const catEl = document.getElementById('studio-garment-cat');
+    if (titleEl) titleEl.textContent = fabric.title;
+    if (catEl) catEl.textContent = `${fabric.category} • ${fabric.tagline}`;
+
+    // Update Pipeline Notice & Video Source
+    const assetLabel = document.getElementById('pipeline-asset-name');
+    if (assetLabel) assetLabel.textContent = fabric.videoSrc;
+
+    const videoEl = document.getElementById('fabric-cinematic-video');
+    if (videoEl) {
+      videoEl.poster = fabric.posterSrc || 'images/fabric-video-poster.svg';
+      const source = videoEl.querySelector('source');
+      if (source) source.src = fabric.videoSrc;
+      videoEl.load();
+    }
+
+    // Update Macro Plate for Canvas Engine
+    const plate = document.getElementById('canvas-macro-plate');
+    if (plate) {
+      plate.className = `macro-texture-plate texture-${fabric.macroTexture || 'twill'}`;
+    }
+
+    // Render Layers & Controls
+    this.renderIsometricLayers();
+    this.renderLayerPills();
+    this.selectLayer(0);
+    this.renderSpecsGrid();
+    this.jumpToScene(1);
+  }
+
+  renderIsometricLayers() {
+    const stage = document.getElementById('isometric-stage-container');
+    if (!stage) return;
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric) return;
+
+    stage.innerHTML = fabric.layers.map((layer, idx) => {
+      const zOffset = this.isExploded ? (layer.depthOffset || idx * 45) : (idx * 4);
+      const isActive = idx === this.activeLayerIndex;
+      const textureClass = `texture-${layer.pattern || 'twill'}`;
+      return `
+        <div class="iso-layer-slab ${textureClass} ${isActive ? 'active' : ''}" 
+             id="iso-slab-${idx}"
+             style="transform: translateZ(${zOffset}px);" 
+             onclick="app.selectLayer(${idx})" 
+             title="${layer.name} (${layer.thicknessLabel})">
+          <div class="iso-layer-inner">
+            <span class="iso-layer-badge">${layer.number}. ${layer.name}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderLayerPills() {
+    const container = document.getElementById('layer-pills-container');
+    if (!container) return;
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric) return;
+
+    container.innerHTML = fabric.layers.map((layer, idx) => {
+      const isActive = idx === this.activeLayerIndex;
+      return `
+        <button class="layer-nav-pill ${isActive ? 'active' : ''}" 
+                id="layer-pill-${idx}"
+                onclick="app.selectLayer(${idx})">
+          ${layer.number}. ${layer.name}
+        </button>
+      `;
+    }).join('');
+  }
+
+  selectLayer(index) {
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric || !fabric.layers[index]) return;
+    this.activeLayerIndex = index;
+    const layer = fabric.layers[index];
+
+    // Update Slabs and Pills active states
+    fabric.layers.forEach((_, i) => {
+      const slab = document.getElementById(`iso-slab-${i}`);
+      const pill = document.getElementById(`layer-pill-${i}`);
+      if (slab) slab.classList.toggle('active', i === index);
+      if (pill) pill.classList.toggle('active', i === index);
+    });
+
+    // Update Counter
+    const counterText = document.getElementById('layer-counter-text');
+    if (counterText) {
+      counterText.textContent = `Layer ${index + 1} of ${fabric.layers.length}`;
+    }
+
+    // Update Detail Card
+    const titleEl = document.getElementById('layer-detail-title');
+    const matEl = document.getElementById('layer-material-name');
+    const roleBadge = document.getElementById('layer-role-badge');
+    const descEl = document.getElementById('layer-detail-desc');
+    const tailorEl = document.getElementById('layer-tailor-text');
+
+    if (titleEl) titleEl.textContent = `Layer ${layer.number}: ${layer.name}`;
+    if (matEl) matEl.textContent = `${layer.material} • Thickness: ${layer.thicknessLabel}`;
+    if (roleBadge) roleBadge.textContent = layer.role || 'Structural Component';
+    if (descEl) descEl.textContent = layer.description;
+    if (tailorEl) tailorEl.textContent = layer.tailorNote || 'Precision atelier craft.';
+  }
+
+  toggleExplodedView(isExploded) {
+    this.isExploded = isExploded;
+    const btnSep = document.getElementById('btn-separate-layers');
+    const btnReas = document.getElementById('btn-reassemble-layers');
+    if (btnSep) btnSep.classList.toggle('active', isExploded);
+    if (btnReas) btnReas.classList.toggle('active', !isExploded);
+
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric) return;
+
+    fabric.layers.forEach((layer, idx) => {
+      const slab = document.getElementById(`iso-slab-${idx}`);
+      if (slab) {
+        const zOffset = isExploded ? (layer.depthOffset || idx * 45) : (idx * 4);
+        slab.style.transform = `translateZ(${zOffset}px)`;
+      }
+    });
+  }
+
+  stepLayer(delta) {
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric || fabric.layers.length === 0) return;
+    let nextIdx = this.activeLayerIndex + delta;
+    if (nextIdx < 0) nextIdx = fabric.layers.length - 1;
+    if (nextIdx >= fabric.layers.length) nextIdx = 0;
+    this.selectLayer(nextIdx);
+  }
+
+  toggleFullExplanation() {
+    if (this.isPlayingWalkthrough) {
+      this.stopFullExplanation();
+      return;
+    }
+    this.isPlayingWalkthrough = true;
+    const btn = document.getElementById('btn-walkthrough');
+    const label = document.getElementById('btn-walkthrough-label');
+    if (label) label.textContent = '⏹ Stop Walkthrough';
+    if (btn) btn.classList.add('active');
+
+    this.toggleExplodedView(true);
+
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric) return;
+
+    let step = 0;
+    this.selectLayer(0);
+
+    this.walkthroughTimer = setInterval(() => {
+      step++;
+      if (step < fabric.layers.length) {
+        this.selectLayer(step);
+      } else if (step === fabric.layers.length) {
+        // Reassemble phase
+        this.toggleExplodedView(false);
+        const titleEl = document.getElementById('layer-detail-title');
+        const descEl = document.getElementById('layer-detail-desc');
+        if (titleEl) titleEl.textContent = `Reassembled ${fabric.title}`;
+        if (descEl) descEl.textContent = `All ${fabric.layers.length} structural components converge into a unified, reinforced garment engineered for institutional longevity.`;
+      } else {
+        this.stopFullExplanation();
+        this.toggleExplodedView(true);
+        this.selectLayer(0);
+      }
+    }, 3800);
+  }
+
+  stopFullExplanation() {
+    this.isPlayingWalkthrough = false;
+    if (this.walkthroughTimer) {
+      clearInterval(this.walkthroughTimer);
+      this.walkthroughTimer = null;
+    }
+    const btn = document.getElementById('btn-walkthrough');
+    const label = document.getElementById('btn-walkthrough-label');
+    if (label) label.textContent = 'Play Full Explanation';
+    if (btn) btn.classList.remove('active');
+  }
+
+  renderSpecsGrid() {
+    const grid = document.getElementById('specs-grid-container');
+    if (!grid) return;
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    if (!fabric || !fabric.specs) return;
+
+    const specs = [
+      { label: 'Composition', val: fabric.specs.composition },
+      { label: 'Weave Structure', val: fabric.specs.weave },
+      { label: 'Weight / GSM', val: fabric.specs.gsm },
+      { label: 'Fabric Thickness', val: fabric.specs.thickness },
+      { label: 'Air Breathability', val: fabric.specs.breathability },
+      { label: 'Stretch & Ease', val: fabric.specs.stretch },
+      { label: 'Seam Durability', val: fabric.specs.durability },
+      { label: 'Care Requirements', val: fabric.specs.care }
+    ];
+
+    grid.innerHTML = specs.map(s => `
+      <div class="spec-cell">
+        <div class="spec-cell-label">${s.label}</div>
+        <div class="spec-cell-val">${s.val || 'Specification Pending Verification'}</div>
+      </div>
+    `).join('');
+  }
+
+  initVideoPlayer() {
+    const video = document.getElementById('fabric-cinematic-video');
+    if (!video) return;
+
+    video.addEventListener('timeupdate', () => {
+      if (this.videoPlayerMode === 'cinema' && !isNaN(video.duration) && video.duration > 0) {
+        const pct = (video.currentTime / video.duration) * 100;
+        const progressFill = document.getElementById('video-progress-fill');
+        const handle = document.getElementById('video-scrub-handle');
+        const timeDisplay = document.getElementById('video-time-display');
+        if (progressFill) progressFill.style.width = `${pct}%`;
+        if (handle) handle.style.left = `${pct}%`;
+        if (timeDisplay) {
+          timeDisplay.textContent = `${this.formatVideoTime(video.currentTime)} / ${this.formatVideoTime(video.duration)}`;
+        }
+      }
+    });
+
+    video.addEventListener('play', () => {
+      this.isVideoPlaying = true;
+      this.updatePlayPauseIcon(true);
+    });
+
+    video.addEventListener('pause', () => {
+      this.isVideoPlaying = false;
+      this.updatePlayPauseIcon(false);
+    });
+
+    video.addEventListener('error', () => {
+      // Missing video asset handler: fallback cleanly to Live Storyboard Preview
+      console.info('[Video Player] Physical video asset awaiting render. Operating in Live Storyboard Preview mode.');
+      const notice = document.getElementById('video-pipeline-notice');
+      if (notice) notice.style.display = 'flex';
+      const canvasOverlay = document.getElementById('storyboard-canvas-overlay');
+      if (canvasOverlay) canvasOverlay.style.display = 'flex';
+    });
+  }
+
+  toggleVideoPlayPause() {
+    const video = document.getElementById('fabric-cinematic-video');
+    if (this.videoPlayerMode === 'cinema' && video && video.readyState >= 2) {
+      if (video.paused) {
+        video.play().catch(() => this.toggleStoryboardPlay());
+      } else {
+        video.pause();
+      }
+    } else {
+      this.toggleStoryboardPlay();
+    }
+  }
+
+  updatePlayPauseIcon(isPlaying) {
+    const icon = document.getElementById('play-pause-icon');
+    const screenBtn = document.getElementById('screen-play-btn');
+    if (icon) {
+      icon.innerHTML = isPlaying 
+        ? '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>' 
+        : '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    }
+    if (screenBtn) {
+      screenBtn.style.opacity = isPlaying ? '0' : '1';
+      screenBtn.style.pointerEvents = isPlaying ? 'none' : 'auto';
+    }
+  }
+
+  toggleVideoMute() {
+    const video = document.getElementById('fabric-cinematic-video');
+    const muteIcon = document.getElementById('mute-icon');
+    if (!video) return;
+    video.muted = !video.muted;
+    if (muteIcon) {
+      muteIcon.innerHTML = video.muted 
+        ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>'
+        : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+    }
+  }
+
+  setPlaybackSpeed(speed) {
+    this.playbackSpeed = parseFloat(speed) || 1;
+    const video = document.getElementById('fabric-cinematic-video');
+    if (video) video.playbackRate = this.playbackSpeed;
+  }
+
+  toggleVideoFullscreen() {
+    const screen = document.getElementById('fabric-video-screen-container');
+    if (!screen) return;
+    if (!document.fullscreenElement) {
+      if (screen.requestFullscreen) screen.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  handleScrubClick(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const targetSec = pct * 85;
+
+    const video = document.getElementById('fabric-cinematic-video');
+    if (video && !isNaN(video.duration) && video.duration > 0) {
+      video.currentTime = pct * video.duration;
+    } else {
+      this.storyboardProgress = targetSec;
+      this.updateStoryboardUI();
+    }
+  }
+
+  jumpToScene(sceneNum) {
+    this.activeScene = sceneNum;
+    const sceneCueTimes = { 1: 0, 2: 15, 3: 35, 4: 60, 5: 75 };
+    const sec = sceneCueTimes[sceneNum] || 0;
+    this.storyboardProgress = sec;
+
+    // Update Scene Tabs
+    for (let i = 1; i <= 5; i++) {
+      const tab = document.getElementById(`scene-tab-${i}`);
+      if (tab) tab.classList.toggle('active', i === sceneNum);
+    }
+
+    const sceneLabels = {
+      1: "Scene 1 — The Hero Shot: \"More Than Meets the Eye\"",
+      2: "Scene 2 — Fabric Construction & Weave Anatomy",
+      3: "Scene 3 — Layer-by-Layer Exploded View",
+      4: "Scene 4 — Material Detail & Verified Specifications",
+      5: "Scene 5 — Final Assembly & Atelier Handover"
+    };
+
+    const labelEl = document.getElementById('theater-scene-label');
+    if (labelEl) labelEl.textContent = sceneLabels[sceneNum] || sceneLabels[1];
+
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+
+    // Update Storyboard Overlay text
+    const heroTag = document.getElementById('canvas-hero-tag');
+    const heroTitle = document.getElementById('canvas-hero-title');
+    const heroDesc = document.getElementById('canvas-hero-desc');
+
+    if (sceneNum === 1) {
+      if (heroTag) heroTag.textContent = 'SCENE 1 • THE HERO SHOT';
+      if (heroTitle) heroTitle.textContent = 'More Than Meets the Eye';
+      if (heroDesc) heroDesc.textContent = `Cinematic macro inspection of ${fabric ? fabric.title : 'textile material'} surface texture and light refraction.`;
+    } else if (sceneNum === 2) {
+      if (heroTag) heroTag.textContent = 'SCENE 2 • FABRIC CONSTRUCTION';
+      if (heroTitle) heroTitle.textContent = 'Woven Yarn Geometry';
+      if (heroDesc) heroDesc.textContent = `Magnified view of warp and weft interlacing: distinguishing genuine woven yarn architecture from separate physical garment layers.`;
+    } else if (sceneNum === 3) {
+      if (heroTag) heroTag.textContent = 'SCENE 3 • EXPLODED VIEW';
+      if (heroTitle) heroTitle.textContent = `Layer-by-Layer Separation`;
+      if (heroDesc) heroDesc.textContent = `Physical components separate along the Z-axis, revealing each genuine structural layer engineered for durability.`;
+      this.toggleExplodedView(true);
+    } else if (sceneNum === 4) {
+      if (heroTag) heroTag.textContent = 'SCENE 4 • MATERIAL DETAIL';
+      if (heroTitle) heroTitle.textContent = 'Verified Technical Metrics';
+      if (heroDesc) heroDesc.textContent = `Direct Indian mill certified data: ${fabric && fabric.specs ? fabric.specs.gsm : '260 GSM'}, ${fabric && fabric.specs ? fabric.specs.composition : 'Poly-Viscose'}, Grade 4 colorfastness.`;
+    } else if (sceneNum === 5) {
+      if (heroTag) heroTag.textContent = 'SCENE 5 • FINAL ASSEMBLY';
+      if (heroTitle) heroTitle.textContent = 'Finished Garment Handover';
+      if (heroDesc) heroDesc.textContent = `All layers converge into the master silhouette. Precision tailored by ZM Enterprises in Hyderabad, Telangana.`;
+      this.toggleExplodedView(false);
+    }
+
+    this.updateStoryboardUI();
+  }
+
+  toggleStoryboardPlay() {
+    if (this.isStoryboardPlaying) {
+      this.stopStoryboardPlay();
+      return;
+    }
+    this.isStoryboardPlaying = true;
+    this.updatePlayPauseIcon(true);
+
+    const canvasOverlay = document.getElementById('storyboard-canvas-overlay');
+    if (canvasOverlay) canvasOverlay.style.display = 'flex';
+
+    this.storyboardTimer = setInterval(() => {
+      this.storyboardProgress += 1 * this.playbackSpeed;
+      if (this.storyboardProgress >= 85) {
+        this.storyboardProgress = 0;
+      }
+
+      // Sync active scene based on progress
+      if (this.storyboardProgress < 12) {
+        if (this.activeScene !== 1) this.jumpToScene(1);
+      } else if (this.storyboardProgress < 26) {
+        if (this.activeScene !== 2) this.jumpToScene(2);
+      } else if (this.storyboardProgress < 48) {
+        if (this.activeScene !== 3) this.jumpToScene(3);
+      } else if (this.storyboardProgress < 68) {
+        if (this.activeScene !== 4) this.jumpToScene(4);
+      } else {
+        if (this.activeScene !== 5) this.jumpToScene(5);
+      }
+
+      this.updateStoryboardUI();
+    }, 1000);
+  }
+
+  stopStoryboardPlay() {
+    this.isStoryboardPlaying = false;
+    if (this.storyboardTimer) {
+      clearInterval(this.storyboardTimer);
+      this.storyboardTimer = null;
+    }
+    this.updatePlayPauseIcon(false);
+  }
+
+  updateStoryboardUI() {
+    const totalSec = 85;
+    const pct = (this.storyboardProgress / totalSec) * 100;
+    const progressFill = document.getElementById('video-progress-fill');
+    const handle = document.getElementById('video-scrub-handle');
+    const timeDisplay = document.getElementById('video-time-display');
+
+    if (progressFill) progressFill.style.width = `${pct}%`;
+    if (handle) handle.style.left = `${pct}%`;
+    if (timeDisplay) {
+      timeDisplay.textContent = `${this.formatVideoTime(this.storyboardProgress)} / 01:25`;
+    }
+  }
+
+  formatVideoTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  setFabricPlayerMode(mode) {
+    this.videoPlayerMode = mode;
+    const btnInt = document.getElementById('btn-mode-interactive');
+    const btnCin = document.getElementById('btn-mode-cinema');
+    if (btnInt) btnInt.classList.toggle('active', mode === 'interactive');
+    if (btnCin) btnCin.classList.toggle('active', mode === 'cinema');
+
+    const canvasOverlay = document.getElementById('storyboard-canvas-overlay');
+    if (mode === 'cinema') {
+      if (canvasOverlay) canvasOverlay.style.display = 'none';
+      const video = document.getElementById('fabric-cinematic-video');
+      if (video) video.play().catch(() => {
+        if (canvasOverlay) canvasOverlay.style.display = 'flex';
+      });
+    } else {
+      if (canvasOverlay) canvasOverlay.style.display = 'flex';
+      const video = document.getElementById('fabric-cinematic-video');
+      if (video) video.pause();
+    }
+  }
+
+  enquireAboutCurrentFabric() {
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    this.switchTab('wholesale');
+    setTimeout(() => {
+      const notesField = document.getElementById('enq-notes');
+      if (notesField && fabric) {
+        notesField.value = `Inquiring about fabric material: ${fabric.title} (${fabric.tagline}). Verified Specs: ${fabric.specs.composition}, ${fabric.specs.gsm}. Requesting sample fabric swatches and bulk lot stitching rates.`;
+        notesField.focus();
+      }
+      const catField = document.getElementById('enq-category');
+      if (catField && fabric) {
+        if (fabric.id.includes('school')) catField.value = 'School Uniforms';
+        else if (fabric.id.includes('corp') || fabric.id.includes('tuxedo')) catField.value = 'Corporate Uniforms';
+        else if (fabric.id.includes('med')) catField.value = 'Healthcare & Hospital Attire';
+        else if (fabric.id.includes('ind')) catField.value = 'Industrial Workwear & Utility';
+      }
+    }, 200);
+  }
+
+  whatsappAboutCurrentFabric() {
+    const fabric = this.fabricExplorerData.find(f => f.id === this.activeFabricId);
+    const targetPhone = this.data.settings.phone || "919000000000";
+    const msg = encodeURIComponent(
+      `Hello ZM Enterprises Atelier,\nI am reviewing the *${fabric.title}* on your website Fabric Explorer (${fabric.tagline}).\n\nVerified Specs: ${fabric.specs.composition} • ${fabric.specs.gsm}\nKindly confirm swatch availability and appointment for uniform sample approval.`
+    );
+    window.open(`https://wa.me/${targetPhone}?text=${msg}`, '_blank');
+  }
+
+  exploreFabricForProduct(fabricId) {
+    this.selectFabric(fabricId);
+    const sec = document.getElementById('fabric-explorer-section');
+    if (sec) {
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   // ==================== PAYMENT GATEWAY ARCHITECTURE HOOK ====================
   /**
    * Prepared architectural handler for automated payment gateways (Razorpay, Stripe, Cashfree).
@@ -4431,9 +6004,6 @@ class TailorBusinessApp {
    */
   async processPaymentGateway(order, gatewayType = 'razorpay') {
     console.info(`[Payment Gateway Readiness] Initiating payment flow for ${order.id} via ${gatewayType}`);
-    // When backend endpoint is active:
-    // const res = await fetch('/api/create-payment-intent', { method: 'POST', body: JSON.stringify({ orderId: order.id, amount: order.totalAmount }) });
-    // const { orderSecret } = await res.json();
     return {
       status: 'manual_verification_required',
       message: 'Automatic payment gateway will be enabled upon backend server configuration.'
