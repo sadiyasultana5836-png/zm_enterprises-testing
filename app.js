@@ -361,6 +361,8 @@ class TailorBusinessApp {
     this.renderInvoicesTable();
     this.renderCategoryChips();
     this.renderProductsGrid();
+      this.renderPortfolio();
+      this.renderCorporateProducts();
     this.renderAdminProductsTable();
     this.renderAdminEcommerceOrders();
     this.updateCartBadges();
@@ -479,6 +481,11 @@ class TailorBusinessApp {
   }
 
   switchTab(tabName) {
+    // Map legacy / shopping tabs to clean corporate sections
+    if (tabName === 'portfolio') tabName = 'work';
+    if (tabName === 'track-order' || tabName === 'cart' || tabName === 'checkout') tabName = 'work';
+    if (tabName === 'wholesale' || tabName === 'enquiry') tabName = 'contact';
+
     // Synchronize desktop nav buttons and mobile bottom nav items
     document.querySelectorAll('.nav-link-btn').forEach(b => {
       b.classList.toggle('active', b.id === 'nav-btn-' + tabName);
@@ -486,14 +493,10 @@ class TailorBusinessApp {
     document.querySelectorAll('.bottom-nav-item').forEach(b => {
       b.classList.toggle('active', b.id === 'bnav-' + tabName);
     });
-    const headerCartBadge = document.getElementById('header-cart-count');
-    if (headerCartBadge && this.cart) {
-      headerCartBadge.textContent = this.cart.reduce((s, i) => s + (Number(i.qty) || 1), 0);
-    }
 
     const validTabs = [
-      'home', 'fabric-explorer', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
-      'products-admin', 'ecommerce-orders', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings', 'uniforms', 'enquiry'
+      'home', 'about', 'products', 'work', 'capabilities', 'contact',
+      'dashboard', 'fabric-explorer', 'manufacturing'
     ];
     if (!validTabs.includes(tabName)) {
       tabName = 'home';
@@ -6852,6 +6855,322 @@ class TailorBusinessApp {
 
     this.saveData();
     this.showToast('Store settings saved successfully!');
+  }
+
+
+
+  // ==================== ZM ENTERPRISES CORPORATE PORTFOLIO LOGIC ====================
+
+  getPortfolioItems() {
+    return [
+      {
+        id: 'PORT-001',
+        title: '"The Royal Dining (TRD)" Executive Chef Uniform',
+        category: 'Hospitality & Culinary',
+        categoryKey: 'hospitality',
+        image: 'images/work-chef-royal-dining.jpg',
+        description: 'Custom double-breasted white chef jacket crafted with premium stain-release cotton blend. Features contrast black piping along the asymmetrical overlap, black mandarin collar, heat-resistant black stud buttons, and custom embroidered TRD crest on the chest with a matching tall pleated chef toque.',
+        highlights: ['Double-Breasted Front', 'Contrast Black Piping', 'Custom Embroidered Chef Toque', 'Heat & Stain Resistant Fabric']
+      },
+      {
+        id: 'PORT-002',
+        title: '"Pizza Khazza" Commercial Restaurant Staff Attire',
+        category: 'Hospitality & Restaurants',
+        categoryKey: 'hospitality',
+        image: 'images/work-hospitality-pizza-khazza.jpg',
+        description: 'Contemporary black service and kitchen coat tailored with a distinctive multi-color ethnic printed fabric panel on the chest and matching cuffs. Paired with a coordinated black utility waist apron featuring an embroidered "Pizza Khazza" logo, patterned pocket trim, and matching headwear.',
+        highlights: ['Multi-Piece Uniform Set', 'Ethnic Pattern Trim', 'Embroidered Brand Logo', 'Heavy-Duty Wash-Fast Twill']
+      },
+      {
+        id: 'PORT-003',
+        title: 'Hand-Embroidered Royal Ivory Groom Wedding Sherwani',
+        category: 'Bespoke Couture & Traditional',
+        categoryKey: 'couture',
+        image: 'images/work-bespoke-wedding-sherwani.jpg',
+        description: 'Masterpiece bespoke royal ivory raw silk sherwani intricately hand-embroidered with antique gold and copper floral zari needlework across the torso, sleeves, and borders. Complete with a coordinated embroidered royal stole (dupatta), pleated royal safa (turban) with jeweled kalgi feather brooch, and matching embroidered raw silk mojari shoes.',
+        highlights: ['Antique Gold Zari Embroidery', '4-Piece Coordinated Ensemble', 'Pure Raw Silk Fabric', 'Bespoke Master Tailor Fit']
+      },
+      {
+        id: 'PORT-004',
+        title: 'Institutional School Uniform Shirts & Pleated Pinafores',
+        category: 'School Uniforms',
+        categoryKey: 'school',
+        image: 'images/school-uniform.jpg',
+        description: 'Precision batch-manufactured school uniform sets in Oxford poly-cotton weave (65/35). Features reinforced double-ply collars with collar stays, growth-margin hem allowances, and fade-resistant box-pleated pinafores engineered for daily academic wear and rigorous laundering.',
+        highlights: ['Reinforced Seams & Collars', '65/35 Poly-Cotton Weave', 'Growth Margin Allowances', 'Institutional Colorfastness']
+      },
+      {
+        id: 'PORT-005',
+        title: 'Executive Corporate Tailored Blazers & Suiting',
+        category: 'Corporate Attire',
+        categoryKey: 'corporate',
+        image: 'images/corporate-suit.jpg',
+        description: 'Tailored corporate blazers and suiting constructed with structured canvas chest pieces, durable poly-viscose suiting fabric, interior satin lining, and custom horn buttons. Designed for enterprise management, front-office personnel, and executive events.',
+        highlights: ['Structured Shoulder Construction', 'Wrinkle-Resistant Poly-Viscose', 'Custom Chest Pocket Margins', 'Consistent Team Fit Matrix']
+      },
+      {
+        id: 'PORT-006',
+        title: 'Certified Mill Textile Uniform Bolts & Checks',
+        category: 'Fabric & Materials',
+        categoryKey: 'corporate',
+        image: 'images/fabric-rolls.jpg',
+        description: 'Direct mill-sourced textile bolts in certified school checks, solid poplin shirting, hospital scrubs twill, and corporate suiting fabrics. We maintain strict batch dye consistency so re-orders match previous uniforms identically.',
+        highlights: ['Direct Mill Sourcing', 'Identical Dye-Lot Guarantee', 'High GSM Durability', 'Pre-Shrunk & Colorfast']
+      }
+    ];
+  }
+
+  getCorporateProductsCatalog() {
+    return [
+      {
+        id: 'PROD-SCH-01',
+        name: 'Boys High School Uniform Shirt (Set of 2)',
+        category: 'School Uniforms',
+        image: 'images/school-uniform.jpg',
+        desc: 'Durable Oxford poly-cotton weave (65/35), reinforced double collar with collar stiffener, chest pocket with badge stitching margin, breathable wash-fast fabric.',
+        specs: 'Fabric: 65% Polyester, 35% Cotton • Weave: Oxford / Poplin • Stitching: Double-needle reinforced'
+      },
+      {
+        id: 'PROD-SCH-02',
+        name: 'Girls Pleated School Pinafore & Salwar Set',
+        category: 'School Uniforms',
+        image: 'images/school-uniform-girls.jpg',
+        desc: 'Wrinkle-resistant poly-viscose box pleat pinafore with growth margin hems and inner lining. Includes durable white salwar and dupatta border options.',
+        specs: 'Fabric: Poly-Viscose Gabardine • Features: Adjustable growth margin, anti-pilling'
+      },
+      {
+        id: 'PROD-HOSP-01',
+        name: 'Executive Double-Breasted Chef Coat & Toque (TRD Style)',
+        category: 'Hospitality',
+        image: 'images/work-chef-royal-dining.jpg',
+        desc: 'Crisp white double-breasted culinary chef jacket with contrast black piping, black mandarin collar, and heat-resistant stud buttons. Includes matching tall chef toque.',
+        specs: 'Fabric: Heavy-duty stain-release cotton blend • Custom embroidery on chest and hat'
+      },
+      {
+        id: 'PROD-HOSP-02',
+        name: 'Commercial Restaurant Staff Coat & Apron (Pizza Khazza Style)',
+        category: 'Hospitality',
+        image: 'images/work-hospitality-pizza-khazza.jpg',
+        desc: 'Asymmetrical black service coat featuring contrast ethnic printed fabric panel and matching cuffs. Paired with customized front-pocket apron and skull cap.',
+        specs: 'Fabric: Wash-durable poly-cotton twill • Custom embroidered logo & patterned trim'
+      },
+      {
+        id: 'PROD-CORP-01',
+        name: 'Corporate Executive Formal Blazer',
+        category: 'Corporate Wear',
+        image: 'images/corporate-suit.jpg',
+        desc: 'Structured single-breasted corporate blazers with full interior satin lining, structured shoulder pads, and reinforced welt pockets for business enterprises.',
+        specs: 'Fabric: Premium Poly-Viscose Suiting • Sizes: 36 to 48 (Custom sizing available)'
+      },
+      {
+        id: 'PROD-CORP-02',
+        name: 'Executive Corporate Formal Shirts & Trousers',
+        category: 'Corporate Wear',
+        image: 'images/stitched-garments.jpg',
+        desc: 'Wrinkle-resistant formal office shirts and matched formal trousers tailored for daily enterprise wear, hotel reception, and corporate staff teams.',
+        specs: 'Fabric: Easy-iron poly-cotton shirting • Reinforced seams and waistbands'
+      },
+      {
+        id: 'PROD-COUT-01',
+        name: 'Bespoke Hand-Embroidered Royal Ivory Groom Sherwani',
+        category: 'Bespoke Couture',
+        image: 'images/work-bespoke-wedding-sherwani.jpg',
+        desc: 'Couture raw silk wedding sherwani adorned with intricate antique gold floral zari threadwork. Accompanied by matching stole, jeweled kalgi turban, and mojari.',
+        specs: 'Fabric: Pure Raw Silk • Hand Zari Needlework • Complete 4-piece coordinated set'
+      },
+      {
+        id: 'PROD-COUT-02',
+        name: 'Bespoke 3-Piece Formal Tuxedo & Suiting',
+        category: 'Bespoke Couture',
+        image: 'images/bespoke-tuxedo.jpg',
+        desc: 'Custom-tailored 3-piece evening tuxedo with satin peak lapels, tailored waistcoat, and precision-creased formal trousers crafted to individual client measurements.',
+        specs: 'Fabric: Wool-blend suiting • Satin peak lapel trim • Master tailor bespoke cut'
+      },
+      {
+        id: 'PROD-WORK-01',
+        name: 'Industrial Heavy-Duty Safety Boiler Suits & Overalls',
+        category: 'Workwear & Scrubs',
+        image: 'images/industrial-workwear.jpg',
+        desc: 'Industrial-grade workwear engineered from heavy cotton drill. Features reinforced bar-tacked pockets, heavy-duty brass front zipper, and optional retro-reflective safety tape.',
+        specs: 'Fabric: 100% Cotton Drill / Poly-Cotton • High tear-resistance • Multi-pocket utility'
+      },
+      {
+        id: 'PROD-WORK-02',
+        name: 'Hospital Healthcare Medical Scrubs & Doctor Coats',
+        category: 'Workwear & Scrubs',
+        image: 'images/medical-scrubs.jpg',
+        desc: 'Antimicrobial healthcare scrub sets and doctor lab coats. Designed for mobility, easy sanitation, and long-shift comfort across clinics and hospitals.',
+        specs: 'Fabric: Breathable hospital-grade poplin • Autoclave wash-fast color retention'
+      }
+    ];
+  }
+
+  renderPortfolio(filter = 'all') {
+    const container = document.getElementById('portfolio-gallery-container');
+    if (!container) return;
+
+    let items = this.getPortfolioItems();
+    if (filter !== 'all') {
+      items = items.filter(it => it.categoryKey === filter);
+    }
+
+    container.innerHTML = items.map(it => `
+      <div class="portfolio-card">
+        <div class="portfolio-card-img-wrap">
+          <img src="${it.image}" alt="${this.escapeHtml(it.title)}" class="portfolio-card-img" onerror="this.src='images/hero-atelier.jpg'">
+          <span class="portfolio-badge">${this.escapeHtml(it.category)}</span>
+        </div>
+        <div class="portfolio-card-body">
+          <span class="portfolio-card-category">${this.escapeHtml(it.client)}</span>
+          <h3 class="portfolio-card-title">${this.escapeHtml(it.title)}</h3>
+          <p class="portfolio-card-desc">${this.escapeHtml(it.description)}</p>
+          <div class="portfolio-highlights">
+            ${(it.highlights || []).map(h => `<span class="portfolio-highlight-tag">${this.escapeHtml(h)}</span>`).join('')}
+          </div>
+          <div class="portfolio-card-actions">
+            <a href="https://wa.me/919391414502?text=Hello%20ZM%20Enterprises,%20I%20am%20interested%20in%20completed%20work%20similar%20to:\n*${encodeURIComponent(it.title)}*\nPlease%20share%20bulk%20specifications%20and%20quotation." target="_blank" class="btn btn-whatsapp btn-sm btn-block" style="text-decoration:none;">
+              💬 Inquire on WhatsApp About This Design
+            </a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  filterPortfolio(filter) {
+    const buttons = document.querySelectorAll('#portfolio-category-filters button');
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+    this.renderPortfolio(filter);
+  }
+
+  renderCorporateProducts(category = 'all') {
+    const container = document.getElementById('corporate-products-container');
+    if (!container) return;
+
+    let products = this.getCorporateProductsCatalog();
+    if (category !== 'all') {
+      products = products.filter(p => p.category === category);
+    }
+
+    container.innerHTML = products.map(p => `
+      <div class="corp-prod-card">
+        <div class="corp-prod-img-wrap">
+          <img src="${p.image}" alt="${this.escapeHtml(p.name)}" class="corp-prod-img" onerror="this.src='images/hero-atelier.jpg'">
+        </div>
+        <div class="corp-prod-body">
+          <span class="corp-prod-cat">${this.escapeHtml(p.category)}</span>
+          <h3 class="corp-prod-title">${this.escapeHtml(p.name)}</h3>
+          <p class="corp-prod-desc">${this.escapeHtml(p.desc)}</p>
+          <div style="font-size:0.75rem; color:#64748b; background:#f8fafc; padding:8px; border-radius:6px; margin-bottom:14px; border:1px solid #e2e8f0;">
+            <strong>Specifications:</strong> ${this.escapeHtml(p.specs)}
+          </div>
+          <div class="corp-prod-actions">
+            <button class="btn btn-whatsapp btn-sm" onclick="app.inquireProductWhatsApp('${this.escapeHtml(p.name)}')">
+              💬 Inquire via WhatsApp
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="app.openBulkQuoteForProduct('${this.escapeHtml(p.name)}', '${this.escapeHtml(p.category)}')">
+              Request Bulk Specification
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  filterCorporateProducts(category) {
+    const buttons = document.querySelectorAll('#products-category-filters button');
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === category));
+    this.renderCorporateProducts(category);
+  }
+
+  inquireProductWhatsApp(productName) {
+    const msg = encodeURIComponent(`Hello ZM Enterprises, I am interested in bulk order requirements for *${productName}*. Please share fabric options, minimum quantities, and quotation details.`);
+    window.open(`https://wa.me/919391414502?text=${msg}`, '_blank');
+  }
+
+  openBulkQuoteForProduct(productName, category) {
+    this.switchTab('contact');
+    const catSelect = document.getElementById('inq-category');
+    const notesField = document.getElementById('inq-notes');
+    if (catSelect && category) {
+      for (let i = 0; i < catSelect.options.length; i++) {
+        if (catSelect.options[i].value.includes(category) || category.includes(catSelect.options[i].value)) {
+          catSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+    if (notesField) {
+      notesField.value = `Inquiry regarding bulk supply for ${productName}. Please quote for customized embroidery, fabric options, and required turnaround time.`;
+      notesField.focus();
+    }
+  }
+
+  submitBulkInquiry(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const org = (document.getElementById('inq-org') || {}).value || '';
+    const name = (document.getElementById('inq-name') || {}).value || '';
+    const phone = (document.getElementById('inq-phone') || {}).value || '';
+    const email = (document.getElementById('inq-email') || {}).value || '';
+    const category = (document.getElementById('inq-category') || {}).value || 'School Uniforms';
+    const qty = (document.getElementById('inq-qty') || {}).value || '50+ pieces';
+    const notes = (document.getElementById('inq-notes') || {}).value || '';
+
+    if (!org.trim() || !name.trim() || !phone.trim()) {
+      this.showToast('Please enter your Organization name, Contact Name, and Mobile Number.');
+      return;
+    }
+
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    if (cleanPhone.length < 10) {
+      this.showToast('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    const text = `Hello ZM Enterprises,
+
+*NEW BULK GARMENT ENQUIRY*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+🏢 *Organization:* ${org.trim()}
+👤 *Contact Person:* ${name.trim()}
+📞 *Mobile:* ${phone.trim()}
+${email.trim() ? '✉️ *Email:* ' + email.trim() + '\\n' : ''}🏷️ *Category:* ${category}
+📦 *Estimated Qty:* ${qty}
+${notes.trim() ? '\\n📝 *Requirements / Specifications:*\\n' + notes.trim() + '\\n' : ''}━━━━━━━━━━━━━━━━━━━━━━━━━
+Please confirm swatch availability and appointment for sample approval.`;
+
+    // Save to local enquiries log
+    if (!Array.isArray(this.data.wholesaleEnquiries)) this.data.wholesaleEnquiries = [];
+    this.data.wholesaleEnquiries.unshift({
+      id: 'ENQ-' + Date.now(),
+      org: org.trim(),
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      category: category,
+      qty: qty,
+      notes: notes.trim(),
+      createdAt: new Date().toISOString()
+    });
+    this.saveData();
+
+    this.showToast('Opening WhatsApp with your bulk enquiry details...');
+    window.open(`https://wa.me/919391414502?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  submitBulkInquiryEmail() {
+    const org = (document.getElementById('inq-org') || {}).value || 'Organization';
+    const name = (document.getElementById('inq-name') || {}).value || '';
+    const phone = (document.getElementById('inq-phone') || {}).value || '';
+    const category = (document.getElementById('inq-category') || {}).value || 'Uniforms';
+    const qty = (document.getElementById('inq-qty') || {}).value || '';
+    const notes = (document.getElementById('inq-notes') || {}).value || '';
+
+    const subject = encodeURIComponent(`Bulk Garment Inquiry — ${org} (${category})`);
+    const body = encodeURIComponent(`Dear ZM Enterprises Team,\n\nWe would like to discuss a bulk garment requirement for ${org}.\n\nContact Person: ${name}\nPhone: ${phone}\nCategory: ${category}\nEstimated Quantity: ${qty}\n\nRequirements / Notes:\n${notes}\n\nPlease share your catalog and appointment options.\n\nThank you,\n${name}`);
+
+    window.location.href = `mailto:sadiyasultana5836@gmail.com?subject=${subject}&body=${body}`;
   }
 
 }
