@@ -479,6 +479,18 @@ class TailorBusinessApp {
   }
 
   switchTab(tabName) {
+    // Synchronize desktop nav buttons and mobile bottom nav items
+    document.querySelectorAll('.nav-link-btn').forEach(b => {
+      b.classList.toggle('active', b.id === 'nav-btn-' + tabName);
+    });
+    document.querySelectorAll('.bottom-nav-item').forEach(b => {
+      b.classList.toggle('active', b.id === 'bnav-' + tabName);
+    });
+    const headerCartBadge = document.getElementById('header-cart-count');
+    if (headerCartBadge && this.cart) {
+      headerCartBadge.textContent = this.cart.reduce((s, i) => s + (Number(i.qty) || 1), 0);
+    }
+
     const validTabs = [
       'home', 'fabric-explorer', 'products', 'categories', 'manufacturing', 'wholesale', 'about', 'contact', 'track-order',
       'products-admin', 'ecommerce-orders', 'dashboard', 'enquiries-admin', 'orders', 'customers', 'catalog', 'invoices', 'settings', 'uniforms', 'enquiry'
@@ -3709,6 +3721,10 @@ class TailorBusinessApp {
     if (drawer) drawer.classList.remove('active');
   }
 
+  addToCart(productId, qty = 1) {
+    return this.cartAddItem(productId, qty);
+  }
+
   cartAddItem(productId, qty = 1) {
     const product = (this.data.ecommerceProducts || []).find(p => p.id === productId);
     if (!product) return;
@@ -6010,6 +6026,834 @@ class TailorBusinessApp {
       message: 'Automatic payment gateway will be enabled upon backend server configuration.'
     };
   }
+
+
+  // ==================== SIMPLIFIED CUSTOMER ORDER CONFIRMATION ====================
+  showOrderConfirmation(order, serverSaved = true) {
+    const body = document.getElementById('order-confirmation-body');
+    if (!body) return;
+
+    const itemCount = (order.items || []).reduce((s, i) => s + (Number(i.qty) || 1), 0);
+    const itemNames = (order.items || []).map(i => `${i.name} (x${i.qty})`).join(', ');
+
+    body.innerHTML = `
+      <div class="order-confirm-compact">
+        <div class="order-confirm-badge-icon">✓</div>
+        <h3 class="order-confirm-title">Order Placed Successfully!</h3>
+        <p class="order-confirm-lead">Your order has been recorded securely in our system.</p>
+
+        <div class="order-confirm-id-card">
+          <div class="order-confirm-id-label">ORDER REFERENCE ID</div>
+          <div class="order-confirm-id-value">${this.escapeHtml(order.id)}</div>
+          <div class="order-confirm-status-tag">
+            <span class="status-indicator-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#d97706; margin-right:5px;"></span>
+            <strong>Status: Pending Confirmation</strong>
+          </div>
+          <p style="font-size:0.775rem; color:#64748b; margin:6px 0 0;">
+            Our Workshop Master Tailor will review your sizing and specifications, then confirm your order.
+          </p>
+        </div>
+
+        <div class="order-confirm-summary-list">
+          <div class="order-summary-row">
+            <span style="color:#64748b;">Items (${itemCount} pcs):</span>
+            <span style="font-weight:600; text-align:right; max-width:60%;">${this.escapeHtml(itemNames)}</span>
+          </div>
+          <div class="order-summary-row">
+            <span style="color:#64748b;">Delivery Destination:</span>
+            <span style="font-weight:600; text-align:right;">${this.escapeHtml(order.address)}, ${this.escapeHtml(order.city || 'Hyderabad')}</span>
+          </div>
+          <div class="order-summary-row">
+            <span style="color:#64748b;">Delivery Fee:</span>
+            <span style="color:#167A62; font-weight:700;">FREE (₹0)</span>
+          </div>
+          <div class="order-summary-row total-highlight">
+            <span style="font-weight:700;">Total Payable:</span>
+            <span style="font-weight:800; color:#234E8A;">₹${(Number(order.totalAmount) || 0).toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+
+        <!-- Primary Action Buttons: Track Order & WhatsApp -->
+        <div class="order-confirm-actions">
+          <button type="button" class="btn btn-primary btn-block" onclick="app.trackOrderDirectly('${this.escapeHtml(order.id)}', '${this.escapeHtml(order.phone)}')">
+            📦 Track My Order Live
+          </button>
+          <button type="button" class="btn btn-whatsapp btn-block" onclick="app.shareOrderConfirmationWhatsApp()">
+            💬 Message Master on WhatsApp
+          </button>
+        </div>
+
+        <!-- Collapsible Order Details -->
+        <details class="order-confirm-collapsible">
+          <summary>View Complete Garment & Measurement Details</summary>
+          <div class="order-confirm-expanded-body">
+            <div><strong>Customer:</strong> ${this.escapeHtml(order.customerName)} (${this.escapeHtml(order.phone)})</div>
+            ${order.email ? `<div><strong>Email:</strong> ${this.escapeHtml(order.email)}</div>` : ''}
+            <div><strong>Payment Mode:</strong> ${this.escapeHtml(order.paymentMode || 'Cash on Delivery / Pickup')}</div>
+            ${order.notes ? `<div><strong>Custom Sizing Notes:</strong> ${this.escapeHtml(order.notes)}</div>` : ''}
+            <div style="margin-top:8px;">
+              <strong>Item Breakdown:</strong>
+              <ul style="margin:4px 0 0 18px; padding:0;">
+                ${(order.items || []).map(i => `<li>${this.escapeHtml(i.name)} — ${i.qty} pcs @ ₹${i.unitPrice} = ₹${i.lineTotal}</li>`).join('')}
+              </ul>
+            </div>
+            <div style="margin-top:8px; font-size:0.75rem; color:#64748b;">
+              Database Status: ${serverSaved ? '✓ Synced with persistent database' : 'Stored locally'}
+            </div>
+          </div>
+        </details>
+
+        <div style="text-align:center; margin-top:14px;">
+          <button type="button" class="btn-link" onclick="app.closeModal('modal-order-confirmation'); app.switchTab('products');" style="background:none; border:none; color:#234E8A; font-weight:700; cursor:pointer;">
+            ← Continue Shopping
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Hide old modal footer buttons that caused clutter
+    const footer = document.querySelector('#modal-order-confirmation .modal-footer');
+    if (footer) footer.style.display = 'none';
+
+    this.openModal('modal-order-confirmation');
+  }
+
+  trackOrderDirectly(orderId, phone) {
+    this.closeModal('modal-order-confirmation');
+    this.switchTab('track-order');
+    const idInput = document.getElementById('track-order-id') || document.getElementById('track-order-input');
+    const phoneInput = document.getElementById('track-order-phone');
+    if (idInput) idInput.value = orderId;
+    if (phoneInput && phone) phoneInput.value = phone;
+    this.trackOrderLookup();
+  }
+
+  // ==================== VISUAL 6-STAGE ORDER TRACKING ====================
+  async trackOrderLookup() {
+    const idInput = document.getElementById('track-order-id') || document.getElementById('track-order-input');
+    const phoneInput = document.getElementById('track-order-phone');
+    const container = document.getElementById('track-order-result');
+    if (!container) return;
+
+    const enteredId = idInput ? idInput.value.trim() : '';
+    const enteredPhone = phoneInput ? phoneInput.value.trim() : '';
+
+    if (!enteredId) {
+      container.innerHTML = `<div style="text-align:center; padding:16px; color:#b91c1c; font-weight:600;">Please enter your Order Reference ID (e.g. ZME-ORD-2026-XXXX).</div>`;
+      return;
+    }
+
+    container.innerHTML = `<div style="text-align:center; padding:24px; color:#64748b;"><em>Searching order records...</em></div>`;
+
+    let matchedOrder = null;
+
+    // 1. Check local storage orders first
+    const localMatch = (this.data.ecommerceOrders || []).find(o => {
+      const matchId = String(o.id).toUpperCase() === enteredId.toUpperCase();
+      if (!matchId) return false;
+      if (enteredPhone) {
+        const cleanPhone = enteredPhone.replace(/[^0-9]/g, '');
+        const orderPhone = String(o.phone || '').replace(/[^0-9]/g, '');
+        return orderPhone.endsWith(cleanPhone.slice(-10));
+      }
+      return true;
+    });
+
+    if (localMatch) {
+      matchedOrder = localMatch;
+    }
+
+    // 2. Fetch live status from persistent serverless backend
+    try {
+      const queryPhone = enteredPhone || (localMatch ? localMatch.phone : '');
+      const res = await fetch(`/api/orders?lookupId=${encodeURIComponent(enteredId)}&lookupPhone=${encodeURIComponent(queryPhone)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.found && data.order) {
+          matchedOrder = data.order;
+        }
+      }
+    } catch (err) {
+      console.warn('[Track Order API non-blocking warning]:', err.message);
+    }
+
+    if (!matchedOrder) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:24px; background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; color:#9f1239;">
+          <strong>No order found matching "${this.escapeHtml(enteredId)}"</strong>
+          <p style="margin:4px 0 0; font-size:0.85rem;">Please check the Order ID and verify your 10-digit mobile number.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Render 6-Stage Stepper
+    this.renderTrackingResultUI(matchedOrder, container);
+  }
+
+  renderTrackingResultUI(order, container) {
+    const isCancelled = order.orderStatus === 'Cancelled' || order.orderStatus === 'Rejected';
+    
+    // 6 Canonical Workflow Stages
+    const stages = [
+      { name: 'Order Placed', desc: 'Received in database' },
+      { name: 'Confirmed', desc: 'Accepted by Master Tailor' },
+      { name: 'In Production', desc: 'Pattern cutting & stitching' },
+      { name: 'Ready for Dispatch', desc: 'Quality checked & packed' },
+      { name: 'Out for Delivery', desc: 'Dispatched to address' },
+      { name: 'Delivered', desc: 'Handed over to customer' }
+    ];
+
+    let currentStageIndex = 0;
+    const st = String(order.orderStatus || '').toLowerCase();
+
+    if (st.includes('deliver') && !st.includes('ready') && !st.includes('out')) {
+      currentStageIndex = 5;
+    } else if (st.includes('out for delivery')) {
+      currentStageIndex = 4;
+    } else if (st.includes('ready') || st.includes('dispatch')) {
+      currentStageIndex = 3;
+    } else if (st.includes('production') || st.includes('stitching')) {
+      currentStageIndex = 2;
+    } else if (st.includes('confirm') || st.includes('accept')) {
+      currentStageIndex = 1;
+    } else {
+      currentStageIndex = 0;
+    }
+
+    const itemsSummary = (order.items || []).map(i => `${i.name} (x${i.qty})`).join(', ');
+
+    container.innerHTML = `
+      <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; margin-top:16px;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; border-bottom:1px solid #f1f5f9; padding-bottom:14px; margin-bottom:16px;">
+          <div>
+            <span style="font-size:0.75rem; text-transform:uppercase; color:#64748b; font-weight:700;">Order Reference</span>
+            <h3 style="font-size:1.35rem; color:#142C4E; margin:2px 0 0; font-family:monospace;">${this.escapeHtml(order.id)}</h3>
+            <div style="font-size:0.8rem; color:#64748b; margin-top:2px;">Placed on: ${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="order-status-pill ${isCancelled ? 'status-cancelled' : 'status-confirmed'}" style="font-size:0.85rem; padding:6px 12px;">
+              ${this.escapeHtml(order.orderStatus || 'Pending Confirmation')}
+            </span>
+            ${order.paymentStatus ? `<div style="font-size:0.8rem; color:#047857; margin-top:4px; font-weight:600;">Payment: ${this.escapeHtml(order.paymentStatus)}</div>` : ''}
+          </div>
+        </div>
+
+        ${isCancelled ? `
+          <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:14px; margin-bottom:20px; color:#991b1b;">
+            <strong style="font-size:0.95rem;">Order Cancelled</strong>
+            <p style="margin:4px 0 0; font-size:0.85rem;">Reason: ${this.escapeHtml(order.cancellationReason || 'Cancelled by workshop management.')}</p>
+          </div>
+        ` : `
+          <!-- 6-Stage Visual Stepper -->
+          <div class="track-progress-stepper">
+            ${stages.map((stage, idx) => {
+              const isCompleted = currentStageIndex > idx;
+              const isCurrent = currentStageIndex === idx;
+              const stepClass = isCompleted ? 'completed' : (isCurrent ? 'current' : '');
+              return `
+                <div class="stepper-step ${stepClass}">
+                  <div class="stepper-circle">${isCompleted ? '✓' : (idx + 1)}</div>
+                  <div class="stepper-label">
+                    <div>${stage.name}</div>
+                    <div style="font-size:0.68rem; color:#94a3b8; font-weight:normal;">${stage.desc}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+
+        <!-- Order Information Summary -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; background:#f8fafc; border-radius:10px; padding:16px; margin:20px 0; font-size:0.85rem;">
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748b; font-weight:700;">Customer</div>
+            <div style="font-weight:600; color:#1e293b; margin-top:2px;">${this.escapeHtml(order.customerName)}</div>
+            ${order.city ? `<div style="color:#64748b;">📍 ${this.escapeHtml(order.city)}, Telangana</div>` : ''}
+          </div>
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748b; font-weight:700;">Garments & Items</div>
+            <div style="font-weight:600; color:#1e293b; margin-top:2px;">${itemsSummary || 'Standard uniform order'}</div>
+            <div style="font-weight:700; color:#234E8A; margin-top:2px;">Total: ₹${(Number(order.totalAmount) || 0).toLocaleString('en-IN')}</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748b; font-weight:700;">Delivery Schedule</div>
+            <div style="font-weight:600; color:#167A62; margin-top:2px;">
+              ${order.expectedDeliveryDate ? `Target: ${order.expectedDeliveryDate}` : 'Standard Delivery (3-5 Days)'}
+            </div>
+            ${order.deliveryPartner ? `<div style="font-size:0.775rem; color:#475569; margin-top:2px;">Courier: ${this.escapeHtml(order.deliveryPartner)} ${order.trackingNumber ? '(' + this.escapeHtml(order.trackingNumber) + ')' : ''}</div>` : ''}
+          </div>
+        </div>
+
+        <!-- WhatsApp Support Link -->
+        <div style="text-align:center;">
+          <a href="https://wa.me/919391414502?text=Hello%20ZM%20Enterprises,%20I%20am%20inquiring%20about%20my%20Order%20${encodeURIComponent(order.id)}" target="_blank" class="btn btn-whatsapp" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-size:0.875rem; text-decoration:none;">
+            💬 Chat with Master Tailor regarding this Order
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==================== 1-TAP OWNER ORDER ACTIONS ====================
+  async acceptEcommerceOrder(orderId) {
+    if (!confirm(`Accept and confirm Order ${orderId} for production?`)) return;
+
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+
+    const oldStatus = order.orderStatus;
+    const newStatus = 'Confirmed / Accepted';
+    order.orderStatus = newStatus;
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldStatus,
+      toStatus: newStatus,
+      note: 'Order accepted and confirmed by workshop master.'
+    });
+
+    this.saveData();
+    this.renderOwnerOverview();
+    this.renderOwnerOrders();
+    this.showToast(`Order ${orderId} accepted and confirmed!`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({
+          orderId,
+          orderStatus: newStatus,
+          note: 'Order accepted and confirmed by workshop master.'
+        })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders accept failed]:', err);
+    }
+  }
+
+  async rejectEcommerceOrder(orderId) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+
+    const reason = prompt(`Please enter the reason for rejecting or cancelling Order ${orderId} (e.g. Fabric out of stock, outside Hyderabad perimeter):`);
+    if (reason === null) return; // User cancelled prompt
+
+    const oldStatus = order.orderStatus;
+    const newStatus = 'Cancelled';
+    order.orderStatus = newStatus;
+    order.cancellationReason = reason || 'Cancelled by workshop master';
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldStatus,
+      toStatus: newStatus,
+      note: `Cancelled. Reason: ${order.cancellationReason}`
+    });
+
+    this.saveData();
+    this.renderOwnerOverview();
+    this.renderOwnerOrders();
+    this.showToast(`Order ${orderId} marked as Cancelled.`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({
+          orderId,
+          orderStatus: newStatus,
+          cancellationReason: order.cancellationReason,
+          note: `Order cancelled. Reason: ${order.cancellationReason}`
+        })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders cancel failed]:', err);
+    }
+  }
+
+  async updateOrderStatus(orderId, newStatus) {
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+
+    const oldStatus = order.orderStatus;
+    if (oldStatus === newStatus) return;
+
+    order.orderStatus = newStatus;
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      fromStatus: oldStatus,
+      toStatus: newStatus,
+      note: `Status updated to ${newStatus}`
+    });
+
+    this.saveData();
+    this.renderOwnerOverview();
+    this.renderOwnerOrders();
+    this.showToast(`Order ${orderId} updated to ${newStatus}`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({
+          orderId,
+          orderStatus: newStatus,
+          note: `Status updated to ${newStatus}`
+        })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders status failed]:', err);
+    }
+  }
+
+  // ==================== 5-SECTION OWNER DASHBOARD CONTROLLER ====================
+  switchOwnerTab(subtab) {
+    const subtabs = ['overview', 'orders', 'products', 'delivery', 'settings'];
+    if (!subtabs.includes(subtab)) subtab = 'overview';
+
+    subtabs.forEach(st => {
+      const btn = document.getElementById(`btn-owner-tab-${st}`);
+      const pane = document.getElementById(`owner-subtab-${st}`);
+      if (btn) btn.classList.toggle('active', st === subtab);
+      if (pane) {
+        pane.style.display = (st === subtab) ? 'block' : 'none';
+        pane.classList.toggle('active', st === subtab);
+      }
+    });
+
+    if (subtab === 'overview') this.renderOwnerOverview();
+    if (subtab === 'orders') this.renderOwnerOrders();
+    if (subtab === 'products') this.renderOwnerProducts();
+    if (subtab === 'delivery') this.renderOwnerDelivery();
+    if (subtab === 'settings') this.loadOwnerSettings();
+  }
+
+  renderOwnerOverview() {
+    const orders = this.data.ecommerceOrders || [];
+
+    const pending = orders.filter(o => o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending').length;
+    const confirmed = orders.filter(o => o.orderStatus === 'Confirmed / Accepted' || o.orderStatus === 'Confirmed' || o.orderStatus === 'Accepted').length;
+    const production = orders.filter(o => o.orderStatus === 'In Production').length;
+    const dispatch = orders.filter(o => o.orderStatus === 'Ready for Dispatch' || o.orderStatus === 'Ready for Delivery' || o.orderStatus === 'Out for Delivery').length;
+    const delivered = orders.filter(o => o.orderStatus === 'Delivered').length;
+
+    const elPending = document.getElementById('kpi-pending-count');
+    const elConfirmed = document.getElementById('kpi-confirmed-count');
+    const elProd = document.getElementById('kpi-production-count');
+    const elDispatch = document.getElementById('kpi-dispatch-count');
+    const elDelivered = document.getElementById('kpi-delivered-count');
+    const badge = document.getElementById('owner-pending-badge');
+
+    if (elPending) elPending.textContent = pending;
+    if (elConfirmed) elConfirmed.textContent = confirmed;
+    if (elProd) elProd.textContent = production;
+    if (elDispatch) elDispatch.textContent = dispatch;
+    if (elDelivered) elDelivered.textContent = delivered;
+    if (badge) badge.textContent = pending;
+
+    // Render Recent Orders (Top 5)
+    const recentContainer = document.getElementById('owner-overview-recent-orders');
+    if (!recentContainer) return;
+
+    if (orders.length === 0) {
+      recentContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">No orders placed yet.</div>`;
+      return;
+    }
+
+    const recent = orders.slice(0, 5);
+    recentContainer.innerHTML = recent.map(o => this.renderOwnerOrderCardHTML(o)).join('');
+  }
+
+  filterOwnerOrdersByStatus(status) {
+    this.ownerActiveFilter = status;
+    const buttons = document.querySelectorAll('#owner-order-status-filters button');
+    buttons.forEach(b => {
+      b.classList.toggle('active', b.dataset.status === status);
+    });
+    this.switchOwnerTab('orders');
+    this.renderOwnerOrders();
+  }
+
+  renderOwnerOrders() {
+    const container = document.getElementById('owner-orders-cards-list');
+    if (!container) return;
+
+    const searchInput = document.getElementById('owner-order-search');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const filter = this.ownerActiveFilter || 'All';
+
+    let orders = this.data.ecommerceOrders || [];
+
+    // Filter by Status
+    if (filter !== 'All') {
+      orders = orders.filter(o => {
+        if (filter === 'Pending Confirmation') {
+          return o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending';
+        }
+        if (filter === 'Confirmed / Accepted') {
+          return o.orderStatus === 'Confirmed / Accepted' || o.orderStatus === 'Confirmed' || o.orderStatus === 'Accepted';
+        }
+        if (filter === 'Cancelled') {
+          return o.orderStatus === 'Cancelled' || o.orderStatus === 'Rejected';
+        }
+        return o.orderStatus === filter;
+      });
+    }
+
+    // Filter by Search Query
+    if (query) {
+      orders = orders.filter(o => 
+        String(o.id).toLowerCase().includes(query) ||
+        String(o.customerName || '').toLowerCase().includes(query) ||
+        String(o.phone || '').includes(query) ||
+        String(o.city || '').toLowerCase().includes(query)
+      );
+    }
+
+    if (orders.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:32px; color:#64748b;">No matching orders found.</div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map(o => this.renderOwnerOrderCardHTML(o)).join('');
+  }
+
+  renderOwnerOrderCardHTML(o) {
+    const isPending = o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending';
+    const itemCount = (o.items || []).reduce((s, i) => s + (Number(i.qty) || 1), 0);
+    const dateFormatted = new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    const timeFormatted = new Date(o.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+    let statusPillClass = 'status-pending';
+    if (o.orderStatus === 'Confirmed / Accepted' || o.orderStatus === 'Confirmed' || o.orderStatus === 'Accepted') statusPillClass = 'status-confirmed';
+    if (o.orderStatus === 'In Production') statusPillClass = 'status-production';
+    if (o.orderStatus === 'Ready for Dispatch' || o.orderStatus === 'Ready for Delivery') statusPillClass = 'status-dispatch';
+    if (o.orderStatus === 'Out for Delivery') statusPillClass = 'status-delivery';
+    if (o.orderStatus === 'Delivered') statusPillClass = 'status-delivered';
+    if (o.orderStatus === 'Cancelled' || o.orderStatus === 'Rejected') statusPillClass = 'status-cancelled';
+
+    return `
+      <div class="admin-order-card ${isPending ? 'is-pending' : ''}">
+        <div class="admin-order-card-header">
+          <div>
+            <span class="order-id-badge">${this.escapeHtml(o.id)}</span>
+            <div class="order-date-time">📅 ${dateFormatted} at ${timeFormatted}</div>
+          </div>
+          <div>
+            <span class="order-status-pill ${statusPillClass}">${this.escapeHtml(o.orderStatus || 'Pending Confirmation')}</span>
+          </div>
+        </div>
+
+        <div class="order-customer-info">
+          <div>
+            <div class="order-customer-label">Customer Name & Phone</div>
+            <div class="order-customer-val">${this.escapeHtml(o.customerName)}</div>
+            <div style="margin-top:2px;">
+              📞 <a href="tel:${this.escapeHtml(o.phone)}" style="color:#234E8A; font-weight:700;">${this.escapeHtml(o.phone)}</a>
+            </div>
+          </div>
+          <div>
+            <div class="order-customer-label">Delivery Destination</div>
+            <div class="order-customer-val">${this.escapeHtml(o.address || 'Standard Address')}</div>
+            <div style="color:#64748b;">📍 ${this.escapeHtml(o.city || 'Hyderabad')}, Telangana</div>
+          </div>
+          <div>
+            <div class="order-customer-label">Order Value & Mode</div>
+            <div style="font-size:1.1rem; font-weight:800; color:#142C4E;">₹${(Number(o.totalAmount) || 0).toLocaleString('en-IN')}</div>
+            <div style="color:#64748b;">${this.escapeHtml(o.paymentMode || 'Cash on Delivery')}</div>
+          </div>
+        </div>
+
+        <div class="order-items-preview">
+          <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase;">Items (${itemCount} pcs):</span>
+          <div style="margin-top:4px;">
+            ${(o.items || []).map(i => `
+              <span class="order-item-chip"><strong>${this.escapeHtml(i.name)}</strong> (x${i.qty}) ${i.unitPrice ? '₹' + i.unitPrice : 'Quote'}</span>
+            `).join('')}
+          </div>
+          ${o.notes ? `<div style="font-size:0.8rem; color:#475569; margin-top:6px; font-style:italic;">Notes: ${this.escapeHtml(o.notes)}</div>` : ''}
+        </div>
+
+        <!-- Touch-Friendly Action Buttons -->
+        <div class="order-card-actions">
+          ${isPending ? `
+            <button class="btn-accept-order" onclick="app.acceptEcommerceOrder('${o.id}')">
+              ✓ Accept Order
+            </button>
+            <button class="btn-reject-order" onclick="app.rejectEcommerceOrder('${o.id}')">
+              ✕ Reject
+            </button>
+          ` : `
+            <select class="form-control" style="max-width:200px; padding:8px; font-size:0.85rem; font-weight:700;" onchange="app.updateOrderStatus('${o.id}', this.value)">
+              <option value="Pending Confirmation" ${(o.orderStatus === 'Pending Confirmation' || o.orderStatus === 'Pending') ? 'selected' : ''}>⏳ Pending Confirmation</option>
+              <option value="Confirmed / Accepted" ${(o.orderStatus === 'Confirmed / Accepted' || o.orderStatus === 'Confirmed' || o.orderStatus === 'Accepted') ? 'selected' : ''}>✓ Confirmed / Accepted</option>
+              <option value="In Production" ${o.orderStatus === 'In Production' ? 'selected' : ''}>🧵 In Production</option>
+              <option value="Ready for Dispatch" ${(o.orderStatus === 'Ready for Dispatch' || o.orderStatus === 'Ready for Delivery') ? 'selected' : ''}>📦 Ready for Dispatch</option>
+              <option value="Out for Delivery" ${o.orderStatus === 'Out for Delivery' ? 'selected' : ''}>🚚 Out for Delivery</option>
+              <option value="Delivered" ${o.orderStatus === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
+              <option value="Cancelled" ${(o.orderStatus === 'Cancelled' || o.orderStatus === 'Rejected') ? 'selected' : ''}>✕ Cancelled</option>
+            </select>
+          `}
+
+          <button class="btn btn-sm btn-outline" onclick="app.viewEcommerceOrderDetails('${o.id}')">
+            View Details
+          </button>
+
+          <a href="https://wa.me/${String(o.phone).replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(o.customerName)},%20this%20is%20ZM%20Enterprises%20regarding%20your%20Order%20${encodeURIComponent(o.id)}" target="_blank" class="btn btn-sm btn-whatsapp">
+            💬 WhatsApp
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==================== OWNER PRODUCTS TAB WITH QUICK EDITABLE PRICING ====================
+  renderOwnerProducts() {
+    const container = document.getElementById('owner-products-admin-list');
+    if (!container) return;
+
+    const products = this.data.ecommerceProducts || [];
+    if (products.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:32px; background:#f8fafc; border-radius:10px;">
+          <p>No products in inventory.</p>
+          <button class="btn btn-primary btn-sm" onclick="app.seedSampleProductsOptional()">⚡ Load Standard Templates</button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Garment Style</th>
+              <th>Category</th>
+              <th>Price (Editable Column)</th>
+              <th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${products.map(p => {
+              const hasPrice = p.price !== undefined && p.price !== null && p.price !== '' && Number(p.price) > 0;
+              return `
+                <tr>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                      <img src="${this.escapeHtml(p.image || 'images/hero-atelier.jpg')}" alt="${this.escapeHtml(p.name)}" style="width:44px; height:44px; object-fit:cover; border-radius:6px;">
+                      <div>
+                        <strong>${this.escapeHtml(p.name)}</strong>
+                        <div style="font-size:0.75rem; color:#64748b;">SKU: ${this.escapeHtml(p.sku || p.id)}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>${this.escapeHtml(p.category || 'General')}</td>
+                  <td>
+                    <div class="admin-price-cell">
+                      <span class="currency-sym">₹</span>
+                      <input type="number" id="quick-price-${p.id}" class="admin-price-input" value="${hasPrice ? p.price : ''}" placeholder="Empty = Quote" min="0" step="1">
+                      <button class="btn btn-sm btn-primary" onclick="app.updateProductPriceQuick('${p.id}')">Save</button>
+                    </div>
+                    ${!hasPrice ? '<span class="badge-quote-price" style="margin-top:4px;">Displaying: Price on Quotation</span>' : ''}
+                  </td>
+                  <td>
+                    <span class="badge badge-stock-in">${p.stockStatus || 'In Stock'}</span>
+                  </td>
+                  <td style="text-align:right;">
+                    <button class="btn btn-sm btn-outline" onclick="app.editEcommerceProduct('${p.id}')">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="app.deleteEcommerceProduct('${p.id}')">Delete</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  updateProductPriceQuick(productId) {
+    const input = document.getElementById(`quick-price-${productId}`);
+    if (!input) return;
+
+    const val = input.value.trim();
+    const product = (this.data.ecommerceProducts || []).find(p => p.id === productId);
+    if (!product) return;
+
+    if (val === '' || isNaN(Number(val)) || Number(val) <= 0) {
+      product.price = null;
+      this.showToast(`Price cleared for ${product.name}. Store will display 'Price on Quotation'.`);
+    } else {
+      product.price = Number(val);
+      this.showToast(`Price updated to ₹${product.price} for ${product.name}`);
+    }
+
+    this.saveData();
+    this.renderOwnerProducts();
+    this.renderProductsGrid();
+  }
+
+  // ==================== OWNER DELIVERY TAB ====================
+  renderOwnerDelivery() {
+    const container = document.getElementById('owner-delivery-orders-list');
+    if (!container) return;
+
+    const orders = (this.data.ecommerceOrders || []).filter(o => 
+      o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled' && o.orderStatus !== 'Rejected'
+    );
+
+    if (orders.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:32px; color:#64748b;">No active pending fulfillment orders. All caught up!</div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map(o => `
+      <div class="admin-order-card">
+        <div class="admin-order-card-header">
+          <div>
+            <span class="order-id-badge">${this.escapeHtml(o.id)}</span>
+            <div class="order-date-time">Customer: ${this.escapeHtml(o.customerName)} (📞 ${this.escapeHtml(o.phone)})</div>
+          </div>
+          <div>
+            <span class="order-status-pill status-dispatch">${this.escapeHtml(o.orderStatus)}</span>
+          </div>
+        </div>
+
+        <div style="font-size:0.85rem; margin-bottom:12px;">
+          <strong>Destination Address:</strong> ${this.escapeHtml(o.address)}, ${this.escapeHtml(o.city || 'Hyderabad')}
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:14px; background:#f8fafc; padding:12px; border-radius:8px;">
+          <div>
+            <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">DELIVERY PARTNER / COURIER</label>
+            <select id="del-partner-${o.id}" class="form-control" style="font-size:0.85rem;">
+              <option value="In-house Hyderabad Delivery Rider" ${(o.deliveryPartner || '').includes('In-house') ? 'selected' : ''}>In-house Hyderabad Delivery Rider</option>
+              <option value="Dunzo / Porter Local" ${(o.deliveryPartner || '').includes('Dunzo') ? 'selected' : ''}>Dunzo / Porter Local Express</option>
+              <option value="DTDC Express" ${(o.deliveryPartner || '').includes('DTDC') ? 'selected' : ''}>DTDC Express Courier</option>
+              <option value="Blue Dart" ${(o.deliveryPartner || '').includes('Blue Dart') ? 'selected' : ''}>Blue Dart Courier</option>
+              <option value="India Post / Speed Post" ${(o.deliveryPartner || '').includes('Speed Post') ? 'selected' : ''}>India Post / Speed Post</option>
+              <option value="Workshop Customer Pickup" ${(o.deliveryPartner || '').includes('Pickup') ? 'selected' : ''}>Workshop Customer Pickup</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">TRACKING / CONSIGNMENT REF</label>
+            <input type="text" id="del-ref-${o.id}" class="form-control" value="${this.escapeHtml(o.trackingNumber || '')}" placeholder="Waybill / Tracking No." style="font-size:0.85rem;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">EXPECTED DELIVERY DATE</label>
+            <input type="date" id="del-date-${o.id}" class="form-control" value="${o.expectedDeliveryDate || ''}" style="font-size:0.85rem;">
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-sm btn-primary" onclick="app.saveOwnerDeliveryInfo('${o.id}')">
+              Save Delivery Details
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="app.updateOrderStatus('${o.id}', 'Out for Delivery')">
+              🚚 Mark Out for Delivery
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="app.updateOrderStatus('${o.id}', 'Delivered')">
+              ✅ Mark Delivered
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async saveOwnerDeliveryInfo(orderId) {
+    const partnerEl = document.getElementById(`del-partner-${orderId}`);
+    const refEl = document.getElementById(`del-ref-${orderId}`);
+    const dateEl = document.getElementById(`del-date-${orderId}`);
+
+    const order = (this.data.ecommerceOrders || []).find(o => o.id === orderId);
+    if (!order) return;
+
+    order.deliveryPartner = partnerEl ? partnerEl.value.trim() : null;
+    order.trackingNumber = refEl ? refEl.value.trim() : null;
+    order.expectedDeliveryDate = dateEl ? dateEl.value.trim() : null;
+
+    if (!Array.isArray(order.history)) order.history = [];
+    order.history.push({
+      timestamp: new Date().toISOString(),
+      status: order.orderStatus,
+      note: `Delivery schedule assigned: ${order.deliveryPartner || 'Courier'} (Ref: ${order.trackingNumber || 'N/A'}, Target: ${order.expectedDeliveryDate || 'N/A'})`
+    });
+
+    this.saveData();
+    this.showToast(`Delivery details saved for Order ${orderId}`);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': this.getAdminPin()
+        },
+        body: JSON.stringify({
+          orderId,
+          deliveryPartner: order.deliveryPartner,
+          trackingNumber: order.trackingNumber,
+          expectedDeliveryDate: order.expectedDeliveryDate
+        })
+      });
+    } catch (err) {
+      console.warn('[PATCH /api/orders delivery info failed]:', err);
+    }
+  }
+
+  // ==================== OWNER SETTINGS TAB ====================
+  loadOwnerSettings() {
+    const s = this.data.settings || {};
+    const nameEl = document.getElementById('owner-setting-biz-name');
+    const phoneEl = document.getElementById('owner-setting-phone');
+    const emailEl = document.getElementById('owner-setting-email');
+    const pinEl = document.getElementById('owner-setting-pin');
+    const addrEl = document.getElementById('owner-setting-address');
+
+    if (nameEl) nameEl.value = s.businessName || 'ZM Enterprises';
+    if (phoneEl) phoneEl.value = s.phone || '919391414502';
+    if (emailEl) emailEl.value = s.ownerEmail || 'sadiyasultana5836@gmail.com';
+    if (pinEl) pinEl.value = s.adminPin || '1234';
+    if (addrEl) addrEl.value = s.address || 'Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001';
+  }
+
+  saveOwnerSettings(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!this.data.settings) this.data.settings = {};
+
+    const nameEl = document.getElementById('owner-setting-biz-name');
+    const phoneEl = document.getElementById('owner-setting-phone');
+    const emailEl = document.getElementById('owner-setting-email');
+    const pinEl = document.getElementById('owner-setting-pin');
+    const addrEl = document.getElementById('owner-setting-address');
+
+    this.data.settings.businessName = nameEl ? nameEl.value.trim() : 'ZM Enterprises';
+    this.data.settings.phone = phoneEl ? phoneEl.value.trim() : '919391414502';
+    this.data.settings.ownerEmail = emailEl ? emailEl.value.trim() : 'sadiyasultana5836@gmail.com';
+    this.data.settings.adminPin = pinEl ? pinEl.value.trim() : '1234';
+    this.data.settings.address = addrEl ? addrEl.value.trim() : 'Hyderabad, Telangana';
+
+    this.saveData();
+    this.showToast('Store settings saved successfully!');
+  }
+
 }
 
 
