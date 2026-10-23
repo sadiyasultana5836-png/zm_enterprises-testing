@@ -194,7 +194,7 @@ const DEFAULT_DATA = {
     tagline: "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
     phone: "919391414502", // Verified Owner WhatsApp: +91 93914 14502: user configures their actual WhatsApp number in Store Settings
     email: "contact@zmenterprises.com",
-    ownerEmail: "sadiyasultana5836@gmail.com",
+    ownerEmail: "zmenterprise.zm@gmail.com",
     adminPin: "1234",
     address: "Hyderabad, Telangana, India",
     city: "Hyderabad",
@@ -295,7 +295,7 @@ class TailorBusinessApp {
     if (!data.settings.state) data.settings.state = "Telangana";
     if (!data.settings.adminPin) data.settings.adminPin = "1234";
     if (!data.settings.phone || data.settings.phone === "919876543210") data.settings.phone = "919391414502";
-    if (!data.settings.ownerEmail) data.settings.ownerEmail = data.settings.email || "sadiyasultana5836@gmail.com";
+    if (!data.settings.ownerEmail) data.settings.ownerEmail = data.settings.email || "zmenterprise.zm@gmail.com";
     if (data.settings.phone === "919876543210") {
       data.settings.phone = ""; // Reset demo placeholder
     }
@@ -2564,9 +2564,9 @@ class TailorBusinessApp {
     setVal('setting-biz-state', s.state || "Telangana");
     setVal('setting-biz-terms', s.terms);
     setVal('setting-admin-pin', s.adminPin || '1234');
-    setVal('setting-notify-email', s.ownerEmail || s.email || 'sadiyasultana5836@gmail.com');
+    setVal('setting-notify-email', s.ownerEmail || s.email || 'zmenterprise.zm@gmail.com');
     const dispEl = document.getElementById('display-notify-email');
-    if (dispEl) dispEl.textContent = s.ownerEmail || s.email || 'sadiyasultana5836@gmail.com';
+    if (dispEl) dispEl.textContent = s.ownerEmail || s.email || 'zmenterprise.zm@gmail.com';
   }
 
   saveSettings(e) {
@@ -2580,9 +2580,9 @@ class TailorBusinessApp {
       tagline: getVal('setting-biz-tagline') || "Professional School & Corporate Uniform Stitching | Tailoring Solutions in Hyderabad",
       phone: getVal('setting-biz-phone'),
       email: getVal('setting-biz-email') || "contact@zmenterprises.com",
-      ownerEmail: getVal('setting-notify-email') || "sadiyasultana5836@gmail.com",
+      ownerEmail: getVal('setting-notify-email') || "zmenterprise.zm@gmail.com",
       adminPin: getVal('setting-admin-pin') || "1234",
-      address: getVal('setting-biz-address') || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001",
+      address: getVal('setting-biz-address') || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500013",
       city: getVal('setting-biz-city') || "Hyderabad",
       state: getVal('setting-biz-state') || "Telangana",
       terms: getVal('setting-biz-terms') || "Fitting alterations accommodated within 7 days of delivery. Sample approval prior to bulk uniform production."
@@ -2599,7 +2599,7 @@ class TailorBusinessApp {
     const btn = document.getElementById('btn-test-notification');
     const resultEl = document.getElementById('test-notification-result');
     const emailInput = document.getElementById('setting-notify-email');
-    const targetEmail = emailInput ? emailInput.value.trim() : (this.data.settings.ownerEmail || 'sadiyasultana5836@gmail.com');
+    const targetEmail = emailInput ? emailInput.value.trim() : (this.data.settings.ownerEmail || 'zmenterprise.zm@gmail.com');
 
     if (!targetEmail) {
       this.showToast('Please enter a notification email address first.');
@@ -2640,7 +2640,7 @@ class TailorBusinessApp {
 
   updateContactDisplay() {
     const s = this.data.settings || {};
-    const addr = s.address || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001";
+    const addr = s.address || "Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500013";
     const phone = s.phone ? s.phone : "";
     const email = s.email || "contact@zmenterprises.com";
 
@@ -6832,9 +6832,9 @@ class TailorBusinessApp {
 
     if (nameEl) nameEl.value = s.businessName || 'ZM Enterprises';
     if (phoneEl) phoneEl.value = s.phone || '919391414502';
-    if (emailEl) emailEl.value = s.ownerEmail || 'sadiyasultana5836@gmail.com';
+    if (emailEl) emailEl.value = s.ownerEmail || 'zmenterprise.zm@gmail.com';
     if (pinEl) pinEl.value = s.adminPin || '1234';
-    if (addrEl) addrEl.value = s.address || 'Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500001';
+    if (addrEl) addrEl.value = s.address || 'Shop No. 12, Commercial Complex, Hyderabad, Telangana - 500013';
   }
 
   saveOwnerSettings(e) {
@@ -6849,7 +6849,7 @@ class TailorBusinessApp {
 
     this.data.settings.businessName = nameEl ? nameEl.value.trim() : 'ZM Enterprises';
     this.data.settings.phone = phoneEl ? phoneEl.value.trim() : '919391414502';
-    this.data.settings.ownerEmail = emailEl ? emailEl.value.trim() : 'sadiyasultana5836@gmail.com';
+    this.data.settings.ownerEmail = emailEl ? emailEl.value.trim() : 'zmenterprise.zm@gmail.com';
     this.data.settings.adminPin = pinEl ? pinEl.value.trim() : '1234';
     this.data.settings.address = addrEl ? addrEl.value.trim() : 'Hyderabad, Telangana';
 
@@ -7170,7 +7170,7 @@ Please confirm swatch availability and appointment for sample approval.`;
     const subject = encodeURIComponent(`Bulk Garment Inquiry — ${org} (${category})`);
     const body = encodeURIComponent(`Dear ZM Enterprises Team,\n\nWe would like to discuss a bulk garment requirement for ${org}.\n\nContact Person: ${name}\nPhone: ${phone}\nCategory: ${category}\nEstimated Quantity: ${qty}\n\nRequirements / Notes:\n${notes}\n\nPlease share your catalog and appointment options.\n\nThank you,\n${name}`);
 
-    window.location.href = `mailto:sadiyasultana5836@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:zmenterprise.zm@gmail.com?subject=${subject}&body=${body}`;
   }
 
 }

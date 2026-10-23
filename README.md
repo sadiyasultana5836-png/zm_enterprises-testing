@@ -142,13 +142,48 @@ Welcome to **ZM Enterprises**, a professional production-ready web platform buil
 
 ---
 
+## 🛒 Order System Architecture & Configuration
+
+The order system has been upgraded with a persistent serverless backend (`/api/orders.js`), email notification dispatcher (`/api/notify.js`), owner admin security gate, and zero unauthorized charges.
+
+### 1. ⚙️ Environment Variables on Vercel
+In your **Vercel Project Dashboard** ➔ **Settings** ➔ **Environment Variables**, configure the following keys:
+
+| Environment Variable | Description | Recommended Setting |
+| :--- | :--- | :--- |
+| `OWNER_EMAIL` | Email address where new order notifications are delivered | `zmenterprise.zm@gmail.com` |
+| `RESEND_API_KEY` | API Key from [resend.com](https://resend.com) for real email delivery | `re_...` (Free tier: 3,000 emails/month) |
+| `ADMIN_PIN` | 4-digit PIN protecting sensitive customer records & admin views | `1234` (or custom secret PIN) |
+| `SUPABASE_URL` | *(Optional)* Supabase project URL for cloud database persistence | `https://xyz.supabase.co` |
+| `SUPABASE_KEY` | *(Optional)* Supabase service role key | `eyJ...` |
+
+### 2. 🔐 Owner Admin PIN Protection
+- Sensitive customer data (phone numbers, full delivery addresses, and order history) is guarded behind an authentication modal.
+- **Default PIN:** `1234`
+- You can change this PIN anytime in **Store Settings** (`setting-admin-pin`) or via the `ADMIN_PIN` environment variable.
+- Click **🔒 Lock Admin** in the sidebar or topbar whenever you want to lock the session.
+
+### 3. 💳 Payment Processing
+- The website operates in **Manual Atelier Verification Mode**.
+- Orders are stored with status **`Pending Verification`**.
+- No online money is charged or deducted from customer accounts. Live payment gateways (Razorpay/Stripe) are kept in architectural readiness and require explicit business onboarding and API credentials before activation.
+- The owner verifies payment manually and updates the payment status to **`Payment Received / Paid`** directly in the Admin Dashboard.
+
+### 4. 💰 Transparent Pricing & Checkout
+- **Zero Surprise Charges:** Every order line item displays Unit Price × Quantity = Line Total.
+- Standard Delivery / Workshop Pickup is explicitly set to **FREE (₹0)**.
+- Mandatory Taxes / Surcharges are set to **₹0**.
+- The Checkout Total, Order Confirmation Total, Database Stored Amount, and Email Notification Total match to the exact rupee.
+
+---
+
 ## 🌐 Steps to Publish Safely to GitHub & Vercel
 
 The application is built as a zero-dependency, ultra-fast static web application that is 100% compatible with GitHub repositories and Vercel static deployments.
 
 ### Method A: Direct Web Upload to GitHub (Easiest)
 1. Open your GitHub repository in your web browser:
-   `https://github.com/sadiyasultana5836-png/zm_enterprises-testing`
+   `https://github.com/zmenterprise.zm-png/zm_enterprises-testing`
 2. Click **Add file** ➔ **Upload files**.
 3. From your computer, open:
    `C:\Users\sadiy\Desktop\ZM Enterprises Tailoring App`
@@ -178,7 +213,7 @@ git push origin main
 If visitors or friends are prompted to log in when you share a link, it is because of one of two common reasons:
 
 ### Reason 1: Sharing an Internal Vercel URL Instead of the Public Domain
-- **Incorrect Links:** Links starting with `https://vercel.com/...` or preview branch URLs like `https://zmenterprises-testing-xxx-sadiyasultana5836-pngs-projects.vercel.app` require a Vercel team account or trigger authentication.
+- **Incorrect Links:** Links starting with `https://vercel.com/...` or preview branch URLs like `https://zmenterprises-testing-xxx-zmenterprise.zm-pngs-projects.vercel.app` require a Vercel team account or trigger authentication.
 - **Correct Public Link:** Always share the canonical public production domain:
   👉 **`https://zmenterprises-testing.vercel.app/`**
   This URL is configured for public access and serves `HTTP 200 OK` directly without any login requirement.
